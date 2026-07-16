@@ -16,18 +16,15 @@ import {
 /*  SHARED PRIMITIVES                                                 */
 /* ================================================================== */
 export const AtlasLogo = ({ size = 24 }) => (
-  <div className="relative flex items-center justify-center rounded-md" style={{ width: size, height: size }}>
-    <svg viewBox="0 0 40 40" className="w-full h-full">
-      <defs>
-        <linearGradient id={`atlasGradF-${size}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#00E6FF" />
-          <stop offset="55%" stopColor="#3B82F6" />
-          <stop offset="100%" stopColor="#A855F7" />
-        </linearGradient>
-      </defs>
-      <path d="M20 4 L34 34 L26 34 L23 27 L17 27 L14 34 L6 34 Z M19 20 L21 20 L20 17 Z" fill={`url(#atlasGradF-${size})`} />
-    </svg>
-    <div className="absolute inset-0 blur-xl opacity-40 rounded-md"
+  <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+    <img
+      src="/atlas-logo.png"
+      alt="Atlas"
+      style={{ width: size, height: size }}
+      className="relative z-10 object-contain"
+      draggable={false}
+    />
+    <div className="absolute inset-0 blur-xl opacity-40 rounded-full"
          style={{ background: 'radial-gradient(circle, #00E6FF, transparent 70%)' }} />
   </div>
 )
@@ -70,8 +67,6 @@ const AuthShell = ({ children }) => (
            style={{ background: 'radial-gradient(circle, rgba(0,230,255,0.35), transparent 60%)' }} />
       <div className="absolute -bottom-40 right-1/4 w-[600px] h-[600px] rounded-full blur-3xl opacity-25"
            style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.35), transparent 60%)' }} />
-      <div className="absolute inset-0 opacity-[0.04]"
-           style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
     </div>
     <div className="relative w-full max-w-[440px]">{children}</div>
   </div>

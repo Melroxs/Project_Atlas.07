@@ -22,23 +22,17 @@ import { AuthFlow, VoiceMode, GlobalSearch, DetailView } from '@/components/atla
 /* ------------------------------------------------------------------ */
 const AtlasLogo = ({ size = 24 }) => (
   <div
-    className="relative flex items-center justify-center rounded-md"
+    className="relative flex items-center justify-center"
     style={{ width: size, height: size }}
   >
-    <svg viewBox="0 0 40 40" className="w-full h-full">
-      <defs>
-        <linearGradient id="atlasGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#00E6FF" />
-          <stop offset="55%" stopColor="#3B82F6" />
-          <stop offset="100%" stopColor="#A855F7" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M20 4 L34 34 L26 34 L23 27 L17 27 L14 34 L6 34 Z M19 20 L21 20 L20 17 Z"
-        fill="url(#atlasGrad)"
-      />
-    </svg>
-    <div className="absolute inset-0 blur-xl opacity-40 rounded-md"
+    <img
+      src="/atlas-logo.png"
+      alt="Atlas"
+      style={{ width: size, height: size }}
+      className="relative z-10 object-contain"
+      draggable={false}
+    />
+    <div className="absolute inset-0 blur-xl opacity-40 rounded-full"
          style={{ background: 'radial-gradient(circle, #00E6FF, transparent 70%)' }} />
   </div>
 )
@@ -655,6 +649,20 @@ const SupplementsPage = () => {
   return (
   <>
     <TopBar eyebrow="Supplements" title="Recovery opportunities" subtitle="18 pending · $127,500 recovered · 87% avg confidence" />
+
+    <div className="flex items-center justify-between gap-3 flex-wrap -mt-2 mb-6">
+      <div className="text-[12px] text-white/50">
+        Atlas surfaces new opportunities the moment they appear across your claims.
+      </div>
+      <div className="flex items-center gap-2">
+        <button className="px-3 py-2 rounded-lg glass border border-white/[0.06] text-[13px] text-white/70 hover:bg-white/[0.06] flex items-center gap-2">
+          <Filter size={13} /> Filters
+        </button>
+        <button className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold text-[13px] flex items-center gap-2 glow-cyan hover:opacity-90 transition">
+          <Plus size={14} /> Create supplement
+        </button>
+      </div>
+    </div>
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
       <StatCard label="Total Pending"     value="18"        color="#A855F7" seed={3} />
