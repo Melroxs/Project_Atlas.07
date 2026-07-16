@@ -1,6 +1,9 @@
 'use client'
 
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useRef, createContext, useContext } from 'react'
+
+const DetailContext = createContext(() => {})
+const useOpenDetail = () => useContext(DetailContext)
 import {
   LayoutDashboard, Sparkles, FolderOpen, FileText, FileStack, UserSquare2,
   Mic, Building2, ListChecks, Activity as ActivityIcon, Briefcase, Users,
@@ -12,6 +15,7 @@ import {
   Play, Pause, FileSignature, ChevronLeft, Layers, Cpu, GaugeCircle,
   Radio, Fingerprint, BarChart3, Bot, Wand2
 } from 'lucide-react'
+import { AuthFlow, VoiceMode, GlobalSearch, DetailView } from '@/components/atlas-features'
 
 /* ------------------------------------------------------------------ */
 /*  ATLAS LOGO                                                        */
@@ -92,13 +96,13 @@ const DAMAGE_TYPES = [
 /* ------------------------------------------------------------------ */
 /*  PRIMITIVE UI                                                      */
 /* ------------------------------------------------------------------ */
-const GlassCard = ({ children, className = '', tone }) => {
+const GlassCard = ({ children, className = '', tone, onClick, ...rest }) => {
   const toneClass =
     tone === 'cyan'   ? 'glow-cyan' :
     tone === 'purple' ? 'glow-purple' :
     tone === 'green'  ? 'glow-green' : ''
   return (
-    <div className={`glass rounded-2xl ${toneClass} ${className}`}>{children}</div>
+    <div onClick={onClick} className={`glass rounded-2xl ${toneClass} ${onClick ? 'cursor-pointer' : ''} ${className}`} {...rest}>{children}</div>
   )
 }
 
@@ -373,7 +377,9 @@ const AskAtlasCard = () => {
   )
 }
 
-const RecentClaims = () => (
+const RecentClaims = () => {
+  const openDetail = useOpenDetail()
+  return (
   <GlassCard className="p-6">
     <div className="flex items-center justify-between">
       <SectionLabel className="text-white/40">Recent Claims</SectionLabel>
@@ -395,7 +401,9 @@ const RecentClaims = () => (
         </thead>
         <tbody>
           {RECENT_CLAIMS.slice(0,5).map((c, i) => (
-            <tr key={c.id} className="border-t border-white/[0.04] hover:bg-white/[0.02] transition">
+            <tr key={c.id}
+                onClick={() => openDetail({ kind: 'claim', id: c.id })}
+                className="border-t border-white/[0.04] hover:bg-white/[0.02] transition cursor-pointer">
               <td className="py-3.5">
                 <div className="text-[13px] font-medium text-white">{c.id}</div>
                 <div className="text-[11px] text-white/40">{c.carrier}</div>
@@ -413,7 +421,8 @@ const RecentClaims = () => (
       </table>
     </div>
   </GlassCard>
-)
+  )
+}
 
 const DashboardPage = () => (
   <>
@@ -564,6 +573,7 @@ const CLAIMS_FULL = [
 ]
 const ClaimsPage = () => {
   const [filter, setFilter] = useState('All')
+  const openDetail = useOpenDetail()
   const filtered = filter === 'All' ? CLAIMS_FULL : CLAIMS_FULL.filter(c => c.status === filter)
   return (
     <>
@@ -607,7 +617,9 @@ const ClaimsPage = () => {
           </thead>
           <tbody>
             {filtered.map(c => (
-              <tr key={c.id} className="border-t border-white/[0.04] hover:bg-white/[0.02] transition">
+              <tr key={c.id}
+                  onClick={() => openDetail({ kind: 'claim', id: c.id })}
+                  className="border-t border-white/[0.04] hover:bg-white/[0.02] transition cursor-pointer">
                 <td className="p-4">
                   <div className="text-[13.5px] font-medium text-white font-mono">{c.id}</div>
                 </td>
@@ -638,7 +650,9 @@ const SUPPLEMENTS = [
   { id: 'SUP-9120', claim: 'NPP-2026-0798', amount: 12150,status: 'In Progress',      confidence: 95, carrier: 'Nationwide' },
   { id: 'SUP-9115', claim: 'NPP-2026-0791', amount: 7290, status: 'Pending Review',   confidence: 87, carrier: 'Travelers' },
 ]
-const SupplementsPage = () => (
+const SupplementsPage = () => {
+  const openDetail = useOpenDetail()
+  return (
   <>
     <TopBar eyebrow="Supplements" title="Recovery opportunities" subtitle="18 pending · $127,500 recovered · 87% avg confidence" />
 
@@ -663,7 +677,9 @@ const SupplementsPage = () => (
         </thead>
         <tbody>
           {SUPPLEMENTS.map(s => (
-            <tr key={s.id} className="border-t border-white/[0.04] hover:bg-white/[0.02] transition">
+            <tr key={s.id}
+                onClick={() => openDetail({ kind: 'supplement', id: s.id })}
+                className="border-t border-white/[0.04] hover:bg-white/[0.02] transition cursor-pointer">
               <td className="p-4 text-[13px] font-mono text-white">{s.id}</td>
               <td className="p-4 text-[13px] font-mono text-white/70">{s.claim}</td>
               <td className="p-4 text-[13px] text-white/70">{s.carrier}</td>
@@ -685,7 +701,8 @@ const SupplementsPage = () => (
     </GlassCard>
     <div className="h-16" />
   </>
-)
+  )
+}
 
 /* ------------------------------------------------------------------ */
 /*  DOCUMENTS PAGE                                                    */
@@ -698,12 +715,16 @@ const DOCUMENTS = [
   { name: 'Signed AOB.pdf',              size: '90 KB',  tag: 'Legal',          claim: 'NPP-2026-0815', ago: '5h' },
   { name: 'Weather Verification.pdf',    size: '220 KB', tag: 'Evidence',       claim: 'NPP-2026-0798', ago: '1d' },
 ]
-const DocumentsPage = () => (
+const DocumentsPage = () => {
+  const openDetail = useOpenDetail()
+  return (
   <>
     <TopBar eyebrow="Documents" title="Everything your claims need" subtitle="Automatically indexed, tagged, and linked to the right claim." />
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {DOCUMENTS.map(d => (
-        <GlassCard key={d.name} className="p-5 hover:bg-white/[0.03] transition group">
+        <GlassCard key={d.name}
+          onClick={() => openDetail({ kind: 'document', id: d.name })}
+          className="p-5 hover:bg-white/[0.03] transition group cursor-pointer">
           <div className="flex items-start justify-between">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/[0.06] flex items-center justify-center">
               <FileText size={18} className="text-cyan-300" />
@@ -725,7 +746,8 @@ const DocumentsPage = () => (
     </div>
     <div className="h-16" />
   </>
-)
+  )
+}
 
 /* ------------------------------------------------------------------ */
 /*  ADJUSTERS PAGE                                                    */
@@ -739,9 +761,10 @@ const ADJUSTERS = [
   { name: 'K. Martins',     type: 'Staff Adjuster',       region: 'Southeast region', response: 3.1, approval: 79, scrutiny: 'Medium', claims: 19 },
 ]
 const AdjusterCard = ({ a }) => {
+  const openDetail = useOpenDetail()
   const scrutinyColor = a.scrutiny === 'High' ? '#A855F7' : a.scrutiny === 'Medium' ? '#F59E0B' : '#22C55E'
   return (
-    <GlassCard className="p-6">
+    <GlassCard onClick={() => openDetail({ kind: 'adjuster', id: a.name })} className="p-6 hover:bg-white/[0.03] transition">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <AtlasLogo size={16} />
@@ -804,7 +827,9 @@ const INTERVIEWS = [
   { id: 'INT-480', name: 'Property walkthrough — 214 Oak',  duration: '24:17', ago: 'yesterday', status: 'Complete', tags: ['Photos','Notes'] },
   { id: 'INT-479', name: 'Homeowner intake — S. Bianchi',   duration: '09:28', ago: '2d ago', status: 'Complete', tags: ['Water'] },
 ]
-const InterviewsPage = () => (
+const InterviewsPage = () => {
+  const openDetail = useOpenDetail()
+  return (
   <>
     <TopBar eyebrow="Interviews" title="Recorded conversations, understood" subtitle="Atlas transcribes, extracts facts, and flags what matters — automatically." />
 
@@ -826,7 +851,9 @@ const InterviewsPage = () => (
 
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {INTERVIEWS.map(i => (
-        <GlassCard key={i.id} className="p-5 hover:bg-white/[0.03] transition">
+        <GlassCard key={i.id}
+          onClick={() => openDetail({ kind: 'interview', id: i.id })}
+          className="p-5 hover:bg-white/[0.03] transition">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <button className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
@@ -855,7 +882,8 @@ const InterviewsPage = () => (
     </div>
     <div className="h-16" />
   </>
-)
+  )
+}
 
 /* ------------------------------------------------------------------ */
 /*  PROPERTIES PAGE                                                   */
@@ -868,7 +896,9 @@ const PROPERTIES = [
   { addr: '3401 Riverside Blvd',   city: 'Nashville, TN',   type: 'Residential', damage: 'Storm / Hail', claims: 1, value: 3210 },
   { addr: '650 Innovation Pkwy',   city: 'Atlanta, GA',     type: 'Commercial',  damage: 'Wind',         claims: 2, value: 7290 },
 ]
-const PropertiesPage = () => (
+const PropertiesPage = () => {
+  const openDetail = useOpenDetail()
+  return (
   <>
     <TopBar eyebrow="Properties" title="Every roof under your care" subtitle="Cross-referenced with claim history, weather events, and inspection notes." />
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -876,7 +906,9 @@ const PropertiesPage = () => (
         const dt = DAMAGE_TYPES.find(d => d.type === p.damage) || DAMAGE_TYPES[0]
         const DIcon = dt.icon
         return (
-          <GlassCard key={p.addr} className="overflow-hidden group hover:bg-white/[0.03] transition">
+          <GlassCard key={p.addr}
+            onClick={() => openDetail({ kind: 'property', id: p.addr })}
+            className="overflow-hidden group hover:bg-white/[0.03] transition">
             <div className="h-32 relative"
                  style={{ background: `radial-gradient(400px 120px at 30% 50%, ${dt.color}22, transparent 70%), linear-gradient(135deg, #0b1220 0%, #050710 100%)` }}>
               <div className="absolute inset-0 opacity-25"
@@ -911,7 +943,8 @@ const PropertiesPage = () => (
     </div>
     <div className="h-16" />
   </>
-)
+  )
+}
 
 /* ------------------------------------------------------------------ */
 /*  TASKS PAGE                                                        */
@@ -925,12 +958,16 @@ const TASKS = [
   { title: 'Verify signed AOB is on file',        claim: 'NPP-2026-0791', due: 'Next week',priority: 'Low',    done: true },
 ]
 const priColor = { High: '#EF4444', Medium: '#F59E0B', Low: '#22C55E' }
-const TasksPage = () => (
+const TasksPage = () => {
+  const openDetail = useOpenDetail()
+  return (
   <>
     <TopBar eyebrow="Tasks" title="What Atlas thinks you should do next" subtitle="Ordered by revenue impact and carrier deadlines." />
     <GlassCard className="divide-y divide-white/[0.04]">
       {TASKS.map((t, i) => (
-        <div key={i} className={`flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition ${t.done ? 'opacity-45' : ''}`}>
+        <div key={i}
+          onClick={() => openDetail({ kind: 'task', id: `task-${i}` })}
+          className={`flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition cursor-pointer ${t.done ? 'opacity-45' : ''}`}>
           <button className={`w-5 h-5 rounded-full border flex items-center justify-center ${t.done ? 'bg-cyan-400/20 border-cyan-400' : 'border-white/20'}`}>
             {t.done && <CheckCircle2 size={12} className="text-cyan-400" />}
           </button>
@@ -947,7 +984,8 @@ const TasksPage = () => (
     </GlassCard>
     <div className="h-16" />
   </>
-)
+  )
+}
 
 /* ------------------------------------------------------------------ */
 /*  ACTIVITY PAGE                                                     */
@@ -1002,12 +1040,16 @@ const COMPANIES = CARRIERS.map((c, i) => ({
   responseDays: 2 + ((i * 3) % 6),
 }))
 
-const CompaniesPage = () => (
+const CompaniesPage = () => {
+  const openDetail = useOpenDetail()
+  return (
   <>
     <TopBar eyebrow="Companies" title="Carriers you work with" subtitle="Cross-carrier behavior tracked automatically." />
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {COMPANIES.map(c => (
-        <GlassCard key={c.name} className="p-6 hover:bg-white/[0.03] transition">
+        <GlassCard key={c.name}
+          onClick={() => openDetail({ kind: 'company', id: c.name })}
+          className="p-6 hover:bg-white/[0.03] transition">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-[12px] font-bold text-white">
               {c.name.split(' ').map(n => n[0]).join('').slice(0,2)}
@@ -1032,7 +1074,8 @@ const CompaniesPage = () => (
     </div>
     <div className="h-16" />
   </>
-)
+  )
+}
 
 const CONTACTS = [
   { name: 'James Robertson', role: 'Homeowner',      email: 'james.r@gmail.com',      phone: '(704) 555-0142', city: 'Charlotte, NC' },
@@ -1264,26 +1307,36 @@ const PAGES = {
 }
 
 const App = () => {
+  const [authed, setAuthed] = useState(false)
   const [active, setActive] = useState('dashboard')
-  const [paletteOpen, setPaletteOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [voiceOpen, setVoiceOpen] = useState(false)
+  const [detail, setDetail] = useState(null) // { kind, id, ... } or { askAtlas }
 
   useEffect(() => {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
-        setPaletteOpen(v => !v)
+        setSearchOpen(v => !v)
       }
-      if (e.key === 'Escape') setPaletteOpen(false)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+        e.preventDefault()
+        setVoiceOpen(v => !v)
+      }
+      if (e.key === 'Escape') { setSearchOpen(false) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  if (!authed) return <AuthFlow onComplete={() => setAuthed(true)} />
+
   const PageComponent = PAGES[active] || DashboardPage
 
   return (
+    <DetailContext.Provider value={setDetail}>
     <div className="flex atlas-bg min-h-screen">
-      <Sidebar active={active} setActive={setActive} />
+      <Sidebar active={active} setActive={(k) => { setActive(k); setDetail(null) }} />
 
       <main className="flex-1 min-w-0 relative">
         {/* ambient glow layer */}
@@ -1295,24 +1348,44 @@ const App = () => {
         </div>
 
         <div className="relative max-w-[1400px] mx-auto px-8">
-          <PageComponent />
+          {detail
+            ? <DetailView target={detail} onBack={() => setDetail(null)} />
+            : <PageComponent onOpenDetail={setDetail} />}
         </div>
 
-        {/* Floating Ask Atlas button */}
-        <button
-          onClick={() => setPaletteOpen(true)}
-          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 pl-3 pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-cyan-400/40 transition shadow-2xl"
-        >
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
-            <Sparkles size={12} className="text-black" />
-          </div>
-          <span className="text-[13px] text-white/80">Ask Atlas</span>
-          <Kbd>⌘K</Kbd>
-        </button>
+        {/* Floating action cluster */}
+        <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
+          <button
+            onClick={() => setVoiceOpen(true)}
+            className="group flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-purple-400/40 transition shadow-2xl"
+          >
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
+              <Mic size={12} className="text-black" />
+            </div>
+            <span className="text-[13px] text-white/80">Voice</span>
+            <Kbd>⌘J</Kbd>
+          </button>
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="group flex items-center gap-2.5 pl-3 pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-cyan-400/40 transition shadow-2xl"
+          >
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+              <Sparkles size={12} className="text-black" />
+            </div>
+            <span className="text-[13px] text-white/80">Ask Atlas</span>
+            <Kbd>⌘K</Kbd>
+          </button>
+        </div>
       </main>
 
-      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <GlobalSearch
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onOpenDetail={(t) => setDetail(t)}
+      />
+      <VoiceMode open={voiceOpen} onClose={() => setVoiceOpen(false)} />
     </div>
+    </DetailContext.Provider>
   )
 }
 
