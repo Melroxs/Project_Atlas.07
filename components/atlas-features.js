@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, createContext, useContext } from 'react'
 import {
   Sparkles, ArrowRight, Mail, Lock, Eye, EyeOff, Loader2, Check,
   Building2, Plus, LayoutDashboard, FolderOpen, FileStack, FileText,
@@ -664,6 +664,262 @@ export const GlobalSearch = ({ open, onClose, onOpenDetail }) => {
         </div>
       </div>
     </div>
+  )
+}
+
+/* ================================================================== */
+/*  CREATE MODAL SYSTEM (elegant placeholder for future backend flows)*/
+/* ================================================================== */
+const CreateContext = createContext(() => {})
+export const useOpenCreate = () => useContext(CreateContext)
+
+const CreateModal = ({ entity, icon: Icon = Sparkles, description, onClose }) => {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 bg-black/70 backdrop-blur-lg" onClick={onClose}>
+      <div className="w-full max-w-md glass-strong rounded-2xl border border-white/10 overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+          <div className="flex items-center gap-2">
+            <AtlasLogo size={16} />
+            <SectionLabel>Create · {entity}</SectionLabel>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-white/[0.06] flex items-center justify-center">
+            <X size={14} className="text-white/60" />
+          </button>
+        </div>
+        <div className="px-6 py-7">
+          <div className="mx-auto w-16 h-16 rounded-2xl glass-strong border border-white/10 flex items-center justify-center mb-5 relative">
+            <div className="absolute inset-0 rounded-2xl blur-xl opacity-60"
+                 style={{ background: 'radial-gradient(circle, rgba(0,230,255,0.5), transparent 60%)' }} />
+            <Icon size={22} className="text-cyan-300 relative" />
+          </div>
+          <h3 className="text-center text-[20px] font-semibold text-white tracking-[-0.01em]">
+            New {entity}
+          </h3>
+          <p className="mt-2 text-center text-[13.5px] text-white/55 leading-relaxed">
+            {description || `This flow will be connected to the Atlas backend.`}
+          </p>
+          <div className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-4">
+            <SectionLabel>Atlas is preparing this flow</SectionLabel>
+            <div className="mt-1.5 text-[12.5px] text-white/70">
+              Once connected, Atlas will guide you through creating a {entity.toLowerCase()} with intelligent suggestions and auto-filled fields based on your operation.
+            </div>
+          </div>
+        </div>
+        <div className="px-6 pb-6 flex items-center gap-2 justify-end">
+          <button onClick={onClose} className="px-4 py-2.5 rounded-xl border border-white/[0.08] text-[13px] text-white/70 hover:bg-white/[0.03]">
+            Cancel
+          </button>
+          <button onClick={onClose} className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black text-[13px] font-semibold flex items-center gap-1.5 glow-cyan">
+            Continue <ArrowRight size={13} />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const CreateModalHost = ({ children }) => {
+  const [payload, setPayload] = useState(null)
+  return (
+    <CreateContext.Provider value={setPayload}>
+      {children}
+      {payload && <CreateModal {...payload} onClose={() => setPayload(null)} />}
+    </CreateContext.Provider>
+  )
+}
+
+/* ================================================================== */
+/*  NOTIFICATIONS DRAWER                                              */
+/* ================================================================== */
+const NotificationsContext = createContext(() => {})
+export const useOpenNotifications = () => useContext(NotificationsContext)
+
+const NOTIFICATIONS = [
+  {
+    type: 'atlas',
+    kind: 'Atlas Recommendation',
+    title: 'Focus on 6 supplements above $4K first',
+    body: 'Reviewing these unlocks an estimated $28,140 in recovery this week.',
+    time: 'now',
+    color: '#00E6FF',
+    icon: Sparkles,
+  },
+  {
+    type: 'risk',
+    kind: 'High-risk claim detected',
+    title: 'NPP-2026-0821 approaching carrier SLA',
+    body: 'Farmers Insurance response is now 5 days overdue. Consider escalation.',
+    time: '2m ago',
+    color: '#EF4444',
+    icon: AlertTriangle,
+  },
+  {
+    type: 'adjuster',
+    kind: 'Adjuster responded',
+    title: 'M. Reynolds replied to your supplement',
+    body: 'NPP-2026-0837 · Requesting additional ridge cap photos before review.',
+    time: '18m ago',
+    color: '#A855F7',
+    icon: MessageSquare,
+  },
+  {
+    type: 'approved',
+    kind: 'Supplement approved',
+    title: 'SUP-9085 approved at $6,120',
+    body: 'Liberty Mutual has approved your supplement on NPP-2026-0776 in full.',
+    time: '42m ago',
+    color: '#22C55E',
+    icon: CheckCircle2,
+  },
+  {
+    type: 'doc',
+    kind: 'Missing documentation',
+    title: 'Roof measurement report needed',
+    body: 'NPP-2026-0848 supplement submission is blocked until report is attached.',
+    time: '1h ago',
+    color: '#F59E0B',
+    icon: FileSignature,
+  },
+  {
+    type: 'revenue',
+    kind: 'Revenue opportunity',
+    title: '$12,150 supplement identified on NPP-2026-0798',
+    body: 'Atlas detected 4 unsupported line items with 95% approval confidence.',
+    time: '2h ago',
+    color: '#00E6FF',
+    icon: TrendingUp,
+  },
+  {
+    type: 'interview',
+    kind: 'Interview ready for review',
+    title: 'Homeowner intake — J. Robertson',
+    body: 'INT-482 transcribed and linked to NPP-2026-0848. 5 facts extracted.',
+    time: '3h ago',
+    color: '#EC4899',
+    icon: Mic,
+  },
+  {
+    type: 'atlas',
+    kind: 'Atlas Recommendation',
+    title: 'Weekly briefing refreshed',
+    body: 'Revenue up $18,400 · 31 actions suggested · 14.2h reclaimed.',
+    time: 'yesterday',
+    color: '#00E6FF',
+    icon: Waves,
+  },
+]
+
+const NotificationsDrawer = ({ open, onClose }) => {
+  const [filter, setFilter] = useState('All')
+  const filters = ['All', 'Atlas', 'Claims', 'Adjusters', 'Documents']
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    if (open) window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  const items = filter === 'All' ? NOTIFICATIONS
+    : filter === 'Atlas'    ? NOTIFICATIONS.filter(n => n.type === 'atlas' || n.type === 'revenue')
+    : filter === 'Claims'   ? NOTIFICATIONS.filter(n => n.type === 'risk' || n.type === 'approved')
+    : filter === 'Adjusters'? NOTIFICATIONS.filter(n => n.type === 'adjuster')
+    : NOTIFICATIONS.filter(n => n.type === 'doc' || n.type === 'interview')
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className={`fixed inset-0 z-[59] bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      />
+      {/* Drawer */}
+      <aside
+        className={`fixed top-0 right-0 bottom-0 z-[60] w-full sm:w-[440px] glass-strong border-l border-white/[0.08] flex flex-col transition-transform duration-300 ease-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+          <div>
+            <div className="flex items-center gap-2">
+              <AtlasLogo size={16} />
+              <SectionLabel>Notifications</SectionLabel>
+            </div>
+            <div className="mt-1.5 text-[15px] font-semibold text-white">What Atlas noticed</div>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-full glass border border-white/[0.06] hover:bg-white/[0.06] flex items-center justify-center">
+            <X size={14} className="text-white/70" />
+          </button>
+        </div>
+
+        <div className="px-4 py-3 border-b border-white/[0.04] flex items-center gap-1 overflow-x-auto">
+          {filters.map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-lg text-[12px] whitespace-nowrap transition ${
+                filter === f ? 'bg-white/[0.06] text-white' : 'text-white/50 hover:text-white'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+          <div className="flex-1" />
+          <button className="text-[11.5px] text-cyan-400 hover:text-cyan-300 pr-1">Mark all read</button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1">
+          {items.map((n, i) => {
+            const Ic = n.icon
+            return (
+              <button
+                key={i}
+                onClick={onClose}
+                className="w-full text-left rounded-xl p-3.5 hover:bg-white/[0.03] transition group border border-transparent hover:border-white/[0.04]"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center border shrink-0"
+                       style={{ background: `${n.color}12`, borderColor: `${n.color}30` }}>
+                    <Ic size={14} style={{ color: n.color }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] tracking-[0.14em] uppercase font-semibold" style={{ color: n.color }}>
+                        {n.kind}
+                      </span>
+                      <span className="text-[10.5px] text-white/35">·</span>
+                      <span className="text-[10.5px] text-white/40">{n.time}</span>
+                    </div>
+                    <div className="mt-1 text-[13.5px] font-medium text-white leading-snug">{n.title}</div>
+                    <div className="mt-1 text-[12.5px] text-white/55 leading-relaxed">{n.body}</div>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="px-4 py-3 border-t border-white/[0.06] flex items-center justify-between text-[11px]">
+          <div className="flex items-center gap-1.5 text-cyan-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-atlas-pulse" />
+            Atlas is actively monitoring your operation
+          </div>
+          <span className="text-white/40 font-mono">{NOTIFICATIONS.length}</span>
+        </div>
+      </aside>
+    </>
+  )
+}
+
+export const NotificationsHost = ({ children }) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <NotificationsContext.Provider value={setOpen}>
+      {children}
+      <NotificationsDrawer open={open} onClose={() => setOpen(false)} />
+    </NotificationsContext.Provider>
   )
 }
 

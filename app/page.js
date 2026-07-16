@@ -15,7 +15,7 @@ import {
   Play, Pause, FileSignature, ChevronLeft, Layers, Cpu, GaugeCircle,
   Radio, Fingerprint, BarChart3, Bot, Wand2
 } from 'lucide-react'
-import { AuthFlow, VoiceMode, GlobalSearch, DetailView } from '@/components/atlas-features'
+import { AuthFlow, VoiceMode, GlobalSearch, DetailView, CreateModalHost, useOpenCreate, NotificationsHost, useOpenNotifications } from '@/components/atlas-features'
 
 /* ------------------------------------------------------------------ */
 /*  ATLAS LOGO                                                        */
@@ -157,79 +157,114 @@ const SectionLabel = ({ children, className = '' }) => (
 /* ------------------------------------------------------------------ */
 /*  SIDEBAR + TOPBAR SHELL                                            */
 /* ------------------------------------------------------------------ */
-const Sidebar = ({ active, setActive }) => (
-  <aside className="w-[260px] shrink-0 h-screen sticky top-0 border-r border-white/5 bg-[#05070d]/80 backdrop-blur-xl flex flex-col">
-    <div className="px-5 pt-6 pb-4 flex items-center gap-3">
-      <AtlasLogo size={26} />
-      <div className="text-[13px] font-semibold tracking-[0.22em] text-white/90">
-        ATLAS <span className="text-white/40 font-medium">INTELLIGENCE</span>
+const Sidebar = ({ active, setActive, mobileOpen, onCloseMobile }) => (
+  <>
+    {/* Mobile backdrop */}
+    <div
+      onClick={onCloseMobile}
+      className={`lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity ${mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+    />
+    <aside className={`
+      w-[260px] shrink-0 h-screen border-r border-white/5 bg-[#05070d]/95 backdrop-blur-xl flex flex-col
+      fixed lg:sticky top-0 z-50 transition-transform duration-300
+      ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
+    `}>
+      <div className="px-5 pt-6 pb-4 flex items-center gap-3">
+        <AtlasLogo size={26} />
+        <div className="text-[13px] font-semibold tracking-[0.22em] text-white/90">
+          ATLAS <span className="text-white/40 font-medium">INTELLIGENCE</span>
+        </div>
       </div>
-    </div>
 
-    <div className="px-3 mt-2 flex-1 overflow-y-auto">
-      <nav className="space-y-0.5">
-        {ROUTES.map(({ key, label, icon: Icon }) => {
-          const isActive = key === active
-          return (
-            <button
-              key={key}
-              onClick={() => setActive(key)}
-              className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] transition-all relative ${
-                isActive
-                  ? 'text-white bg-white/[0.04] border border-white/[0.06]'
-                  : 'text-white/55 hover:text-white hover:bg-white/[0.02]'
-              }`}
-            >
-              {isActive && (
-                <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-gradient-to-b from-cyan-400 to-blue-500" />
-              )}
-              <Icon
-                size={17}
-                strokeWidth={1.75}
-                className={isActive ? 'text-cyan-400' : 'text-white/45 group-hover:text-white/80'}
-              />
-              <span className="font-medium">{label}</span>
-            </button>
-          )
-        })}
-      </nav>
-    </div>
+      <div className="px-3 mt-2 flex-1 overflow-y-auto">
+        <nav className="space-y-0.5">
+          {ROUTES.map(({ key, label, icon: Icon }) => {
+            const isActive = key === active
+            return (
+              <button
+                key={key}
+                onClick={() => { setActive(key); onCloseMobile?.() }}
+                className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13.5px] transition-all relative ${
+                  isActive
+                    ? 'text-white bg-white/[0.04] border border-white/[0.06]'
+                    : 'text-white/55 hover:text-white hover:bg-white/[0.02]'
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-gradient-to-b from-cyan-400 to-blue-500" />
+                )}
+                <Icon
+                  size={17}
+                  strokeWidth={1.75}
+                  className={isActive ? 'text-cyan-400' : 'text-white/45 group-hover:text-white/80'}
+                />
+                <span className="font-medium">{label}</span>
+              </button>
+            )
+          })}
+        </nav>
+      </div>
 
-    <div className="p-3 border-t border-white/5">
-      <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex items-center justify-center">
-          <Building2 size={15} className="text-cyan-300" />
-        </div>
-        <div className="flex-1 text-left">
-          <div className="text-[12.5px] font-medium text-white leading-tight">NPP Roofing &amp; Restoration</div>
-          <div className="text-[10.5px] text-white/40">Company</div>
-        </div>
-        <ChevronDown size={14} className="text-white/40" />
-      </button>
-    </div>
-  </aside>
+      <div className="p-3 border-t border-white/5">
+        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex items-center justify-center">
+            <Building2 size={15} className="text-cyan-300" />
+          </div>
+          <div className="flex-1 text-left">
+            <div className="text-[12.5px] font-medium text-white leading-tight">NPP Roofing &amp; Restoration</div>
+            <div className="text-[10.5px] text-white/40">Company</div>
+          </div>
+          <ChevronDown size={14} className="text-white/40" />
+        </button>
+      </div>
+    </aside>
+  </>
 )
 
-const TopBar = ({ title, subtitle, eyebrow }) => (
-  <div className="flex items-start justify-between gap-6 pt-8 pb-6">
-    <div className="max-w-3xl">
-      {eyebrow && (
-        <div className="text-[13px] font-medium mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent tracking-wide">
-          {eyebrow}
-        </div>
-      )}
-      <h1 className="text-[38px] leading-[1.1] font-semibold text-white tracking-[-0.02em]">
-        {title}
-      </h1>
-      {subtitle && (
-        <p className="mt-3 text-[15px] text-white/50 max-w-2xl">{subtitle}</p>
-      )}
+const TopBar = ({ title, subtitle, eyebrow, create }) => {
+  const openCreate = useOpenCreate()
+  const openNotif = useOpenNotifications()
+  const onOpenSidebar = useOpenSidebar()
+  return (
+  <div className="flex items-start justify-between gap-4 pt-6 lg:pt-8 pb-6 flex-wrap">
+    <div className="max-w-3xl flex items-start gap-3 min-w-0">
+      <button
+        onClick={onOpenSidebar}
+        className="lg:hidden mt-1 w-9 h-9 rounded-full glass border border-white/[0.06] flex items-center justify-center shrink-0"
+        aria-label="Open menu"
+      >
+        <Layers size={15} className="text-white/70" />
+      </button>
+      <div className="min-w-0">
+        {eyebrow && (
+          <div className="text-[13px] font-medium mb-2 lg:mb-3 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent tracking-wide">
+            {eyebrow}
+          </div>
+        )}
+        <h1 className="text-[26px] sm:text-[32px] lg:text-[38px] leading-[1.1] font-semibold text-white tracking-[-0.02em]">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="mt-2 lg:mt-3 text-[13.5px] lg:text-[15px] text-white/50 max-w-2xl">{subtitle}</p>
+        )}
+      </div>
     </div>
-    <div className="flex items-center gap-3 pt-1">
+    <div className="flex items-center gap-2 lg:gap-3 pt-1 flex-wrap">
+      {create && (
+        <button
+          onClick={() => openCreate(create)}
+          className="px-3.5 py-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold text-[13px] flex items-center gap-1.5 glow-cyan hover:opacity-90 transition"
+        >
+          <Plus size={14} strokeWidth={2.5} /> {create.label || `New ${create.entity}`}
+        </button>
+      )}
       <button className="w-9 h-9 rounded-full glass flex items-center justify-center hover:bg-white/[0.06] transition">
         <Search size={16} className="text-white/70" />
       </button>
-      <button className="w-9 h-9 rounded-full glass flex items-center justify-center hover:bg-white/[0.06] transition relative">
+      <button
+        onClick={() => openNotif(true)}
+        className="w-9 h-9 rounded-full glass flex items-center justify-center hover:bg-white/[0.06] transition relative"
+      >
         <Bell size={16} className="text-white/70" />
         <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-cyan-400 animate-atlas-pulse" />
       </button>
@@ -241,11 +276,12 @@ const TopBar = ({ title, subtitle, eyebrow }) => (
           <div className="text-[13px] font-medium text-white">Melissa October</div>
           <div className="text-[11px] text-white/40">NPP Roofing &amp; Restor…</div>
         </div>
-        <ChevronDown size={14} className="text-white/40" />
+        <ChevronDown size={14} className="text-white/40 hidden md:block" />
       </div>
     </div>
   </div>
-)
+  )
+}
 
 /* ------------------------------------------------------------------ */
 /*  DASHBOARD                                                         */
@@ -571,7 +607,7 @@ const ClaimsPage = () => {
   const filtered = filter === 'All' ? CLAIMS_FULL : CLAIMS_FULL.filter(c => c.status === filter)
   return (
     <>
-      <TopBar eyebrow="Claims" title="All active claims" subtitle="97 open · 34 in review · $312,480 total revenue at risk" />
+      <TopBar eyebrow="Claims" title="All active claims" subtitle="97 open · 34 in review · $312,480 total revenue at risk" create={{ entity: 'Claim', label: 'New Claim', icon: FolderOpen }} />
 
       <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
         <div className="flex items-center gap-1.5 p-1 rounded-xl glass">
@@ -589,9 +625,6 @@ const ClaimsPage = () => {
           </div>
           <button className="px-3 py-2 rounded-lg glass text-[13px] text-white/70 flex items-center gap-2">
             <Filter size={13} /> Filters
-          </button>
-          <button className="px-3 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold text-[13px] flex items-center gap-2">
-            <Plus size={13} /> New claim
           </button>
         </div>
       </div>
@@ -648,21 +681,7 @@ const SupplementsPage = () => {
   const openDetail = useOpenDetail()
   return (
   <>
-    <TopBar eyebrow="Supplements" title="Recovery opportunities" subtitle="18 pending · $127,500 recovered · 87% avg confidence" />
-
-    <div className="flex items-center justify-between gap-3 flex-wrap -mt-2 mb-6">
-      <div className="text-[12px] text-white/50">
-        Atlas surfaces new opportunities the moment they appear across your claims.
-      </div>
-      <div className="flex items-center gap-2">
-        <button className="px-3 py-2 rounded-lg glass border border-white/[0.06] text-[13px] text-white/70 hover:bg-white/[0.06] flex items-center gap-2">
-          <Filter size={13} /> Filters
-        </button>
-        <button className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold text-[13px] flex items-center gap-2 glow-cyan hover:opacity-90 transition">
-          <Plus size={14} /> Create supplement
-        </button>
-      </div>
-    </div>
+    <TopBar eyebrow="Supplements" title="Recovery opportunities" subtitle="18 pending · $127,500 recovered · 87% avg confidence" create={{ entity: 'Supplement', label: 'Create Supplement', icon: FileStack }} />
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
       <StatCard label="Total Pending"     value="18"        color="#A855F7" seed={3} />
@@ -727,7 +746,7 @@ const DocumentsPage = () => {
   const openDetail = useOpenDetail()
   return (
   <>
-    <TopBar eyebrow="Documents" title="Everything your claims need" subtitle="Automatically indexed, tagged, and linked to the right claim." />
+    <TopBar eyebrow="Documents" title="Everything your claims need" subtitle="Automatically indexed, tagged, and linked to the right claim." create={{ entity: 'Document', label: 'Upload Document', icon: FileText }} />
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {DOCUMENTS.map(d => (
         <GlassCard key={d.name}
@@ -818,7 +837,7 @@ const AdjusterCard = ({ a }) => {
 }
 const AdjustersPage = () => (
   <>
-    <TopBar eyebrow="Adjusters" title="Know every adjuster before you call" subtitle="Atlas learns each adjuster's approval patterns from your history." />
+    <TopBar eyebrow="Adjusters" title="Know every adjuster before you call" subtitle="Atlas learns each adjuster's approval patterns from your history." create={{ entity: 'Adjuster', label: 'Add Adjuster', icon: UserSquare2 }} />
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       {ADJUSTERS.map(a => <AdjusterCard key={a.name} a={a} />)}
     </div>
@@ -839,7 +858,7 @@ const InterviewsPage = () => {
   const openDetail = useOpenDetail()
   return (
   <>
-    <TopBar eyebrow="Interviews" title="Recorded conversations, understood" subtitle="Atlas transcribes, extracts facts, and flags what matters — automatically." />
+    <TopBar eyebrow="Interviews" title="Recorded conversations, understood" subtitle="Atlas transcribes, extracts facts, and flags what matters — automatically." create={{ entity: 'Interview', label: 'Start Interview', icon: Mic }} />
 
     <GlassCard className="p-6 mb-5">
       <div className="flex items-center gap-4">
@@ -908,7 +927,7 @@ const PropertiesPage = () => {
   const openDetail = useOpenDetail()
   return (
   <>
-    <TopBar eyebrow="Properties" title="Every roof under your care" subtitle="Cross-referenced with claim history, weather events, and inspection notes." />
+    <TopBar eyebrow="Properties" title="Every roof under your care" subtitle="Cross-referenced with claim history, weather events, and inspection notes." create={{ entity: 'Property', label: 'Add Property', icon: Building2 }} />
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {PROPERTIES.map((p, i) => {
         const dt = DAMAGE_TYPES.find(d => d.type === p.damage) || DAMAGE_TYPES[0]
@@ -970,7 +989,7 @@ const TasksPage = () => {
   const openDetail = useOpenDetail()
   return (
   <>
-    <TopBar eyebrow="Tasks" title="What Atlas thinks you should do next" subtitle="Ordered by revenue impact and carrier deadlines." />
+    <TopBar eyebrow="Tasks" title="What Atlas thinks you should do next" subtitle="Ordered by revenue impact and carrier deadlines." create={{ entity: 'Task', label: 'New Task', icon: ListChecks }} />
     <GlassCard className="divide-y divide-white/[0.04]">
       {TASKS.map((t, i) => (
         <div key={i}
@@ -1052,7 +1071,7 @@ const CompaniesPage = () => {
   const openDetail = useOpenDetail()
   return (
   <>
-    <TopBar eyebrow="Companies" title="Carriers you work with" subtitle="Cross-carrier behavior tracked automatically." />
+    <TopBar eyebrow="Companies" title="Carriers you work with" subtitle="Cross-carrier behavior tracked automatically." create={{ entity: 'Company', label: 'Add Company', icon: Briefcase }} />
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {COMPANIES.map(c => (
         <GlassCard key={c.name}
@@ -1095,7 +1114,7 @@ const CONTACTS = [
 ]
 const ContactsPage = () => (
   <>
-    <TopBar eyebrow="Contacts" title="Everyone in your orbit" subtitle="Homeowners, adjusters, public adjusters — unified." />
+    <TopBar eyebrow="Contacts" title="Everyone in your orbit" subtitle="Homeowners, adjusters, public adjusters — unified." create={{ entity: 'Contact', label: 'Add Contact', icon: Users }} />
     <GlassCard className="p-2">
       <table className="w-full text-left">
         <thead>
@@ -1138,7 +1157,7 @@ const USERS = [
 ]
 const UsersPage = () => (
   <>
-    <TopBar eyebrow="Users" title="Your Atlas team" subtitle="5 seats · unlimited claims · unlimited intelligence." />
+    <TopBar eyebrow="Users" title="Your Atlas team" subtitle="5 seats · unlimited claims · unlimited intelligence." create={{ entity: 'User', label: 'Invite User', icon: UserCog }} />
     <GlassCard className="p-2">
       <table className="w-full text-left">
         <thead>
@@ -1314,12 +1333,12 @@ const PAGES = {
   settings:     SettingsPage,
 }
 
-const App = () => {
-  const [authed, setAuthed] = useState(false)
+const AppInner = () => {
   const [active, setActive] = useState('dashboard')
   const [searchOpen, setSearchOpen] = useState(false)
   const [voiceOpen, setVoiceOpen] = useState(false)
-  const [detail, setDetail] = useState(null) // { kind, id, ... } or { askAtlas }
+  const [detail, setDetail] = useState(null)
+  const [mobileNav, setMobileNav] = useState(false)
 
   useEffect(() => {
     const onKey = (e) => {
@@ -1331,23 +1350,25 @@ const App = () => {
         e.preventDefault()
         setVoiceOpen(v => !v)
       }
-      if (e.key === 'Escape') { setSearchOpen(false) }
+      if (e.key === 'Escape') { setSearchOpen(false); setMobileNav(false) }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
-
-  if (!authed) return <AuthFlow onComplete={() => setAuthed(true)} />
 
   const PageComponent = PAGES[active] || DashboardPage
 
   return (
     <DetailContext.Provider value={setDetail}>
     <div className="flex atlas-bg min-h-screen">
-      <Sidebar active={active} setActive={(k) => { setActive(k); setDetail(null) }} />
+      <Sidebar
+        active={active}
+        setActive={(k) => { setActive(k); setDetail(null) }}
+        mobileOpen={mobileNav}
+        onCloseMobile={() => setMobileNav(false)}
+      />
 
       <main className="flex-1 min-w-0 relative">
-        {/* ambient glow layer */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full blur-3xl opacity-30"
                style={{ background: 'radial-gradient(circle, rgba(0,230,255,0.25), transparent 60%)' }} />
@@ -1355,33 +1376,34 @@ const App = () => {
                style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.25), transparent 60%)' }} />
         </div>
 
-        <div className="relative max-w-[1400px] mx-auto px-8">
-          {detail
-            ? <DetailView target={detail} onBack={() => setDetail(null)} />
-            : <PageComponent onOpenDetail={setDetail} />}
+        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <TopBarInjector onOpenSidebar={() => setMobileNav(true)}>
+            {detail
+              ? <DetailView target={detail} onBack={() => setDetail(null)} />
+              : <PageComponent />}
+          </TopBarInjector>
         </div>
 
-        {/* Floating action cluster */}
-        <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2">
           <button
             onClick={() => setVoiceOpen(true)}
-            className="group flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-purple-400/40 transition shadow-2xl"
+            className="group flex items-center gap-2 pl-3 pr-3 sm:pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-purple-400/40 transition shadow-2xl"
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
               <Mic size={12} className="text-black" />
             </div>
-            <span className="text-[13px] text-white/80">Voice</span>
-            <Kbd>⌘J</Kbd>
+            <span className="hidden sm:inline text-[13px] text-white/80">Voice</span>
+            <span className="hidden sm:inline"><Kbd>⌘J</Kbd></span>
           </button>
           <button
             onClick={() => setSearchOpen(true)}
-            className="group flex items-center gap-2.5 pl-3 pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-cyan-400/40 transition shadow-2xl"
+            className="group flex items-center gap-2.5 pl-3 pr-3 sm:pr-4 py-2.5 rounded-full glass-strong border border-white/10 hover:border-cyan-400/40 transition shadow-2xl"
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
               <Sparkles size={12} className="text-black" />
             </div>
-            <span className="text-[13px] text-white/80">Ask Atlas</span>
-            <Kbd>⌘K</Kbd>
+            <span className="hidden sm:inline text-[13px] text-white/80">Ask Atlas</span>
+            <span className="hidden sm:inline"><Kbd>⌘K</Kbd></span>
           </button>
         </div>
       </main>
@@ -1394,6 +1416,27 @@ const App = () => {
       <VoiceMode open={voiceOpen} onClose={() => setVoiceOpen(false)} />
     </div>
     </DetailContext.Provider>
+  )
+}
+
+// Provides onOpenSidebar down to whichever TopBar the page renders.
+// The pages use TopBar directly, so we make onOpenSidebar available via React.cloneElement is complex;
+// instead, we expose a global via a simple context.
+const SidebarToggleContext = createContext(() => {})
+const useOpenSidebar = () => useContext(SidebarToggleContext)
+const TopBarInjector = ({ children, onOpenSidebar }) => (
+  <SidebarToggleContext.Provider value={onOpenSidebar}>{children}</SidebarToggleContext.Provider>
+)
+
+const App = () => {
+  const [authed, setAuthed] = useState(false)
+  if (!authed) return <AuthFlow onComplete={() => setAuthed(true)} />
+  return (
+    <CreateModalHost>
+      <NotificationsHost>
+        <AppInner />
+      </NotificationsHost>
+    </CreateModalHost>
   )
 }
 
