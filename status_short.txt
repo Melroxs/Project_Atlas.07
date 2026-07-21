@@ -1,0 +1,329 @@
+M  .gitignore
+D  Lovable/AGENTS.md
+D  Lovable/bun.lock
+D  Lovable/bunfig.toml
+D  Lovable/components.json
+D  Lovable/eslint.config.js
+D  Lovable/gitignore
+D  Lovable/lovable/project.json
+D  Lovable/package.json
+D  Lovable/prettierignore
+D  Lovable/prettierrc
+D  Lovable/public/favicon.png
+D  Lovable/src/assets/atlas-logo-full.png
+D  Lovable/src/assets/atlas-logo.png
+D  Lovable/src/assets/atlas-mark.png
+D  "Lovable/src/components ui/accordion.tsx"
+D  "Lovable/src/components ui/alert-dialog.tsx"
+D  "Lovable/src/components ui/alert.tsx"
+D  "Lovable/src/components ui/aspect-ratio.tsx"
+D  "Lovable/src/components ui/avatar.tsx"
+D  "Lovable/src/components ui/badge.tsx"
+D  "Lovable/src/components ui/breadcrumb.tsx"
+D  "Lovable/src/components ui/button.tsx"
+D  "Lovable/src/components ui/calendar.tsx"
+D  "Lovable/src/components ui/card.tsx"
+D  "Lovable/src/components ui/carousel.tsx"
+D  "Lovable/src/components ui/chart.tsx"
+D  "Lovable/src/components ui/checkbox.tsx"
+D  "Lovable/src/components ui/collapsible.tsx"
+D  "Lovable/src/components ui/command.tsx"
+D  "Lovable/src/components ui/context-menu.tsx"
+D  "Lovable/src/components ui/dialog.tsx"
+D  "Lovable/src/components ui/drawer.tsx"
+D  "Lovable/src/components ui/dropdown-menu.tsx"
+D  "Lovable/src/components ui/form.tsx"
+D  "Lovable/src/components ui/input-otp.tsx"
+D  "Lovable/src/components ui/input.tsx"
+D  "Lovable/src/components ui/label.tsx"
+D  "Lovable/src/components ui/navigation-menu.tsx"
+D  "Lovable/src/components ui/pagination.tsx"
+D  "Lovable/src/components ui/popover.tsx"
+D  "Lovable/src/components ui/progress.tsx"
+D  "Lovable/src/components ui/radio-group.tsx"
+D  "Lovable/src/components ui/scroll-area.tsx"
+D  "Lovable/src/components ui/select.tsx"
+D  "Lovable/src/components ui/separator.tsx"
+D  "Lovable/src/components ui/sheet.tsx"
+D  "Lovable/src/components ui/sidebar.tsx"
+D  "Lovable/src/components ui/skeleton.tsx"
+D  "Lovable/src/components ui/slider.tsx"
+D  "Lovable/src/components ui/sonner.tsx"
+D  "Lovable/src/components ui/switch.tsx"
+D  "Lovable/src/components ui/table.tsx"
+D  "Lovable/src/components ui/tabs.tsx"
+D  "Lovable/src/components ui/textarea.tsx"
+D  "Lovable/src/components ui/toggle-group.tsx"
+D  "Lovable/src/components ui/toggle.tsx"
+D  Lovable/src/hooks/use-mobile.tsx
+D  Lovable/src/lib/error-capture.ts
+D  Lovable/src/lib/error-page.ts
+D  Lovable/src/lib/lovable-error-reporting.ts
+D  Lovable/src/lib/utils.ts
+D  Lovable/src/routeTree.gen.ts
+D  Lovable/src/router.tsx
+D  "Lovable/src/routes/README (1).md"
+D  Lovable/src/routes/__root.tsx
+D  Lovable/src/routes/index.tsx
+D  Lovable/src/server.ts
+D  Lovable/src/start.ts
+D  Lovable/src/styles.css
+D  Lovable/tsconfig.json
+D  Lovable/vite.config.ts
+M  apps/api/package.json
+M  apps/api/src/lib/env.ts
+M  apps/api/src/routes/adjusters.ts
+D  apps/api/src/routes/claims.js
+M  apps/api/src/routes/claims.ts
+D  apps/api/src/routes/companies.js
+D  apps/api/src/routes/contacts.js
+M  apps/api/src/routes/contacts.ts
+D  apps/api/src/routes/crud.js
+M  apps/api/src/routes/crud.ts
+D  apps/api/src/routes/index.js
+D  apps/api/src/routes/interviews.js
+D  apps/api/src/routes/notes.js
+D  apps/api/src/routes/properties.js
+M  apps/api/src/routes/properties.ts
+D  apps/api/src/routes/supplements.js
+M  apps/api/src/routes/supplements.ts
+D  apps/api/src/routes/tasks.js
+D  apps/api/src/routes/tenant_members.js
+M  apps/api/src/routes/tenant_members.ts
+D  apps/api/src/routes/tenants.js
+M  apps/api/src/routes/tenants.ts
+D  apps/api/src/routes/users.js
+M  apps/api/src/routes/users.ts
+M  apps/api/src/server.ts
+D  apps/landing/src/app/globals.css
+D  apps/landing/src/app/layout.tsx
+D  apps/landing/src/app/page.tsx
+D  "apps/landing/src/components ui/accordion.tsx"
+D  "apps/landing/src/components ui/alert-dialog.tsx"
+D  "apps/landing/src/components ui/alert.tsx"
+D  "apps/landing/src/components ui/aspect-ratio.tsx"
+D  "apps/landing/src/components ui/avatar.tsx"
+D  "apps/landing/src/components ui/breadcrumb.tsx"
+D  "apps/landing/src/components ui/button.tsx"
+D  "apps/landing/src/components ui/calendar.tsx"
+D  "apps/landing/src/components ui/card.tsx"
+D  "apps/landing/src/components ui/carousel.tsx"
+D  "apps/landing/src/components ui/chart.tsx"
+D  "apps/landing/src/components ui/checkbox.tsx"
+D  "apps/landing/src/components ui/collapsible.tsx"
+D  "apps/landing/src/components ui/command.tsx"
+D  "apps/landing/src/components ui/context-menu.tsx"
+D  "apps/landing/src/components ui/dialog.tsx"
+D  "apps/landing/src/components ui/drawer.tsx"
+D  "apps/landing/src/components ui/form.tsx"
+D  "apps/landing/src/components ui/hover-card.tsx"
+D  "apps/landing/src/components ui/input-otp.tsx"
+D  "apps/landing/src/components ui/input.tsx"
+D  "apps/landing/src/components ui/label.tsx"
+D  "apps/landing/src/components ui/menubar.tsx"
+D  "apps/landing/src/components ui/navigation-menu.tsx"
+D  "apps/landing/src/components ui/pagination.tsx"
+D  "apps/landing/src/components ui/popover.tsx"
+D  "apps/landing/src/components ui/progress.tsx"
+D  "apps/landing/src/components ui/radio-group.tsx"
+D  "apps/landing/src/components ui/resizable.tsx"
+D  "apps/landing/src/components ui/scroll-area.tsx"
+D  "apps/landing/src/components ui/select.tsx"
+D  "apps/landing/src/components ui/separator.tsx"
+D  "apps/landing/src/components ui/sheet.tsx"
+D  "apps/landing/src/components ui/sidebar.tsx"
+D  "apps/landing/src/components ui/skeleton.tsx"
+D  "apps/landing/src/components ui/slider.tsx"
+D  "apps/landing/src/components ui/sonner.tsx"
+D  "apps/landing/src/components ui/switch.tsx"
+D  "apps/landing/src/components ui/table.tsx"
+D  "apps/landing/src/components ui/tabs.tsx"
+D  "apps/landing/src/components ui/textarea.tsx"
+D  "apps/landing/src/components ui/toggle-group.tsx"
+D  "apps/landing/src/components ui/toggle.tsx"
+D  "apps/landing/src/components ui/tooltip.tsx"
+D  apps/landing/src/hooks/use-mobile.tsx
+M  apps/landing/src/routeTree.gen.ts
+M  apps/landing/src/routes/index.tsx
+D  "apps/web/Lovable ui/AGENTS.md"
+D  "apps/web/Lovable ui/bun.lock"
+D  "apps/web/Lovable ui/bunfig.toml"
+D  "apps/web/Lovable ui/components.json"
+D  "apps/web/Lovable ui/eslint.config.js"
+D  "apps/web/Lovable ui/gitignore"
+D  "apps/web/Lovable ui/package.json"
+D  "apps/web/Lovable ui/prettierignore"
+D  "apps/web/Lovable ui/prettierrc"
+D  "apps/web/Lovable ui/src/assets/atlas-logo.png.png"
+D  "apps/web/Lovable ui/src/assets/atlas-mark.png.png"
+D  "apps/web/Lovable ui/src/components/atlas/AppSidebar.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/AtlasInsights.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/AtlasLogo.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/PageHeader.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/Sparkline.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/StatCard.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/StatusPill.tsx"
+D  "apps/web/Lovable ui/src/components/atlas/TopBar.tsx"
+D  "apps/web/Lovable ui/src/components/ui/accordion.tsx"
+D  "apps/web/Lovable ui/src/components/ui/alert-dialog.tsx"
+D  "apps/web/Lovable ui/src/components/ui/alert.tsx"
+D  "apps/web/Lovable ui/src/components/ui/aspect-ratio.tsx"
+D  "apps/web/Lovable ui/src/components/ui/avatar.tsx"
+D  "apps/web/Lovable ui/src/components/ui/badge.tsx"
+D  "apps/web/Lovable ui/src/components/ui/breadcrumb.tsx"
+D  "apps/web/Lovable ui/src/components/ui/button.tsx"
+D  "apps/web/Lovable ui/src/components/ui/card.tsx"
+D  "apps/web/Lovable ui/src/components/ui/carousel.tsx"
+D  "apps/web/Lovable ui/src/components/ui/chart.tsx"
+D  "apps/web/Lovable ui/src/components/ui/checkbox.tsx"
+D  "apps/web/Lovable ui/src/components/ui/command.tsx"
+D  "apps/web/Lovable ui/src/components/ui/dialog.tsx"
+D  "apps/web/Lovable ui/src/components/ui/drawer.tsx"
+D  "apps/web/Lovable ui/src/components/ui/dropdown-menu.tsx"
+D  "apps/web/Lovable ui/src/components/ui/form.tsx"
+D  "apps/web/Lovable ui/src/components/ui/hover-card.tsx"
+D  "apps/web/Lovable ui/src/components/ui/input-otp.tsx"
+D  "apps/web/Lovable ui/src/components/ui/input.tsx"
+D  "apps/web/Lovable ui/src/components/ui/label.tsx"
+D  "apps/web/Lovable ui/src/components/ui/menubar.tsx"
+D  "apps/web/Lovable ui/src/components/ui/navigation-menu.tsx"
+D  "apps/web/Lovable ui/src/components/ui/pagination.tsx"
+D  "apps/web/Lovable ui/src/components/ui/progress.tsx"
+D  "apps/web/Lovable ui/src/components/ui/radio-group.tsx"
+D  "apps/web/Lovable ui/src/components/ui/resizable.tsx"
+D  "apps/web/Lovable ui/src/components/ui/scroll-area.tsx"
+D  "apps/web/Lovable ui/src/components/ui/select.tsx"
+D  "apps/web/Lovable ui/src/components/ui/separator.tsx"
+D  "apps/web/Lovable ui/src/components/ui/sheet.tsx"
+D  "apps/web/Lovable ui/src/components/ui/sidebar.tsx"
+D  "apps/web/Lovable ui/src/components/ui/skeleton.tsx"
+D  "apps/web/Lovable ui/src/components/ui/slider.tsx"
+D  "apps/web/Lovable ui/src/components/ui/sonner.tsx"
+D  "apps/web/Lovable ui/src/components/ui/table.tsx"
+D  "apps/web/Lovable ui/src/components/ui/tabs.tsx"
+D  "apps/web/Lovable ui/src/components/ui/textarea.tsx"
+D  "apps/web/Lovable ui/src/components/ui/toggle-group.tsx"
+D  "apps/web/Lovable ui/src/components/ui/toggle.tsx"
+D  "apps/web/Lovable ui/src/components/ui/tooltip.tsx"
+D  "apps/web/Lovable ui/src/hooks/use-mobile.tsx"
+D  "apps/web/Lovable ui/src/lib/error-capture.ts"
+D  "apps/web/Lovable ui/src/lib/error-page.ts"
+D  "apps/web/Lovable ui/src/lib/lovable-error-reporting.ts"
+D  "apps/web/Lovable ui/src/lib/utils.ts"
+D  "apps/web/Lovable ui/src/routeTree.gen.ts"
+D  "apps/web/Lovable ui/src/router.tsx"
+D  "apps/web/Lovable ui/src/routes/README.md"
+D  "apps/web/Lovable ui/src/routes/__root.tsx"
+D  "apps/web/Lovable ui/src/routes/_app.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/analytics.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/ask.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/calendar.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/claims.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/companies.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/documents.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/interviews.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/notifications.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/profile.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/properties.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/settings.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/supplements.tsx"
+D  "apps/web/Lovable ui/src/routes/_app/tasks.tsx"
+D  "apps/web/Lovable ui/src/routes/index.tsx"
+D  "apps/web/Lovable ui/src/routes/login.tsx"
+D  "apps/web/Lovable ui/src/routes/sitemap[.]xml.ts"
+D  "apps/web/Lovable ui/src/server.ts"
+D  "apps/web/Lovable ui/src/start.ts"
+D  "apps/web/Lovable ui/src/styles.css"
+D  "apps/web/Lovable ui/tsconfig.json"
+D  "apps/web/Lovable ui/vite.config.ts"
+D  apps/web/next.config.ts
+M  apps/web/package.json
+M  apps/web/public/atlas-logo.png
+M  apps/web/src/app/(auth)/login/page.tsx
+M  apps/web/src/app/admin/interviews/[id]/page.tsx
+M  apps/web/src/app/admin/settings/page.tsx
+M  apps/web/src/app/globals.css
+M  apps/web/src/app/landing/page.tsx
+M  apps/web/src/app/layout.tsx
+A  apps/web/src/app/page.jsx
+D  apps/web/src/app/page.tsx
+A  apps/web/src/app/providers.jsx
+A  apps/web/src/components/atlas-features.jsx
+A  apps/web/src/components/ui/accordion.jsx
+A  apps/web/src/components/ui/alert-dialog.jsx
+A  apps/web/src/components/ui/alert.jsx
+A  apps/web/src/components/ui/aspect-ratio.jsx
+A  apps/web/src/components/ui/avatar.jsx
+R  "apps/landing/src/components ui/badge.tsx" -> apps/web/src/components/ui/badge.jsx
+A  apps/web/src/components/ui/breadcrumb.jsx
+A  apps/web/src/components/ui/button.jsx
+R  "apps/web/Lovable ui/src/components/ui/calendar.tsx" -> apps/web/src/components/ui/calendar.jsx
+A  apps/web/src/components/ui/card.jsx
+A  apps/web/src/components/ui/carousel.jsx
+A  apps/web/src/components/ui/chart.jsx
+A  apps/web/src/components/ui/checkbox.jsx
+R  "apps/web/Lovable ui/src/components/ui/collapsible.tsx" -> apps/web/src/components/ui/collapsible.jsx
+A  apps/web/src/components/ui/command.jsx
+R  "apps/web/Lovable ui/src/components/ui/context-menu.tsx" -> apps/web/src/components/ui/context-menu.jsx
+A  apps/web/src/components/ui/dialog.jsx
+A  apps/web/src/components/ui/drawer.jsx
+R  "apps/landing/src/components ui/dropdown-menu.tsx" -> apps/web/src/components/ui/dropdown-menu.jsx
+A  apps/web/src/components/ui/form.jsx
+R  "Lovable/src/components ui/hover-card.tsx" -> apps/web/src/components/ui/hover-card.jsx
+A  apps/web/src/components/ui/input-otp.jsx
+A  apps/web/src/components/ui/input.jsx
+A  apps/web/src/components/ui/label.jsx
+R  "Lovable/src/components ui/menubar.tsx" -> apps/web/src/components/ui/menubar.jsx
+A  apps/web/src/components/ui/navigation-menu.jsx
+A  apps/web/src/components/ui/pagination.jsx
+R  "apps/web/Lovable ui/src/components/ui/popover.tsx" -> apps/web/src/components/ui/popover.jsx
+A  apps/web/src/components/ui/progress.jsx
+A  apps/web/src/components/ui/radio-group.jsx
+R  "Lovable/src/components ui/resizable.tsx" -> apps/web/src/components/ui/resizable.jsx
+A  apps/web/src/components/ui/scroll-area.jsx
+A  apps/web/src/components/ui/select.jsx
+A  apps/web/src/components/ui/separator.jsx
+A  apps/web/src/components/ui/sheet.jsx
+A  apps/web/src/components/ui/sidebar.jsx
+A  apps/web/src/components/ui/skeleton.jsx
+A  apps/web/src/components/ui/slider.jsx
+A  apps/web/src/components/ui/sonner.jsx
+R  "apps/web/Lovable ui/src/components/ui/switch.tsx" -> apps/web/src/components/ui/switch.jsx
+A  apps/web/src/components/ui/table.jsx
+A  apps/web/src/components/ui/tabs.jsx
+A  apps/web/src/components/ui/textarea.jsx
+A  apps/web/src/components/ui/toast.jsx
+A  apps/web/src/components/ui/toaster.jsx
+A  apps/web/src/components/ui/toggle-group.jsx
+A  apps/web/src/components/ui/toggle.jsx
+R  "Lovable/src/components ui/tooltip.tsx" -> apps/web/src/components/ui/tooltip.jsx
+A  apps/web/src/hooks/use-mobile.jsx
+A  apps/web/src/hooks/use-toast.js
+A  apps/web/src/lib/atlas-service.js
+A  apps/web/src/lib/constants/testIds/auth.js
+A  apps/web/src/lib/constants/testIds/home.js
+A  apps/web/src/lib/constants/testIds/index.js
+M  apps/web/src/lib/server-auth.ts
+A  apps/web/src/lib/utils.js
+D  apps/web/tailwind.config.js
+D  apps/web/tailwind.config.ts
+M  apps/web/tsconfig.json
+A  apps/web/web-dev.log
+M  eslint.config.js
+A  package-lock.diff
+M  package-lock.json
+M  packages/database/package.json
+M  packages/database/src/index.js
+M  packages/database/src/schema/activity_logs.js
+M  packages/database/src/schema/adjusters.js
+M  packages/database/src/schema/claims.js
+A  packages/database/src/schema/interview-templates.js
+M  packages/database/src/schema/interviews.js
+A  packages/database/src/schema/supplement-drafts.js
+M  packages/database/src/schema/supplements.js
+M  packages/database/tsconfig.json
+?? app_diff.txt
+?? gitignore_diff.txt
+?? lint_final.log
+?? package-lock-stat.txt
+?? status_short.txt
