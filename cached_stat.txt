@@ -1,0 +1,325 @@
+ .gitignore                                         |    54 +-
+ Lovable/AGENTS.md                                  |    10 -
+ Lovable/bun.lock                                   |  1389 ---
+ Lovable/bunfig.toml                                |     7 -
+ Lovable/components.json                            |    22 -
+ Lovable/eslint.config.js                           |    40 -
+ Lovable/gitignore                                  |    32 -
+ Lovable/lovable/project.json                       |     5 -
+ Lovable/package.json                               |    87 -
+ Lovable/prettierignore                             |     8 -
+ Lovable/prettierrc                                 |     6 -
+ Lovable/public/favicon.png                         |   Bin 223730 -> 0 bytes
+ Lovable/src/assets/atlas-logo-full.png             |   Bin 585471 -> 0 bytes
+ Lovable/src/assets/atlas-logo.png                  |   Bin 1266442 -> 0 bytes
+ Lovable/src/assets/atlas-mark.png                  |   Bin 223730 -> 0 bytes
+ Lovable/src/components ui/accordion.tsx            |    51 -
+ Lovable/src/components ui/alert-dialog.tsx         |   115 -
+ Lovable/src/components ui/alert.tsx                |    49 -
+ Lovable/src/components ui/aspect-ratio.tsx         |     5 -
+ Lovable/src/components ui/avatar.tsx               |    47 -
+ Lovable/src/components ui/badge.tsx                |    32 -
+ Lovable/src/components ui/breadcrumb.tsx           |   101 -
+ Lovable/src/components ui/button.tsx               |    49 -
+ Lovable/src/components ui/calendar.tsx             |   177 -
+ Lovable/src/components ui/card.tsx                 |    55 -
+ Lovable/src/components ui/carousel.tsx             |   240 -
+ Lovable/src/components ui/chart.tsx                |   331 -
+ Lovable/src/components ui/checkbox.tsx             |    26 -
+ Lovable/src/components ui/collapsible.tsx          |    11 -
+ Lovable/src/components ui/command.tsx              |   143 -
+ Lovable/src/components ui/context-menu.tsx         |   187 -
+ Lovable/src/components ui/dialog.tsx               |   104 -
+ Lovable/src/components ui/drawer.tsx               |    98 -
+ Lovable/src/components ui/dropdown-menu.tsx        |   188 -
+ Lovable/src/components ui/form.tsx                 |   171 -
+ Lovable/src/components ui/input-otp.tsx            |    69 -
+ Lovable/src/components ui/input.tsx                |    22 -
+ Lovable/src/components ui/label.tsx                |    21 -
+ Lovable/src/components ui/navigation-menu.tsx      |   120 -
+ Lovable/src/components ui/pagination.tsx           |    98 -
+ Lovable/src/components ui/popover.tsx              |    31 -
+ Lovable/src/components ui/progress.tsx             |    25 -
+ Lovable/src/components ui/radio-group.tsx          |    36 -
+ Lovable/src/components ui/scroll-area.tsx          |    44 -
+ Lovable/src/components ui/select.tsx               |   152 -
+ Lovable/src/components ui/separator.tsx            |    24 -
+ Lovable/src/components ui/sheet.tsx                |   122 -
+ Lovable/src/components ui/sidebar.tsx              |   744 --
+ Lovable/src/components ui/skeleton.tsx             |     7 -
+ Lovable/src/components ui/slider.tsx               |    23 -
+ Lovable/src/components ui/sonner.tsx               |    23 -
+ Lovable/src/components ui/switch.tsx               |    27 -
+ Lovable/src/components ui/table.tsx                |    94 -
+ Lovable/src/components ui/tabs.tsx                 |    53 -
+ Lovable/src/components ui/textarea.tsx             |    21 -
+ Lovable/src/components ui/toggle-group.tsx         |    57 -
+ Lovable/src/components ui/toggle.tsx               |    42 -
+ Lovable/src/hooks/use-mobile.tsx                   |    19 -
+ Lovable/src/lib/error-capture.ts                   |    27 -
+ Lovable/src/lib/error-page.ts                      |    30 -
+ Lovable/src/lib/lovable-error-reporting.ts         |    36 -
+ Lovable/src/lib/utils.ts                           |     6 -
+ Lovable/src/routeTree.gen.ts                       |    59 -
+ Lovable/src/router.tsx                             |    16 -
+ Lovable/src/routes/README (1).md                   |    21 -
+ Lovable/src/routes/__root.tsx                      |   136 -
+ Lovable/src/routes/index.tsx                       |  1766 ----
+ Lovable/src/server.ts                              |    61 -
+ Lovable/src/start.ts                               |    22 -
+ Lovable/src/styles.css                             |   200 -
+ Lovable/tsconfig.json                              |    27 -
+ Lovable/vite.config.ts                             |    15 -
+ apps/api/package.json                              |     5 +-
+ apps/api/src/lib/env.ts                            |     1 +
+ apps/api/src/routes/adjusters.ts                   |     1 +
+ apps/api/src/routes/claims.js                      |    21 -
+ apps/api/src/routes/claims.ts                      |     1 +
+ apps/api/src/routes/companies.js                   |    77 -
+ apps/api/src/routes/contacts.js                    |    21 -
+ apps/api/src/routes/contacts.ts                    |     2 +-
+ apps/api/src/routes/crud.js                        |    68 -
+ apps/api/src/routes/crud.ts                        |     9 +-
+ apps/api/src/routes/index.js                       |    32 -
+ apps/api/src/routes/interviews.js                  |    87 -
+ apps/api/src/routes/notes.js                       |    19 -
+ apps/api/src/routes/properties.js                  |    16 -
+ apps/api/src/routes/properties.ts                  |     2 +-
+ apps/api/src/routes/supplements.js                 |    21 -
+ apps/api/src/routes/supplements.ts                 |     5 +-
+ apps/api/src/routes/tasks.js                       |    21 -
+ apps/api/src/routes/tenant_members.js              |    20 -
+ apps/api/src/routes/tenant_members.ts              |     2 +-
+ apps/api/src/routes/tenants.js                     |    19 -
+ apps/api/src/routes/tenants.ts                     |     2 +-
+ apps/api/src/routes/users.js                       |    20 -
+ apps/api/src/routes/users.ts                       |     2 +-
+ apps/api/src/server.ts                             |     2 +-
+ apps/landing/src/app/globals.css                   |   287 -
+ apps/landing/src/app/layout.tsx                    |    35 -
+ apps/landing/src/app/page.tsx                      |   692 --
+ apps/landing/src/components ui/accordion.tsx       |    51 -
+ apps/landing/src/components ui/alert-dialog.tsx    |   115 -
+ apps/landing/src/components ui/alert.tsx           |    49 -
+ apps/landing/src/components ui/aspect-ratio.tsx    |     5 -
+ apps/landing/src/components ui/avatar.tsx          |    47 -
+ apps/landing/src/components ui/breadcrumb.tsx      |   101 -
+ apps/landing/src/components ui/button.tsx          |    49 -
+ apps/landing/src/components ui/calendar.tsx        |   177 -
+ apps/landing/src/components ui/card.tsx            |    55 -
+ apps/landing/src/components ui/carousel.tsx        |   240 -
+ apps/landing/src/components ui/chart.tsx           |   331 -
+ apps/landing/src/components ui/checkbox.tsx        |    26 -
+ apps/landing/src/components ui/collapsible.tsx     |    11 -
+ apps/landing/src/components ui/command.tsx         |   143 -
+ apps/landing/src/components ui/context-menu.tsx    |   187 -
+ apps/landing/src/components ui/dialog.tsx          |   104 -
+ apps/landing/src/components ui/drawer.tsx          |    98 -
+ apps/landing/src/components ui/form.tsx            |   171 -
+ apps/landing/src/components ui/hover-card.tsx      |    27 -
+ apps/landing/src/components ui/input-otp.tsx       |    69 -
+ apps/landing/src/components ui/input.tsx           |    22 -
+ apps/landing/src/components ui/label.tsx           |    21 -
+ apps/landing/src/components ui/menubar.tsx         |   229 -
+ apps/landing/src/components ui/navigation-menu.tsx |   120 -
+ apps/landing/src/components ui/pagination.tsx      |    98 -
+ apps/landing/src/components ui/popover.tsx         |    31 -
+ apps/landing/src/components ui/progress.tsx        |    25 -
+ apps/landing/src/components ui/radio-group.tsx     |    36 -
+ apps/landing/src/components ui/resizable.tsx       |    37 -
+ apps/landing/src/components ui/scroll-area.tsx     |    44 -
+ apps/landing/src/components ui/select.tsx          |   152 -
+ apps/landing/src/components ui/separator.tsx       |    24 -
+ apps/landing/src/components ui/sheet.tsx           |   122 -
+ apps/landing/src/components ui/sidebar.tsx         |   744 --
+ apps/landing/src/components ui/skeleton.tsx        |     7 -
+ apps/landing/src/components ui/slider.tsx          |    23 -
+ apps/landing/src/components ui/sonner.tsx          |    23 -
+ apps/landing/src/components ui/switch.tsx          |    27 -
+ apps/landing/src/components ui/table.tsx           |    94 -
+ apps/landing/src/components ui/tabs.tsx            |    53 -
+ apps/landing/src/components ui/textarea.tsx        |    21 -
+ apps/landing/src/components ui/toggle-group.tsx    |    57 -
+ apps/landing/src/components ui/toggle.tsx          |    42 -
+ apps/landing/src/components ui/tooltip.tsx         |    32 -
+ apps/landing/src/hooks/use-mobile.tsx              |    19 -
+ apps/landing/src/routeTree.gen.ts                  |    10 +
+ apps/landing/src/routes/index.tsx                  |     3 -
+ apps/web/Lovable ui/AGENTS.md                      |    10 -
+ apps/web/Lovable ui/bun.lock                       |  1261 ---
+ apps/web/Lovable ui/bunfig.toml                    |     7 -
+ apps/web/Lovable ui/components.json                |    22 -
+ apps/web/Lovable ui/eslint.config.js               |    40 -
+ apps/web/Lovable ui/gitignore                      |    32 -
+ apps/web/Lovable ui/package.json                   |    87 -
+ apps/web/Lovable ui/prettierignore                 |     8 -
+ apps/web/Lovable ui/prettierrc                     |     6 -
+ apps/web/Lovable ui/src/assets/atlas-logo.png.png  |   Bin 131174 -> 0 bytes
+ apps/web/Lovable ui/src/assets/atlas-mark.png.png  |   Bin 123125 -> 0 bytes
+ .../Lovable ui/src/components/atlas/AppSidebar.tsx |   100 -
+ .../src/components/atlas/AtlasInsights.tsx         |    41 -
+ .../Lovable ui/src/components/atlas/AtlasLogo.tsx  |    23 -
+ .../Lovable ui/src/components/atlas/PageHeader.tsx |    26 -
+ .../Lovable ui/src/components/atlas/Sparkline.tsx  |    46 -
+ .../Lovable ui/src/components/atlas/StatCard.tsx   |    38 -
+ .../Lovable ui/src/components/atlas/StatusPill.tsx |    28 -
+ .../web/Lovable ui/src/components/atlas/TopBar.tsx |    32 -
+ .../web/Lovable ui/src/components/ui/accordion.tsx |    51 -
+ .../Lovable ui/src/components/ui/alert-dialog.tsx  |   115 -
+ apps/web/Lovable ui/src/components/ui/alert.tsx    |    49 -
+ .../Lovable ui/src/components/ui/aspect-ratio.tsx  |     5 -
+ apps/web/Lovable ui/src/components/ui/avatar.tsx   |    47 -
+ apps/web/Lovable ui/src/components/ui/badge.tsx    |    32 -
+ .../Lovable ui/src/components/ui/breadcrumb.tsx    |   101 -
+ apps/web/Lovable ui/src/components/ui/button.tsx   |    49 -
+ apps/web/Lovable ui/src/components/ui/card.tsx     |    55 -
+ apps/web/Lovable ui/src/components/ui/carousel.tsx |   240 -
+ apps/web/Lovable ui/src/components/ui/chart.tsx    |   331 -
+ apps/web/Lovable ui/src/components/ui/checkbox.tsx |    26 -
+ apps/web/Lovable ui/src/components/ui/command.tsx  |   143 -
+ apps/web/Lovable ui/src/components/ui/dialog.tsx   |   104 -
+ apps/web/Lovable ui/src/components/ui/drawer.tsx   |    98 -
+ .../Lovable ui/src/components/ui/dropdown-menu.tsx |   188 -
+ apps/web/Lovable ui/src/components/ui/form.tsx     |   171 -
+ .../Lovable ui/src/components/ui/hover-card.tsx    |    27 -
+ .../web/Lovable ui/src/components/ui/input-otp.tsx |    69 -
+ apps/web/Lovable ui/src/components/ui/input.tsx    |    22 -
+ apps/web/Lovable ui/src/components/ui/label.tsx    |    21 -
+ apps/web/Lovable ui/src/components/ui/menubar.tsx  |   229 -
+ .../src/components/ui/navigation-menu.tsx          |   120 -
+ .../Lovable ui/src/components/ui/pagination.tsx    |    98 -
+ apps/web/Lovable ui/src/components/ui/progress.tsx |    25 -
+ .../Lovable ui/src/components/ui/radio-group.tsx   |    36 -
+ .../web/Lovable ui/src/components/ui/resizable.tsx |    37 -
+ .../Lovable ui/src/components/ui/scroll-area.tsx   |    44 -
+ apps/web/Lovable ui/src/components/ui/select.tsx   |   152 -
+ .../web/Lovable ui/src/components/ui/separator.tsx |    24 -
+ apps/web/Lovable ui/src/components/ui/sheet.tsx    |   122 -
+ apps/web/Lovable ui/src/components/ui/sidebar.tsx  |   744 --
+ apps/web/Lovable ui/src/components/ui/skeleton.tsx |     7 -
+ apps/web/Lovable ui/src/components/ui/slider.tsx   |    23 -
+ apps/web/Lovable ui/src/components/ui/sonner.tsx   |    23 -
+ apps/web/Lovable ui/src/components/ui/table.tsx    |    94 -
+ apps/web/Lovable ui/src/components/ui/tabs.tsx     |    53 -
+ apps/web/Lovable ui/src/components/ui/textarea.tsx |    21 -
+ .../Lovable ui/src/components/ui/toggle-group.tsx  |    57 -
+ apps/web/Lovable ui/src/components/ui/toggle.tsx   |    42 -
+ apps/web/Lovable ui/src/components/ui/tooltip.tsx  |    32 -
+ apps/web/Lovable ui/src/hooks/use-mobile.tsx       |    19 -
+ apps/web/Lovable ui/src/lib/error-capture.ts       |    27 -
+ apps/web/Lovable ui/src/lib/error-page.ts          |    30 -
+ .../Lovable ui/src/lib/lovable-error-reporting.ts  |    36 -
+ apps/web/Lovable ui/src/lib/utils.ts               |     6 -
+ apps/web/Lovable ui/src/routeTree.gen.ts           |   402 -
+ apps/web/Lovable ui/src/router.tsx                 |    16 -
+ apps/web/Lovable ui/src/routes/README.md           |    21 -
+ apps/web/Lovable ui/src/routes/__root.tsx          |   105 -
+ apps/web/Lovable ui/src/routes/_app.tsx            |    21 -
+ apps/web/Lovable ui/src/routes/_app/analytics.tsx  |   120 -
+ apps/web/Lovable ui/src/routes/_app/ask.tsx        |   149 -
+ apps/web/Lovable ui/src/routes/_app/calendar.tsx   |   131 -
+ apps/web/Lovable ui/src/routes/_app/claims.tsx     |   134 -
+ apps/web/Lovable ui/src/routes/_app/companies.tsx  |   115 -
+ apps/web/Lovable ui/src/routes/_app/documents.tsx  |   120 -
+ apps/web/Lovable ui/src/routes/_app/interviews.tsx |   130 -
+ .../Lovable ui/src/routes/_app/notifications.tsx   |    66 -
+ apps/web/Lovable ui/src/routes/_app/profile.tsx    |    69 -
+ apps/web/Lovable ui/src/routes/_app/properties.tsx |    92 -
+ apps/web/Lovable ui/src/routes/_app/settings.tsx   |   115 -
+ .../web/Lovable ui/src/routes/_app/supplements.tsx |   144 -
+ apps/web/Lovable ui/src/routes/_app/tasks.tsx      |   100 -
+ apps/web/Lovable ui/src/routes/index.tsx           |     7 -
+ apps/web/Lovable ui/src/routes/login.tsx           |   115 -
+ apps/web/Lovable ui/src/routes/sitemap[.]xml.ts    |    21 -
+ apps/web/Lovable ui/src/server.ts                  |    61 -
+ apps/web/Lovable ui/src/start.ts                   |    22 -
+ apps/web/Lovable ui/src/styles.css                 |   198 -
+ apps/web/Lovable ui/tsconfig.json                  |    27 -
+ apps/web/Lovable ui/vite.config.ts                 |    15 -
+ apps/web/next.config.ts                            |     7 -
+ apps/web/package.json                              |    49 +
+ apps/web/public/atlas-logo.png                     |   Bin 1266442 -> 123125 bytes
+ apps/web/src/app/(auth)/login/page.tsx             |     4 +-
+ apps/web/src/app/admin/interviews/[id]/page.tsx    |     1 -
+ apps/web/src/app/admin/settings/page.tsx           |     1 -
+ apps/web/src/app/globals.css                       |   137 +
+ apps/web/src/app/landing/page.tsx                  |     3 -
+ apps/web/src/app/layout.tsx                        |     7 +-
+ apps/web/src/app/page.jsx                          |  1411 +++
+ apps/web/src/app/page.tsx                          |   500 -
+ apps/web/src/app/providers.jsx                     |    18 +
+ apps/web/src/components/atlas-features.jsx         |  1585 +++
+ apps/web/src/components/ui/accordion.jsx           |    43 +
+ apps/web/src/components/ui/alert-dialog.jsx        |    99 +
+ apps/web/src/components/ui/alert.jsx               |    47 +
+ apps/web/src/components/ui/aspect-ratio.jsx        |     7 +
+ apps/web/src/components/ui/avatar.jsx              |    35 +
+ .../badge.tsx => web/src/components/ui/badge.jsx}  |    26 +-
+ apps/web/src/components/ui/breadcrumb.jsx          |    92 +
+ apps/web/src/components/ui/button.jsx              |    48 +
+ .../components/ui/calendar.jsx}                    |   102 +-
+ apps/web/src/components/ui/card.jsx                |    50 +
+ apps/web/src/components/ui/carousel.jsx            |   194 +
+ apps/web/src/components/ui/chart.jsx               |   314 +
+ apps/web/src/components/ui/checkbox.jsx            |    24 +
+ .../components/ui/collapsible.jsx}                 |    12 +-
+ apps/web/src/components/ui/command.jsx             |   117 +
+ .../components/ui/context-menu.jsx}                |   173 +-
+ apps/web/src/components/ui/dialog.jsx              |    96 +
+ apps/web/src/components/ui/drawer.jsx              |    92 +
+ .../src/components/ui/dropdown-menu.jsx}           |   170 +-
+ apps/web/src/components/ui/form.jsx                |   134 +
+ .../web/src/components/ui/hover-card.jsx           |    30 +-
+ apps/web/src/components/ui/input-otp.jsx           |    55 +
+ apps/web/src/components/ui/input.jsx               |    19 +
+ apps/web/src/components/ui/label.jsx               |    18 +
+ .../web/src/components/ui/menubar.jsx              |   209 +-
+ apps/web/src/components/ui/navigation-menu.jsx     |   104 +
+ apps/web/src/components/ui/pagination.jsx          |   100 +
+ .../popover.tsx => src/components/ui/popover.jsx}  |    32 +-
+ apps/web/src/components/ui/progress.jsx            |    23 +
+ apps/web/src/components/ui/radio-group.jsx         |    31 +
+ .../web/src/components/ui/resizable.jsx            |    45 +-
+ apps/web/src/components/ui/scroll-area.jsx         |    40 +
+ apps/web/src/components/ui/select.jsx              |   121 +
+ apps/web/src/components/ui/separator.jsx           |    25 +
+ apps/web/src/components/ui/sheet.jsx               |   109 +
+ apps/web/src/components/ui/sidebar.jsx             |   630 ++
+ apps/web/src/components/ui/skeleton.jsx            |    14 +
+ apps/web/src/components/ui/slider.jsx              |    23 +
+ apps/web/src/components/ui/sonner.jsx              |    29 +
+ .../ui/switch.tsx => src/components/ui/switch.jsx} |    29 +-
+ apps/web/src/components/ui/table.jsx               |    86 +
+ apps/web/src/components/ui/tabs.jsx                |    43 +
+ apps/web/src/components/ui/textarea.jsx            |    18 +
+ apps/web/src/components/ui/toast.jsx               |    86 +
+ apps/web/src/components/ui/toaster.jsx             |    35 +
+ apps/web/src/components/ui/toggle-group.jsx        |    44 +
+ apps/web/src/components/ui/toggle.jsx              |    40 +
+ .../web/src/components/ui/tooltip.jsx              |    32 +-
+ apps/web/src/hooks/use-mobile.jsx                  |    19 +
+ apps/web/src/hooks/use-toast.js                    |   155 +
+ apps/web/src/lib/atlas-service.js                  |   370 +
+ apps/web/src/lib/constants/testIds/auth.js         |    33 +
+ apps/web/src/lib/constants/testIds/home.js         |     6 +
+ apps/web/src/lib/constants/testIds/index.js        |    15 +
+ apps/web/src/lib/server-auth.ts                    |    29 +-
+ apps/web/src/lib/utils.js                          |     6 +
+ apps/web/tailwind.config.js                        |    14 -
+ apps/web/tailwind.config.ts                        |    14 -
+ apps/web/tsconfig.json                             |     3 +
+ apps/web/web-dev.log                               |    19 +
+ eslint.config.js                                   |    45 +-
+ package-lock.diff                                  | 10373 +++++++++++++++++++
+ package-lock.json                                  |  8554 +++++++++++----
+ packages/database/package.json                     |    11 +-
+ packages/database/src/index.js                     |     8 +-
+ packages/database/src/schema/activity_logs.js      |    12 +-
+ packages/database/src/schema/adjusters.js          |     9 +-
+ packages/database/src/schema/claims.js             |    17 +-
+ .../database/src/schema/interview-templates.js     |    25 +
+ packages/database/src/schema/interviews.js         |    28 +-
+ packages/database/src/schema/supplement-drafts.js  |    34 +
+ packages/database/src/schema/supplements.js        |    18 +-
+ packages/database/tsconfig.json                    |     5 +-
+ 324 files changed, 24625 insertions(+), 25031 deletions(-)
