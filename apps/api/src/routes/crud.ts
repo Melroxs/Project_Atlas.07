@@ -19,12 +19,14 @@ export function registerCrudRoutes(
     // optional hooks to run before/after create/update/delete
     beforeCreate?: (data: any, req: FastifyRequest) => Promise<any>;
     afterCreate?: (result: any, req: FastifyRequest) => Promise<void>;
+    skipList?: boolean; // set true when a custom list route is registered separately
   }
 ) {
-  const { basePath, table, schema, beforeCreate, afterCreate } = opts;
+  const { basePath, table, schema, beforeCreate, afterCreate, skipList } = opts;
 
-  // List all rows (company‑scoped)
-  server.get(basePath, async (req: FastifyRequest, reply: FastifyReply) => {
+  if (!skipList) {
+    // List all rows (company‑scoped)
+    server.get(basePath, async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       const companyId = (req as AuthenticatedRequest).companyId;
       const rows = await db.select().from(table).where(eq((table as any).companyId, companyId));
@@ -33,6 +35,7 @@ export function registerCrudRoutes(
       reply.code(500).send({ error: 'Failed to fetch records' });
     }
   });
+  }
 
   // Get by id (ensuring same company)
   server.get(`${basePath}/:id`, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {

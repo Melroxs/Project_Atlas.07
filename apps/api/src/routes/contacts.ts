@@ -1,7 +1,7 @@
 // apps/api/src/routes/contacts.ts
 import { FastifyPluginAsync } from 'fastify';
 import { registerCrudRoutes } from './crud';
-import { contacts } from '../../../../packages/database/src/schema/contacts';
+import { contacts } from '@project-atlas/database';
 import { z } from 'zod';
 
 // Adjust the schema according to your contacts table definition

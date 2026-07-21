@@ -37,17 +37,10 @@ export async function getAuthenticatedUser() {
   try {
     const supabase = await createServerClient();
     const { data: { user }, error } = await supabase.auth.getUser();
-    
-    if (error || !user) {
-      console.log('AUTH_DIAGNOSTICS: AUTH_USER_FOUND', false, 'ERROR', error?.message);
-      return null;
-    }
-
-    console.log('AUTH_DIAGNOSTICS: AUTH_USER_FOUND', true, 'USER_ID', user.id);
+    if (error || !user) return null;
     return user;
   } catch (error) {
     console.error('Auth error:', error);
-    console.log('AUTH_DIAGNOSTICS: AUTH_USER_FOUND', false, 'ERROR', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }
@@ -55,13 +48,9 @@ export async function getAuthenticatedUser() {
 // Get company context for authenticated user
 export async function getCompanyContext() {
   const user = await getAuthenticatedUser();
-  if (!user) {
-    console.log('AUTH_DIAGNOSTICS: COMPANY_CONTEXT_FOUND', false, 'REASON', 'No authenticated user');
-    return null;
-  }
+  if (!user) return null;
 
   try {
-    // Get user's tenant membership using Drizzle
     const [member] = await db
       .select({
         companyId: tenantMembers.companyId,
@@ -71,14 +60,8 @@ export async function getCompanyContext() {
       .where(eq(tenantMembers.userId, user.id))
       .limit(1);
 
-    if (!member) {
-      console.log('AUTH_DIAGNOSTICS: MEMBERSHIP_FOUND', false, 'USER_ID', user.id);
-      return null;
-    }
+    if (!member) return null;
 
-    console.log('AUTH_DIAGNOSTICS: MEMBERSHIP_FOUND', true, 'COMPANY_ID', member.companyId, 'ROLE', member.role);
-
-    // Get user profile for name
     const [profile] = await db
       .select({
         firstName: profiles.firstName,
@@ -89,19 +72,15 @@ export async function getCompanyContext() {
       .where(eq(profiles.id, user.id))
       .limit(1);
 
-    const context = {
+    return {
       userId: user.id,
       companyId: member.companyId,
       role: member.role,
       userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || profile.email : user.email,
       userEmail: user.email,
     };
-
-    console.log('AUTH_DIAGNOSTICS: COMPANY_CONTEXT_FOUND', true, 'COMPANY_ID', context.companyId);
-    return context;
   } catch (error) {
     console.error('Company context error:', error);
-    console.log('AUTH_DIAGNOSTICS: COMPANY_CONTEXT_FOUND', false, 'ERROR', error instanceof Error ? error.message : 'Unknown error');
     return null;
   }
 }

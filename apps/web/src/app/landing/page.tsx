@@ -152,9 +152,6 @@ function PilotModal() {
     e.preventDefault();
     setSubmitting(true);
     // Placeholder submission — wire to backend later.
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    // eslint-disable-next-line no-console
-    console.log("[Atlas Pilot Application]", data);
     await new Promise((r) => setTimeout(r, 600));
     setSubmitting(false);
     setSubmitted(true);

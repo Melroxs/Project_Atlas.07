@@ -31,8 +31,8 @@ export default function LoginPage() {
       return;
     }
     
-    // Successful login - redirect to admin dashboard
-    router.push('/admin');
+    // Successful login - redirect to dashboard
+    router.push('/');
     router.refresh(); // Refresh to update server-side auth state
     setLoading(false);
   };

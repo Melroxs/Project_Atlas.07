@@ -1,7 +1,7 @@
 // apps/api/src/routes/tenants.ts
 import { FastifyPluginAsync } from 'fastify';
 import { registerCrudRoutes } from './crud';
-import { tenants } from '../../../../packages/database/src/schema/tenants';
+import { tenants } from '@project-atlas/database';
 import { z } from 'zod';
 
 // Basic schema; extend as needed.

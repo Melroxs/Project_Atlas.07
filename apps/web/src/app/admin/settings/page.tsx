@@ -13,7 +13,6 @@ export default function SettingsPage() {
 
   const handleSave = () => {
     // TODO: Save settings to API
-    console.log("Saving settings:", settings);
   };
 
   return (

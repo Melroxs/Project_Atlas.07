@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SupabaseProvider } from "@/providers/SupabaseProvider";
 import SplashScreen from "@/components/SplashScreen";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,11 +57,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SplashScreen />
-        <SupabaseProvider>{children}</SupabaseProvider>
+        <SupabaseProvider>
+          <Providers>{children}</Providers>
+        </SupabaseProvider>
       </body>
     </html>
   );

@@ -1,0 +1,19 @@
+
+> web@0.1.0 dev
+> next dev
+
+ ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\cyber sev3n\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\package-lock.json
+
+ ΓÜá Port 3000 is in use by an unknown process, using available port 3002 instead.
+   Γû▓ Next.js 15.5.20
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.56.1:3002
+   - Environments: .env.local
+
+ Γ£ô Starting...
+ Γ£ô Ready in 16.8s

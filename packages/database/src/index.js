@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db = void 0;
+exports.db = exports.pool = void 0;
 const node_postgres_1 = require("drizzle-orm/node-postgres");
 const pg_1 = require("pg");
 __exportStar(require("./schema/tenants"), exports);
@@ -24,6 +24,7 @@ __exportStar(require("./schema/contacts"), exports);
 __exportStar(require("./schema/properties"), exports);
 __exportStar(require("./schema/claims"), exports);
 __exportStar(require("./schema/supplements"), exports);
+__exportStar(require("./schema/supplement-drafts"), exports);
 __exportStar(require("./schema/documents"), exports);
 __exportStar(require("./schema/tasks"), exports);
 __exportStar(require("./schema/notes"), exports);
@@ -31,9 +32,10 @@ __exportStar(require("./schema/adjusters"), exports);
 __exportStar(require("./schema/activity_logs"), exports);
 __exportStar(require("./schema/interviews"), exports);
 __exportStar(require("./schema/interview_questions"), exports);
+__exportStar(require("./schema/interview-templates"), exports);
 __exportStar(require("./schema/ai_conversations"), exports);
 __exportStar(require("./schema/tenant_members"), exports);
-const pool = new pg_1.Pool({
+exports.pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
 });
-exports.db = (0, node_postgres_1.drizzle)(pool);
+exports.db = (0, node_postgres_1.drizzle)(exports.pool);

@@ -1,10 +1,7 @@
 // apps/api/src/routes/supplements.ts
 import { FastifyPluginAsync } from 'fastify';
 import { eq, and, desc, sql, like, or } from 'drizzle-orm';
-import { supplements } from '../../../../packages/database/src/schema/supplements';
-import { claims } from '../../../../packages/database/src/schema/claims';
-import { adjusters } from '../../../../packages/database/src/schema/adjusters';
-import { db } from '../../../../packages/database/src';
+import { db, supplements, claims, adjusters } from '@project-atlas/database';
 import { z } from 'zod';
 import { AuthenticatedRequest } from '../types/request';
 import { 

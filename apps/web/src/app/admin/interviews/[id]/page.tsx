@@ -163,7 +163,6 @@ export default function InterviewDetailPage() {
         },
       );
       alert("Claim data extracted. Claim generation not yet implemented.");
-      console.log("Claim data:", data.claimData);
     } catch (e: any) {
       setError(`Error generating claim: ${e.message}`);
     }

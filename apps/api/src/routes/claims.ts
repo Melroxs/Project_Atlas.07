@@ -34,6 +34,7 @@ export const claimsRoutes: FastifyPluginAsync = async (fastify) => {
     basePath: '/',
     table: claims,
     schema: claimSchema,
+    skipList: true,
     beforeCreate: async (data, req) => {
       const userId = (req as AuthenticatedRequest).userId;
       const companyId = (req as AuthenticatedRequest).companyId;

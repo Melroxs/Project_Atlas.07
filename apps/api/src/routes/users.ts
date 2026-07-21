@@ -1,7 +1,7 @@
 // apps/api/src/routes/users.ts
 import { FastifyPluginAsync } from 'fastify';
 import { registerCrudRoutes } from './crud';
-import { profiles } from '../../../../packages/database/src/schema/users';
+import { profiles } from '@project-atlas/database';
 import { z } from 'zod';
 
 // Basic schema; extend as needed.

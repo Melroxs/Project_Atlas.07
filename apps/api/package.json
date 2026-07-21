@@ -13,11 +13,12 @@
     "db:push": "node -r ts-node/register packages/database/src/migrations/run.ts"
   },
   "dependencies": {
-    "@fastify/cors": "^11.3.0",
+    "@fastify/cors": "^9.0.1",
     "@fastify/multipart": "^8.0.0",
-    "@fastify/rate-limit": "^11.1.0",
+    "@fastify/rate-limit": "^9.1.0",
     "@supabase/supabase-js": "^2.42.4",
     "csv-parser": "^3.0.0",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.5",
     "fastify": "^4.24.0",
     "fastify-plugin": "^4.5.0",
