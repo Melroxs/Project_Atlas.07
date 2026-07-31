@@ -1,138 +1,1 @@
-Project Atlas
-
-<img width="918" height="356" alt="1" src="https://github.com/user-attachments/assets/5d69dc5f-79ef-45b8-9916-f7d5f86e226a" />
-
-
-Project Atlas
-Know Everything. Miss Nothing.
-
-Project Atlas is an AI Operating System for insurance restoration companies.
-
-Atlas transforms restoration businesses from disconnected, open-loop operations into intelligent, closed-loop organizations by connecting claims, supplements, inspections, documents, interviews, photos, and operational data into a single AI intelligence layer.
-
-Instead of searching through multiple systems, users simply ask Atlas questions.
-
-The Vision
-
-Traditional restoration software stores information.
-
-Atlas understands information.
-
-Atlas continuously builds organizational knowledge from every:
-
-Claim
-Inspection
-Supplement
-Carrier response
-Document
-Interview
-Estimate
-Customer interaction
-
-This allows contractors to ask questions like:
-
-Where did we lose the most revenue this month?
-Which supplements are still waiting on carriers?
-Which adjusters approve the fastest?
-Which claims haven't moved in 14 days?
-Which documents are still missing?
-What revenue is currently at risk?
-Core Modules
-AI Intelligence Layer
-Claims Management
-Supplements Workflow
-Documents
-Customer Interviews (FNOL)
-Adjuster Management
-Activity Timeline
-Dashboard & Analytics
-Demo Environment
-Guided Walkthroughs
-Technology Stack
-
-Frontend
-
-Next.js
-React
-TypeScript
-TailwindCSS
-shadcn/ui
-
-Backend
-
-Fastify
-Supabase
-PostgreSQL
-
-Artificial Intelligence
-
-OpenAI
-Modular AI Provider Architecture
-
-Deployment
-
-Vercel
-Supabase (PostgreSQL + Auth + Storage)
-Current Status
-
-Project Atlas is currently in an invite-only pilot program with insurance restoration contractors.
-
-Current focus:
-
-Pilot testing
-Workflow validation
-Customer interviews
-AI recommendation refinement
-Demo Features
-
-The application includes:
-
-Interactive demo environment
-Six guided customer scenarios
-Multiple restoration workflows
-AI supplement generation
-Atlas Intelligence
-Revenue analytics
-Executive dashboard
-Roadmap
-Phase 1
-✅ Claims Workflow
-✅ Supplements Workflow
-✅ Interview System
-✅ Documents
-✅ Adjusters
-✅ Demo Environment
-✅ AI Supplement Generation
-Phase 2
-Atlas Intelligence Learning
-Business Memory
-Predictive Analytics
-Workflow Automation
-Notification Engine
-Carrier Analytics
-Phase 3
-Native JobNimbus Integration
-CompanyCam Integration
-Xactimate Integration
-QuickBooks Integration
-Email Intelligence
-Mobile Application
-Mission
-
-Help restoration companies recover more revenue by making their businesses understandable to AI.
-
-License
-
-Private Repository
-
-Copyright © 2026 Project Atlas.
-
-Contact
-
-Pilot Program
-
-pilot@projectatlas.ai
-
-Website
-
-Coming Soon
+# Atlas Documentation**Version:** 1.0**Status:** Active---# OverviewAtlas is an AI-powered conversational operating system for insurance restoration companies.Its purpose is to make an entire restoration business queryable through natural language while providing explainable, evidence-backed AI recommendations that improve operational efficiency and revenue recovery.This documentation serves as the authoritative engineering reference for the Atlas platform.---# Documentation PrinciplesAtlas documentation follows these principles:- Single source of truth- Evidence-first design- Modular architecture- Secure by default- Explainable AI- Human approval before automation- Enterprise scalability---# Documentation Structure```docs/│├── README.md│├── architecture/│├── engineering/│├── database/│├── api/│├── frontend/│├── mobile/│├── ai/│├── voice/│├── security/│├── testing/│└── implementation/```---# Architecture DocumentsThese documents define the overall platform.| ID | Document ||----|----------|| ARCH-001 | System Architecture || ARCH-002 | Backend Architecture || ARCH-003 | Frontend Architecture || ARCH-004 | API Architecture || ARCH-005 | Security Architecture || ARCH-006 | AI Decision Engine || ARCH-007 | Voice Intelligence || ARCH-008 | Workflow Automation || ARCH-009 | Deployment Architecture || ARCH-010 | Master Technical Blueprint |---# Database DocumentsThese documents define the data model.| ID | Document ||----|----------|| DB-001 | Domain Model || DB-002 | Organizations Data Dictionary || DB-003 | Organizations ERD || DB-004 | Organizations SQL Specification || DB-005 | Organizations ORM Models || DB-006 | Organizations API Mapping |Additional modules will follow the same pattern.---# Engineering StandardsEngineering standards define how Atlas is built.Included topics:- Coding conventions- Repository structure- TypeScript standards- API conventions- Database standards- Testing strategy- Pull request process- Code review process---# Development OrderAtlas should be implemented in the following sequence.## Phase 1Platform Foundation- Organizations- Users- Teams- Roles- Permissions- Authentication---## Phase 2Core Operations- Customers- Properties- Claims- Documents- Photos- Timeline---## Phase 3Intelligence- OCR- Evidence Graph- AI Decision Engine- Compliance Engine- Supplement Generator---## Phase 4Experience- Voice Platform- Mobile App- Reporting- Dashboards---## Phase 5Enterprise- Integrations- SDK- Plugin Framework- Monitoring- Administration---# Coding PrinciplesEvery module must include:- Database schema- ORM model- TypeScript types- API- Backend service- Frontend UI- Validation- Automated tests- Documentation---# Repository StandardsEvery change must:- Pass automated tests- Pass code review- Update documentation- Follow Atlas engineering standards- Preserve backwards compatibility where appropriate---# AI DevelopmentAI should accelerate development but should never replace engineering judgement.Every AI-generated contribution must be:- Reviewed- Tested- Understood- Documented---# Long-Term VisionAtlas is designed as a conversational operating system for operational businesses.Insurance restoration is the first implementation.The architecture should support expansion into additional industries without redesigning the platform.
