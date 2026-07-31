@@ -10,6 +10,7 @@ export * from "./schema/claims";
 export * from "./schema/supplements";
 export * from "./schema/supplement-drafts";
 export * from "./schema/documents";
+export * from "./schema/evidence-links";
 export * from "./schema/tasks";
 export * from "./schema/notes";
 export * from "./schema/adjusters";

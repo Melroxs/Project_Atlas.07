@@ -1,0 +1,1 @@
+# Restoration Reference Data---Trade CategoriesRoofingMitigationDrywallPaintingElectricalHVACFlooringPlumbingCarpentryMasonryWindowsCleaningContentsGeneral Conditions---Measurement UnitsEALFSFSYCFHRDAYLOTSETGALLB---Damage CategoriesWaterFireSmokeWindHailImpactCollapseMoldVandalismBiohazardTheft

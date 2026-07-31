@@ -18,6 +18,7 @@ import intelligenceRoutes from './intelligence';
 import { notesRoutes } from './notes';
 import { tasksRoutes } from './tasks';
 import { decisionRoutes } from './decisions';
+import { evidenceLinksRoutes } from './evidence-links';
 
 export async function registerRoutes(server: FastifyInstance) {
   // Companies CRUD + CSV import
@@ -73,4 +74,7 @@ export async function registerRoutes(server: FastifyInstance) {
 
   // Decision Engine
   server.register(decisionRoutes, { prefix: '/decisions' });
+
+  // Evidence Links
+  server.register(evidenceLinksRoutes, { prefix: '/evidence-links' });
 }

@@ -1,0 +1,1 @@
+# ProjectsPurposeGroups related claims.---Tableprojects---Columnsidorganization_idnamereference_numberstatuscustomer_idmanager_idstart_datetarget_completioncompleted_atbudgetnotescreated_atupdated_at---Relationships1:N ClaimsMany UsersMany DocumentsMany Activities
