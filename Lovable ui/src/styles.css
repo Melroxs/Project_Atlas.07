@@ -1,0 +1,198 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+/* Safelist dynamic tone classes used with template literals */
+@source inline("bg-cyan bg-blue bg-purple bg-green");
+@source inline("bg-cyan/5 bg-cyan/10 bg-cyan/15 bg-cyan/20 bg-cyan/25");
+@source inline("bg-blue/5 bg-blue/10 bg-blue/15 bg-blue/20");
+@source inline("bg-purple/5 bg-purple/10 bg-purple/15 bg-purple/20");
+@source inline("bg-green/5 bg-green/10 bg-green/15 bg-green/20");
+@source inline("text-cyan text-blue text-purple text-green");
+@source inline("border-cyan/15 border-cyan/20 border-cyan/25 border-cyan/30 border-cyan/40 border-cyan/50");
+@source inline("border-blue/20 border-blue/25 border-blue/30");
+@source inline("border-purple/20 border-purple/25 border-purple/30");
+@source inline("border-green/20 border-green/25 border-green/30");
+@source inline("bg-amber-400/10 bg-amber-400/15 text-amber-300 border-amber-400/25 border-amber-400/30");
+@source inline("bg-rose-500/10 text-rose-300 border-rose-500/25");
+
+
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cyan: var(--atlas-cyan);
+  --color-blue: var(--atlas-blue);
+  --color-purple: var(--atlas-purple);
+  --color-green: var(--atlas-green);
+  --color-surface: var(--atlas-surface);
+  --color-surface-2: var(--atlas-surface-2);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root, .dark {
+  --radius: 0.875rem;
+
+  /* Atlas core palette */
+  --atlas-bg: oklch(0.16 0.03 260);
+  --atlas-surface: oklch(0.205 0.035 262);
+  --atlas-surface-2: oklch(0.24 0.038 264);
+  --atlas-border: oklch(0.32 0.04 262);
+  --atlas-cyan: oklch(0.82 0.16 210);
+  --atlas-blue: oklch(0.66 0.19 260);
+  --atlas-purple: oklch(0.72 0.17 305);
+  --atlas-green: oklch(0.78 0.19 155);
+
+  --background: var(--atlas-bg);
+  --foreground: oklch(0.97 0.005 250);
+  --card: var(--atlas-surface);
+  --card-foreground: oklch(0.97 0.005 250);
+  --popover: var(--atlas-surface-2);
+  --popover-foreground: oklch(0.97 0.005 250);
+  --primary: var(--atlas-cyan);
+  --primary-foreground: oklch(0.14 0.03 260);
+  --secondary: var(--atlas-surface-2);
+  --secondary-foreground: oklch(0.97 0.005 250);
+  --muted: var(--atlas-surface);
+  --muted-foreground: oklch(0.68 0.02 258);
+  --accent: var(--atlas-surface-2);
+  --accent-foreground: oklch(0.97 0.005 250);
+  --destructive: oklch(0.68 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: color-mix(in oklab, var(--atlas-border) 55%, transparent);
+  --input: color-mix(in oklab, var(--atlas-border) 60%, transparent);
+  --ring: var(--atlas-cyan);
+
+  --sidebar: oklch(0.185 0.03 262);
+  --sidebar-foreground: oklch(0.9 0.01 258);
+  --sidebar-primary: var(--atlas-cyan);
+  --sidebar-primary-foreground: oklch(0.14 0.03 260);
+  --sidebar-accent: color-mix(in oklab, var(--atlas-cyan) 12%, transparent);
+  --sidebar-accent-foreground: var(--atlas-cyan);
+  --sidebar-border: color-mix(in oklab, var(--atlas-border) 40%, transparent);
+  --sidebar-ring: var(--atlas-cyan);
+
+  --gradient-atlas: linear-gradient(135deg, oklch(0.82 0.16 210) 0%, oklch(0.66 0.19 260) 50%, oklch(0.72 0.17 305) 100%);
+  --gradient-cyan: linear-gradient(135deg, oklch(0.82 0.16 210), oklch(0.66 0.19 260));
+  --gradient-purple: linear-gradient(135deg, oklch(0.66 0.19 260), oklch(0.72 0.17 305));
+  --gradient-green: linear-gradient(135deg, oklch(0.78 0.19 155), oklch(0.82 0.16 210));
+
+  --glow-cyan: 0 0 40px oklch(0.82 0.16 210 / 0.35);
+  --glow-purple: 0 0 40px oklch(0.72 0.17 305 / 0.3);
+  --shadow-glass: 0 8px 32px oklch(0.1 0.02 260 / 0.6), inset 0 1px 0 oklch(1 0 0 / 0.04);
+}
+
+html { color-scheme: dark; }
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body { background: var(--color-background); color: var(--color-foreground); }
+  body {
+    font-family: var(--font-display);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.66 0.19 260 / 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, oklch(0.72 0.17 305 / 0.12), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 0% 100%, oklch(0.82 0.16 210 / 0.1), transparent 60%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: oklch(0.82 0.16 210 / 0.3); }
+}
+
+@utility glass {
+  background: color-mix(in oklab, var(--atlas-surface) 65%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid color-mix(in oklab, var(--atlas-border) 55%, transparent);
+  box-shadow: var(--shadow-glass);
+}
+
+@utility glass-strong {
+  background: color-mix(in oklab, var(--atlas-surface) 85%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid color-mix(in oklab, var(--atlas-border) 70%, transparent);
+  box-shadow: var(--shadow-glass);
+}
+
+@utility text-gradient {
+  background: var(--gradient-atlas);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-cyan {
+  background: var(--gradient-cyan);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility glow-cyan { box-shadow: var(--glow-cyan); }
+@utility glow-purple { box-shadow: var(--glow-purple); }
+
+@utility bg-gradient-atlas { background: var(--gradient-atlas); }
+@utility bg-gradient-cyan { background: var(--gradient-cyan); }
+@utility bg-gradient-purple { background: var(--gradient-purple); }
+@utility bg-gradient-green { background: var(--gradient-green); }
+
+@keyframes atlas-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+@keyframes atlas-wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+@keyframes atlas-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes atlas-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes atlas-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-atlas-pulse { animation: atlas-pulse 2.4s ease-in-out infinite; }
+@utility animate-atlas-float { animation: atlas-float 4s ease-in-out infinite; }
+@utility animate-atlas-fade-up { animation: atlas-fade-up 0.5s ease-out both; }
+
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--atlas-border) 70%, transparent); border-radius: 999px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
