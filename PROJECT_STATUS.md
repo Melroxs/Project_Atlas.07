@@ -1532,6 +1532,48 @@ Based on the priority order provided and audit findings:
 
 ---
 
+## Decision Engine — Implementation Status
+
+**Updated:** August 1, 2026  
+**Status:** Implemented (core engine + API integration + unit tests)
+
+### Completed
+- ✅ **DecisionPipeline** — 8-stage orchestration (collect evidence → validate → detect inconsistencies → assess completeness → calculate confidence → generate recommendations → evaluate compliance → escalate/publish)
+- ✅ **DecisionEngine** facade + **DecisionService** layer (analyze claim, supplement decision, approve/reject, explain)
+- ✅ **ConfidenceScorer** — DECISION-004 weighted model (source reliability 30%, completeness 25%, consistency 25%, AI confidence 20%) with confidence matrix labels
+- ✅ **RiskScorer** — DECISION-004 risk points (missing evidence +20, conflicting +30, compliance gap +40) with LOW/MODERATE/HIGH/CRITICAL levels
+- ✅ **EvidenceCollector** — normalizes claims/documents/interviews/supplements/activity/AI recommendations into evidence nodes and evaluates completeness
+- ✅ **RecommendationBuilder** — SUP-001/002/003, CMP-001/002, REV-001 rules with priority calculation
+- ✅ **RecommendationValidator** — SUP-002 evidence requirement, SUP-003 confidence threshold, CMP-002 traceability, REV-001 conflict review
+- ✅ **RulesBasedComplianceGateway** — reuses the existing ComplianceRulesEngine (no duplicate implementation)
+- ✅ Structured outputs: `DecisionPipelineResult`, `EvidenceSummary`, `Recommendation`, `RiskAssessment`, `ConfidenceScore`, `MissingEvidence`
+- ✅ **API integration** — `POST /api/v1/decisions/evaluate`, `POST /approve`, `POST /reject`, `GET /claim/:id`; wired into routes/index.ts; activity timeline logging
+- ✅ **Unit tests** — 21 tests covering confidence scoring, risk scoring, decision pipeline, recommendation validation, evidence completeness (jest + ts-jest)
+
+### Remaining work (production readiness)
+- ✅ **PHASE 1 — Decision Repository (DECISION-002):** drizzle schemas (`decisions`, `decision_scores`, `decision_evidence_links`, `decision_risks`, `decision_actions`, `decision_approvals`, `decision_reasoning_logs`, `decision_outcomes`), migrations `002_decision_engine.sql` + `003_decision_learning.sql` (with down migrations), and a drizzle-backed `DecisionRepository` with version history (never overwrites — each execution is a new row with an incremented version per claim). Persists evidence summary, recommendations, confidence, risk, compliance status, human review status, reasoning trace.
+- ✅ **PHASE 2 — AI Recommendation Integration:** `DecisionContextCollector` now loads live AI Supplement Generation drafts (`supplement_drafts`) into `aiRecommendations`; every recommendation becomes an evidence-graph node, receives confidence + risk scores, passes Compliance Validation, and is persisted by the repository. Every engine execution persists structured results.
+- ✅ **PHASE 3 — Decision Review UI:** `/admin/decisions` (list + evaluate-claim + continuous-learning metrics) and `/admin/decisions/[id]` (primary Human Review screen: recommendations, supporting evidence, confidence, risk, compliance findings, missing evidence, reasoning trace, approve/reject/request-changes/regenerate, Atlas Voice explain, record outcome). Wired into the sidebar.
+- ✅ **PHASE 4 — Atlas Voice (Elemental):** provider-agnostic `VoiceService` + `VoiceProvider` interface + `ElementalVoiceProvider` adapter. Explanations are grounded exclusively in the Decision Repository + Evidence Graph (persisted evidence nodes, recommendations, reasoning stages) — no hallucinated answers. Swap the adapter to change the voice backend.
+- ✅ **PHASE 5 — Continuous Learning:** `DecisionLearningService` feedback loop — records final approved supplement, reviewer edits, adjuster outcome, amounts approved/denied, confidence accuracy, evidence gaps, time to approval; computes confidence calibration, recommendation accuracy, evidence quality trends, human override frequency via the pure `computeLearningMetrics` (shared by API + web). Analytics only — no automatic model retraining; human review remains mandatory.
+- ✅ **Unit tests** — 21 engine tests + new voice/learning suite (grounded explanations, Elemental adapter, learning metrics).
+
+### Remaining work (demo readiness)
+- ✅ **Database migrations** — migration runner (`packages/database/src/migrations/run.ts`) applies 001→004 SQL in order with `schema_migrations` tracking; `004_supplement_templates.sql` adds the missing `supplement_drafts` + `interview_templates` tables; scripts `db:migrate` + `db:seed`
+- ✅ **Persistent demo seed** — `database-seeder.ts` now persists the complete demo environment to the DB (company, users, adjusters, claims + policies, interviews, templates, documents/photos, supplements, AI drafts, activity timeline, decision history, learning outcomes) with idempotent reset + deterministic seed 42; runs the real Decision Engine over persona claims
+- ✅ **Atlas Voice (Elemental)** — provider-agnostic; reads `ELEMENTAL_API_KEY`/`OPENAI_API_KEY`; automatically falls back to the grounded text explanation system (GroundedTextProvider) when unconfigured or on provider failure — explanations always reference stored evidence
+- ✅ **Reviewer experience** — bulk review actions (approve/reject/request-changes on multiple decisions), export package (JSON + markdown, API + UI), claim-detail deep-links, per-recommendation "Ask Atlas Why" quick asks
+- ✅ **YC demo script** — `docs/demo/YC_DEMO_SCRIPT.md` (5–7 min walkthrough, voice prompts, backup procedure, troubleshooting)
+- ✅ **End-to-end validation tests** — `demo-validation.test.ts` exercises pipeline → review → export → voice fallback with pure domain + in-memory fakes
+
+### Demo environment setup (one-time)
+1. Add `DATABASE_URL` via API Keys
+2. `bun run db:migrate`
+3. `bun run db:seed`
+4. (Optional) add `ELEMENTAL_API_KEY` or `OPENAI_API_KEY` for live voice
+
+---
+
 ## Next Steps
 
 1. **Immediate:** Address critical security issues (Phase 1)

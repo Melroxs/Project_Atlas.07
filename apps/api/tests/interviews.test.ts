@@ -6,16 +6,50 @@ import * as ai from '../src/lib/ai';
 /**
  * Integration tests for interview workflow routes.
  * The AI generation is mocked to avoid external calls.
+ *
+ * NOTE: LIVE-DATABASE integration suite — env/supabase stubbed at import
+ * (buildFastify is synchronous; the earlier `await` was a type error) and
+ * the suite skips cleanly when DATABASE_URL is absent.
  */
 jest.mock('../src/lib/ai', () => ({
   generateInterviewAnswer: jest.fn().mockResolvedValue('Mocked AI answer'),
 }));
 
-describe('Interviews API', () => {
+jest.mock('../src/lib/env', () => ({
+  env: {
+    PORT: '3000',
+    CORS_ORIGIN: 'http://localhost:3000',
+    DATABASE_URL: process.env.DATABASE_URL || 'postgres://localhost:5432/atlas',
+    SUPABASE_URL: process.env.SUPABASE_URL || 'https://example.supabase.co',
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || 'mock-key',
+  },
+  validateEnv: () => ({ valid: true, errors: [] }),
+}));
+
+jest.mock('../src/lib/supabase', () => ({
+  supabase: {
+    auth: { getUser: jest.fn().mockResolvedValue({ data: { user: null }, error: null }) },
+    from: jest.fn(() => ({
+      select: jest.fn().mockReturnThis(),
+      insert: jest.fn().mockReturnThis(),
+      update: jest.fn().mockReturnThis(),
+      delete: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      single: jest.fn(),
+    })),
+  },
+}));
+
+const hasDatabase = () => Boolean(process.env.DATABASE_URL);
+
+// LIVE-DATABASE integration suite: skipped cleanly when no DB is configured.
+const describeEnv = hasDatabase() ? describe : describe.skip;
+
+describeEnv('Interviews API', () => {
   let app: ReturnType<typeof buildFastify>;
 
   beforeAll(async () => {
-    app = await buildFastify();
+    app = buildFastify();
     await app.ready();
   });
 

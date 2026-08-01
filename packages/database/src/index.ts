@@ -19,6 +19,14 @@ export * from "./schema/interview_questions";
 export * from "./schema/interview-templates";
 export * from "./schema/ai_conversations";
 export * from "./schema/tenant_members";
+export * from "./schema/decisions";
+export * from "./schema/decision-scores";
+export * from "./schema/decision-evidence-links";
+export * from "./schema/decision-risks";
+export * from "./schema/decision-actions";
+export * from "./schema/decision-approvals";
+export * from "./schema/decision-reasoning-logs";
+export * from "./schema/decision-outcomes";
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
