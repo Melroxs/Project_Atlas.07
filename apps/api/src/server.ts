@@ -8,8 +8,16 @@ import { authMiddleware } from './middleware/auth';
 import { roleMiddleware } from './middleware/role';
 import { registerRoutes } from './routes';
 import { validateEnv, env } from './lib/env';
+import { wireClaimIntelligenceEvents } from './lib/intelligence/claim-intelligence-service';
+import { wireOperationsEvents } from './lib/operations/operations-service';
 
 export const buildFastify = () => {
+  // Wire the Claim Intelligence event bus: whenever claim data changes,
+  // the engine re-analyzes automatically (no manual refresh required).
+  wireClaimIntelligenceEvents();
+  // Operations Intelligence: refresh the persistent digital twin on events too.
+  wireOperationsEvents();
+
   const server = Fastify({ logger: true });
 
   // Validate environment variables

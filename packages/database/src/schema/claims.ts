@@ -10,6 +10,11 @@ export const claims = pgTable("claims", {
   propertyId: uuid("property_id").references(() => properties.id, { onDelete: "set null" }),
   claimNumber: varchar("claim_number", { length: 64 }).notNull(),
   status: varchar("status", { length: 32 }).notNull().default('new'), // Workflow statuses
+  // Multi-entry workflow: how this claim entered the lifecycle.
+  // 'new_claim' | 'existing_claim' | 'supplement_only' | 'imported'
+  entryPoint: varchar("entry_point", { length: 32 }).notNull().default('new_claim'),
+  // For imported projects: source system reference (optional)
+  sourceSystem: varchar("source_system", { length: 255 }),
   dateOfLoss: timestamp("date_of_loss"),
   dateReported: timestamp("date_reported"),
   insuranceCompany: varchar("insurance_company", { length: 255 }),

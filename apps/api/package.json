@@ -17,6 +17,8 @@
     "@fastify/cors": "^11.3.0",
     "@fastify/multipart": "^8.0.0",
     "@fastify/rate-limit": "^11.1.0",
+    "@project-atlas/ai": "*",
+    "@project-atlas/claim-intelligence": "*",
     "@supabase/supabase-js": "^2.42.4",
     "csv-parser": "^3.0.0",
     "drizzle-orm": "^0.30.5",

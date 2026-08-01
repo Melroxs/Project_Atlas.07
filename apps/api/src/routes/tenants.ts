@@ -15,5 +15,7 @@ export const tenantsRoutes: FastifyPluginAsync = async (fastify) => {
     basePath: '/',
     table: tenants,
     schema: tenantSchema,
+    // tenants is a tenant-level table: no company_id column
+    companyScoped: false,
   });
 };

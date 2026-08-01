@@ -10,12 +10,11 @@ import {
   SupplementRecommendations 
 } from '../lib/ai-supplement/types';
 import { SupplementPromptBuilder as PB } from '../lib/ai-supplement/prompt-builder';
-import { OpenAIProvider } from '../lib/ai-supplement/providers/openai';
+import { UnifiedAIProvider, isAIConfigured, getActiveProvider, getActiveModel } from '@project-atlas/ai';
 import { SupplementResultParser as RP } from '../lib/ai-supplement/result-parser';
 import { SupplementValidationService as VS } from '../lib/ai-supplement/validation';
 import { SupplementRecommendationEngine as RE } from '../lib/ai-supplement/engine';
 import { ActivityService } from '../lib/activity';
-import { env } from '../lib/env';
 import { AuthenticatedRequest } from '../types/request';
 
 const generateSupplementSchema = z.object({
@@ -191,15 +190,14 @@ export const aiSupplementsRoutes: FastifyPluginAsync = async (fastify) => {
       })),
     };
 
-    // Initialize AI components
-    const openaiKey = env.OPENAI_API_KEY;
-    if (!openaiKey) {
-      reply.code(500).send({ error: 'OpenAI API key not configured' });
+    // Initialize AI components (free AI layer: Gemini primary, Groq fallback)
+    if (!isAIConfigured()) {
+      reply.code(500).send({ error: 'AI provider not configured. Set GOOGLE_API_KEY and/or GROQ_API_KEY.' });
       return;
     }
 
     const promptBuilder = new PB();
-    const aiProvider = new OpenAIProvider({ apiKey: openaiKey });
+    const aiProvider = new UnifiedAIProvider();
     const resultParser = new RP();
     const validationService = new VS();
     const engine = new RE(
@@ -235,8 +233,10 @@ export const aiSupplementsRoutes: FastifyPluginAsync = async (fastify) => {
         status: 'draft',
         generatedAt: new Date(),
         recommendations: recommendations as any,
-        aiProvider: 'OpenAI',
-        aiModel: 'gpt-4-turbo-preview',
+        // Records the intended provider (pre-fallback); actual serving provider
+        // and fallback events are captured by the AI layer logger at runtime.
+        aiProvider: getActiveProvider() === 'groq' ? 'Groq' : 'Gemini',
+        aiModel: getActiveModel(),
         confidenceScore: recommendations.confidenceScore.toString(),
         riskScore: recommendations.riskScore.toString(),
         estimatedRevenue: estimatedRevenue.toString(),
@@ -477,7 +477,7 @@ export const aiSupplementsRoutes: FastifyPluginAsync = async (fastify) => {
     const validationService = new VS();
     const engine = new RE(
       new PB(),
-      new OpenAIProvider({ apiKey: env.OPENAI_API_KEY || '' }),
+      new UnifiedAIProvider(),
       resultParser,
       validationService
     );

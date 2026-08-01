@@ -1,6 +1,8 @@
 // apps/api/src/lib/intelligence/health-service.ts
 // Health Service for Atlas Intelligence
 
+import { isAIConfigured, getActiveProvider, getActiveModel } from '@project-atlas/ai';
+
 export interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: Date;
@@ -116,15 +118,18 @@ export class HealthService {
       await new Promise(resolve => setTimeout(resolve, 10));
       const duration = Date.now() - startTime;
       
+      const configured = isAIConfigured();
       return {
         name: 'AI Provider',
-        status: 'pass',
-        message: 'AI provider connection successful',
+        status: configured ? 'pass' : 'warn',
+        message: configured
+          ? 'AI provider configured (free AI layer)'
+          : 'AI not configured: set GOOGLE_API_KEY and/or GROQ_API_KEY',
         duration,
         metadata: {
-          provider: 'OpenAI',
-          model: 'gpt-4',
-          apiCallsToday: 150
+          provider: getActiveProvider(),
+          model: getActiveModel(),
+          configured
         }
       };
     } catch (error) {

@@ -6,6 +6,11 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  // Free AI layer (Gemini primary, Groq fallback). OPENAI_API_KEY kept for
+  // backward compatibility; new deployments should prefer the free keys.
+  GOOGLE_API_KEY: z.string().optional(),
+  GROQ_API_KEY: z.string().optional(),
+  AI_PROVIDER: z.enum(['gemini', 'groq']).optional().default('gemini'),
   OPENAI_API_KEY: z.string().optional(),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
 });

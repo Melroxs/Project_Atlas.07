@@ -28,6 +28,11 @@ export * from "./schema/decision-actions";
 export * from "./schema/decision-approvals";
 export * from "./schema/decision-reasoning-logs";
 export * from "./schema/decision-outcomes";
+export * from "./schema/domain-events";
+export * from "./schema/claim-intelligence-snapshots";
+export * from "./schema/communication-extractions";
+export * from "./schema/carrier-intelligence";
+export * from "./schema/digital-twins";
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

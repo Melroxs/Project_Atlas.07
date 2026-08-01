@@ -24,6 +24,7 @@ import {
   FileEdit,
   Settings,
   BarChart3,
+  LayoutDashboard,
   HeartPulse,
   Sparkles,
   Lightbulb,
@@ -116,6 +117,12 @@ const moduleShortcuts = [
     label: "Tasks",
     href: "/admin/tasks",
     icon: Briefcase,
+    color: "bg-accent/10 text-accent",
+  },
+  {
+    label: "Operations",
+    href: "/admin/operations",
+    icon: LayoutDashboard,
     color: "bg-accent/10 text-accent",
   },
   {

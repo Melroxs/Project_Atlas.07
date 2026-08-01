@@ -1,6 +1,8 @@
 // apps/api/src/lib/intelligence/diagnostics-service.ts
 // Diagnostics Service for Atlas Intelligence
 
+import { isAIConfigured } from '@project-atlas/ai';
+
 export interface SystemInfo {
   applicationVersion: string;
   gitCommitHash: string;
@@ -17,7 +19,7 @@ export interface DeploymentReadiness {
   apiConnected: boolean;
   databaseConnected: boolean;
   storageConnected: boolean;
-  openaiConnected: boolean;
+  aiConnected: boolean;
   authenticationWorking: boolean;
   demoModeWorking: boolean;
   noCriticalErrors: boolean;
@@ -97,7 +99,7 @@ export class DiagnosticsService {
       apiConnected: true,
       databaseConnected: true,
       storageConnected: true,
-      openaiConnected: true,
+      aiConnected: isAIConfigured(),
       authenticationWorking: true,
       demoModeWorking: true,
       noCriticalErrors: true
@@ -182,7 +184,9 @@ export class DiagnosticsService {
       'DATABASE_URL',
       'SUPABASE_URL',
       'SUPABASE_ANON_KEY',
-      'OPENAI_API_KEY',
+      'AI_PROVIDER',
+      'GOOGLE_API_KEY',
+      'GROQ_API_KEY',
       'NEXT_PUBLIC_API_URL'
     ];
 

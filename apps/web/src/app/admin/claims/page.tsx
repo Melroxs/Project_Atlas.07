@@ -9,11 +9,14 @@ import {
   STATUS_COLORS,
   ClaimStatus,
 } from "@/lib/claims-workflow";
+import NewProjectDialog from "@/components/projects/NewProjectDialog";
+import { ENTRY_POINTS, EntryPoint } from "@/lib/workflow-engine";
 
 interface Claim {
   id: string;
   claimNumber: string;
   status: ClaimStatus;
+  entryPoint?: EntryPoint | null;
   dateOfLoss: string | null;
   dateReported: string | null;
   insuranceCompany: string | null;
@@ -49,6 +52,7 @@ export default function ClaimsPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [adjusters, setAdjusters] = useState<Adjuster[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showNewProject, setShowNewProject] = useState(false);
   const [formData, setFormData] = useState({
     claimNumber: "",
     status: "new",
@@ -179,13 +183,26 @@ export default function ClaimsPage() {
     <div className="max-w-7xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-foreground">Claims</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
-        >
-          {showForm ? "Cancel" : "Add Claim"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowNewProject(true)}
+            className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
+          >
+            + New Project
+          </button>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="px-4 py-2 bg-muted hover:bg-accent text-foreground rounded-lg font-medium transition-colors"
+          >
+            {showForm ? "Cancel" : "Add Claim"}
+          </button>
+        </div>
       </div>
+
+      <NewProjectDialog
+        open={showNewProject}
+        onClose={() => setShowNewProject(false)}
+      />
 
       {status && <p className="mb-4 text-sm text-muted-foreground">{status}</p>}
 
@@ -485,12 +502,23 @@ export default function ClaimsPage() {
             {claims.map((claim) => (
               <tr key={claim.id} className="hover:bg-muted transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                  <a
-                    href={`/admin/claims/${claim.id}`}
-                    className="text-primary hover:text-primary/90 font-medium transition-colors"
-                  >
-                    {claim.claimNumber}
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`/admin/claims/${claim.id}`}
+                      className="text-primary hover:text-primary/90 font-medium transition-colors"
+                    >
+                      {claim.claimNumber}
+                    </a>
+                    {claim.entryPoint && claim.entryPoint !== "new_claim" && (
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
+                        title={ENTRY_POINTS[claim.entryPoint]?.description}
+                      >
+                        {ENTRY_POINTS[claim.entryPoint]?.icon}{" "}
+                        {ENTRY_POINTS[claim.entryPoint]?.label}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                   <span
