@@ -48,6 +48,7 @@ import { AuthenticatedRequest } from '../types/request';
       reply.code(500).send({ error: 'Failed to fetch records' });
     }
   });
+  }
 
   // Get by id (ensuring same company when scoped)
   if (!opts.skipGetById) {
