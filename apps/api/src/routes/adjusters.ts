@@ -26,6 +26,8 @@ export const adjustersRoutes: FastifyPluginAsync = async (fastify) => {
     basePath: '/',
     table: adjusters,
     schema: adjusterSchema,
+    skipList: true,
+    skipDelete: true, // custom DELETE /:id registered below
     beforeCreate: async (data, req) => {
       const userId = (req as AuthenticatedRequest).userId;
       const companyId = (req as AuthenticatedRequest).companyId;

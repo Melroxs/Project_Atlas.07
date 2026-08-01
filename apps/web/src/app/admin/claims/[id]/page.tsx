@@ -9,11 +9,16 @@ import {
   STATUS_COLORS,
   ClaimStatus,
 } from "@/lib/claims-workflow";
+import ClaimWorkspace from "@/components/projects/ClaimWorkspace";
+import ClaimIntelligence from "@/components/projects/ClaimIntelligence";
+import OperationsPanel from "@/components/operations/OperationsPanel";
+import { ENTRY_POINTS, EntryPoint } from "@/lib/workflow-engine";
 
 interface Claim {
   id: string;
   claimNumber: string;
   status: ClaimStatus;
+  entryPoint?: EntryPoint | null;
   dateOfLoss: string | null;
   dateReported: string | null;
   insuranceCompany: string | null;
@@ -115,6 +120,7 @@ export default function ClaimDetailPage() {
   const [status, setStatus] = useState("");
   const [reason, setReason] = useState("");
   const [showStatusDialog, setShowStatusDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState<"workspace" | "intelligence" | "operations">("workspace");
   const [error, setError] = useState("");
   const [loadingClaim, setLoadingClaim] = useState(true);
 
@@ -217,6 +223,61 @@ export default function ClaimDetailPage() {
       </div>
 
       {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
+
+      {/* Entry Point Badge */}
+      {claim.entryPoint && claim.entryPoint !== "new_claim" && (
+        <div className="mb-4 px-4 py-2 bg-muted/50 border rounded-lg inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="text-lg">{ENTRY_POINTS[claim.entryPoint]?.icon}</span>
+          <span className="font-medium text-foreground">
+            {ENTRY_POINTS[claim.entryPoint]?.label}
+          </span>
+        </div>
+      )}
+
+      {/* Tabs: Workspace | Claim Intelligence | Operations */}
+      <div className="mb-6 flex gap-2 border-b pb-3">
+        <button
+          onClick={() => setActiveTab("workspace")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === "workspace"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Claim Workspace
+        </button>
+        <button
+          onClick={() => setActiveTab("intelligence")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === "intelligence"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Claim Intelligence
+        </button>
+        <button
+          onClick={() => setActiveTab("operations")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeTab === "operations"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Operations
+        </button>
+      </div>
+
+      {/* Dynamic Claim Workspace / Claim Intelligence / Operations */}
+      <div className="mb-6">
+        {activeTab === "workspace" ? (
+          <ClaimWorkspace claimId={claim.id} />
+        ) : activeTab === "intelligence" ? (
+          <ClaimIntelligence claimId={claim.id} />
+        ) : (
+          <OperationsPanel claimId={claim.id} />
+        )}
+      </div>
 
       {/* Status Banner */}
       <div className="mb-6 p-4 bg-surface rounded shadow">

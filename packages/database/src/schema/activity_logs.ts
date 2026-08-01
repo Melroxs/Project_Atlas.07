@@ -10,6 +10,7 @@ export const activityLogs = pgTable("activity_logs", {
   entityType: text("entity_type").notNull(),
   entityId: uuid("entity_id"),
   entityName: text("entity_name"),
+  claimId: uuid("claim_id"), // optional claim-scoped activity (used by AI supplement engine)
   action: text("action").notNull(),
   description: text("description"),
   previousValues: jsonb("previous_values"),

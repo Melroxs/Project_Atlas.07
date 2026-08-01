@@ -4,6 +4,7 @@ import { companiesRoutes } from './companies';
 import { interviewsRoutes } from './interviews';
 import { contactsRoutes } from './contacts';
 import { claimsRoutes } from './claims';
+import { multiEntryRoutes } from './multi-entry';
 import { propertiesRoutes } from './properties';
 import { tenantsRoutes } from './tenants';
 import { usersRoutes } from './users';
@@ -15,9 +16,12 @@ import { activityRoutes } from './activity';
 import { aiSupplementsRoutes } from './ai-supplements';
 import { demoRoutes } from './demo';
 import intelligenceRoutes from './intelligence';
+import { claimIntelligenceRoutes } from './claim-intelligence';
+import { operationsRoutes } from './operations';
 import { notesRoutes } from './notes';
 import { tasksRoutes } from './tasks';
 import { decisionRoutes } from './decisions';
+import { evidenceLinksRoutes } from './evidence-links';
 
 export async function registerRoutes(server: FastifyInstance) {
   // Companies CRUD + CSV import
@@ -31,6 +35,9 @@ export async function registerRoutes(server: FastifyInstance) {
 
   // Claims CRUD
   server.register(claimsRoutes, { prefix: '/claims' });
+
+  // Multi-Entry Claim Workflow (supplement-only, import, workspace, AI task checks)
+  server.register(multiEntryRoutes, { prefix: '/multi-entry' });
 
   // Properties CRUD
   server.register(propertiesRoutes, { prefix: '/properties' });
@@ -73,4 +80,13 @@ export async function registerRoutes(server: FastifyInstance) {
 
   // Decision Engine
   server.register(decisionRoutes, { prefix: '/decisions' });
+
+  // Claim Intelligence Layer (Phase 2) — read-only dynamic endpoints
+  server.register(claimIntelligenceRoutes, { prefix: '/intelligence' });
+
+  // Operations Intelligence Layer (Phase 3) — AI Case Manager + dashboards
+  server.register(operationsRoutes, { prefix: '/operations' });
+
+  // Evidence Links
+  server.register(evidenceLinksRoutes, { prefix: '/evidence-links' });
 }

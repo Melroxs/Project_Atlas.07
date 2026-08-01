@@ -12,18 +12,29 @@ import { AuthenticatedRequest } from '../types/request';
 // Zod schema for a company – adjust fields according to DB schema
 const companySchema = z.object({
   name: z.string().min(1),
+  // slug is NOT NULL UNIQUE in the DB; derive one from name when not supplied
+  slug: z.string().min(1).optional(),
+  plan: z.string().optional(),
   // add other required fields here (e.g., address, email)
 });
+
+// Ensure slug is always present (DB column is NOT NULL UNIQUE)
+function withSlug(data: any) {
+  const slug = data.slug || (data.name || 'company').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return { ...data, slug };
+}
 
 // Mapping schema – maps CSV column names to DB column names
 const columnMappingSchema = z.record(z.string());
 
 export const companiesRoutes: FastifyPluginAsync = async (fastify) => {
-  // Register generic CRUD routes
+  // Register generic CRUD routes (tenant-level table: no company_id column)
   registerCrudRoutes(fastify, {
     basePath: '/',
     table: companies,
     schema: companySchema,
+    companyScoped: false,
+    beforeCreate: async (data) => withSlug(data),
   });
 
   // CSV import endpoint: multipart/form-data with 'file' and 'mapping' fields
@@ -71,8 +82,8 @@ export const companiesRoutes: FastifyPluginAsync = async (fastify) => {
         if (!parsed.success) {
           return reply.code(400).send({ error: 'Row validation failed', row, details: parsed.error.format() });
         }
-        const companyId = (req as AuthenticatedRequest).companyId;
-        validated.push({ ...parsed.data, companyId });
+        // Companies is a tenant-level table: do NOT inject companyId; ensure slug
+        validated.push(withSlug(parsed.data));
       }
 
       const inserted: any[] = [];

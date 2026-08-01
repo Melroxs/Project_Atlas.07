@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!aiService.isConfigured()) {
       return NextResponse.json({
         error: 'AI service not configured',
-        message: 'Please set OPENAI_API_KEY environment variable to enable AI features',
+        message: 'Please set GOOGLE_API_KEY and/or GROQ_API_KEY environment variables to enable AI features',
         supplementId,
         userId: context.userId,
         companyId: context.companyId

@@ -8,10 +8,12 @@ import { eq } from 'drizzle-orm';
 import { db } from '@project-atlas/database';
 import { ActivityService } from '../lib/activity';
 import { AuthenticatedRequest } from '../types/request';
+import { emitClaimEvent } from '../lib/intelligence/claim-intelligence-service';
 
-// Document schema for validation
+// Document schema for validation (url is NOT NULL in the documents table)
 const documentSchema = z.object({
   claimId: z.string().uuid().optional(),
+  url: z.string().min(1),
   fileName: z.string().min(1).max(255),
   mimeType: z.string().max(100).optional(),
   sizeBytes: z.number().optional(),
@@ -23,6 +25,7 @@ export const documentsRoutes: FastifyPluginAsync = async (fastify) => {
     basePath: '/',
     table: documents,
     schema: documentSchema,
+    skipDelete: true, // custom DELETE /:id registered below (also removes from storage)
   });
 
   // Upload document
@@ -144,6 +147,16 @@ export const documentsRoutes: FastifyPluginAsync = async (fastify) => {
     });
 
     reply.code(201).send(document);
+
+    // Trigger claim intelligence re-analysis (document/photo/estimate/policy uploaded)
+    const eventType = mimetype.startsWith('image/')
+      ? 'photo.uploaded'
+      : /policy|coverage|declarations/i.test(filename)
+        ? 'policy.uploaded'
+        : /estimate|xactimate/i.test(filename)
+          ? 'estimate.uploaded'
+          : 'document.uploaded';
+    await emitClaimEvent(companyId, claimId, eventType, 'document', (document as any).id, { fileName: filename });
     } catch (error) {
       reply.code(500).send({ error: 'Failed to upload document for claim' });
     }

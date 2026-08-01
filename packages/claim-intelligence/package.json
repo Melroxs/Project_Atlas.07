@@ -1,0 +1,22 @@
+{
+  "name": "@project-atlas/claim-intelligence",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@project-atlas/config-typescript": "*",
+    "@types/node": "^20.11.30",
+    "typescript": "^5.4.5"
+  }
+}

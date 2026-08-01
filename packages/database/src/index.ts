@@ -10,6 +10,7 @@ export * from "./schema/claims";
 export * from "./schema/supplements";
 export * from "./schema/supplement-drafts";
 export * from "./schema/documents";
+export * from "./schema/evidence-links";
 export * from "./schema/tasks";
 export * from "./schema/notes";
 export * from "./schema/adjusters";
@@ -27,6 +28,11 @@ export * from "./schema/decision-actions";
 export * from "./schema/decision-approvals";
 export * from "./schema/decision-reasoning-logs";
 export * from "./schema/decision-outcomes";
+export * from "./schema/domain-events";
+export * from "./schema/claim-intelligence-snapshots";
+export * from "./schema/communication-extractions";
+export * from "./schema/carrier-intelligence";
+export * from "./schema/digital-twins";
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

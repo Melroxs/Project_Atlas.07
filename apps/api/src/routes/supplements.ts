@@ -14,6 +14,7 @@ import {
   SupplementStatus 
 } from '../lib/supplements-workflow';
 import { ActivityService } from '../lib/activity';
+import { emitClaimEvent } from '../lib/intelligence/claim-intelligence-service';
 
 const supplementSchema = z.object({
   companyId: z.string().uuid(),
@@ -219,6 +220,12 @@ export const supplementsRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       reply.send(newSupplement);
+
+      // Trigger claim intelligence re-analysis (estimate/supplement created)
+      await emitClaimEvent(companyId, newSupplement.claimId, 'estimate.uploaded', 'supplement', newSupplement.id, {
+        supplementNumber: newSupplement.supplementNumber,
+        status: newSupplement.status,
+      });
     } catch (error) {
       reply.code(500).send({ error: 'Failed to create supplement' });
     }
@@ -445,6 +452,13 @@ export const supplementsRoutes: FastifyPluginAsync = async (fastify) => {
       });
 
       reply.send(updated);
+
+      // Trigger claim intelligence re-analysis (carrier response / status change)
+      const isCarrierResponse = ['approved', 'denied', 'partially_approved', 'needs_revision', 'waiting_for_carrier', 'closed'].includes(status);
+      await emitClaimEvent(companyId, supplement.claimId, isCarrierResponse ? 'carrier.response' : 'timeline.updated', 'supplement', id, {
+        supplementNumber: supplement.supplementNumber,
+        status,
+      });
     } catch (error) {
       reply.code(500).send({ error: 'Failed to change supplement status' });
     }

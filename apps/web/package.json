@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@project-atlas/ai": "*",
+    "@project-atlas/claim-intelligence": "*",
     "@project-atlas/database": "*",
     "@project-atlas/ui": "*",
     "@supabase/ssr": "^0.12.0",

@@ -31,7 +31,7 @@ interface DiagnosticsData {
     apiConnected: boolean;
     databaseConnected: boolean;
     storageConnected: boolean;
-    openaiConnected: boolean;
+    aiConnected: boolean;
     authenticationWorking: boolean;
     demoModeWorking: boolean;
     noCriticalErrors: boolean;

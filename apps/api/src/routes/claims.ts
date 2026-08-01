@@ -8,10 +8,14 @@ import { eq, and, like, or, desc } from 'drizzle-orm';
 import { ActivityService } from '../lib/activity';
 import { ClaimsWorkflowService, ClaimStatus, STATUS_LABELS } from '../lib/claims-workflow';
 import { AuthenticatedRequest } from '../types/request';
+import { emitClaimEvent } from '../lib/intelligence/claim-intelligence-service';
 
 // Claim schema for validation
 const claimSchema = z.object({
   claimNumber: z.string().min(1).max(64),
+  // Multi-entry workflow: how this claim entered the lifecycle
+  entryPoint: z.enum(['new_claim', 'existing_claim', 'supplement_only', 'imported']).optional(),
+  sourceSystem: z.string().max(255).optional(),
   status: z.string().default('new'),
   dateOfLoss: z.string().optional(),
   dateReported: z.string().optional(),
@@ -34,12 +38,15 @@ export const claimsRoutes: FastifyPluginAsync = async (fastify) => {
     basePath: '/',
     table: claims,
     schema: claimSchema,
+    skipList: true,
+    skipGetById: true, // custom GET /:id registered below
     beforeCreate: async (data, req) => {
       const userId = (req as AuthenticatedRequest).userId;
       const companyId = (req as AuthenticatedRequest).companyId;
       return {
         ...data,
         companyId,
+        entryPoint: data.entryPoint || 'new_claim',
         createdBy: userId,
         updatedBy: userId,
         statusHistory: [{
@@ -63,6 +70,10 @@ export const claimsRoutes: FastifyPluginAsync = async (fastify) => {
         description: `Created claim: ${(result as any).claimNumber}`,
         newValues: { claimNumber: (result as any).claimNumber, status: (result as any).status },
         ipAddress: userInfo.ipAddress,
+      });
+      // Trigger claim intelligence (initial analysis)
+      await emitClaimEvent(companyId, (result as any).id, 'claim.created', 'claim', (result as any).id, {
+        claimNumber: (result as any).claimNumber,
       });
     },
   });
@@ -211,6 +222,9 @@ export const claimsRoutes: FastifyPluginAsync = async (fastify) => {
     });
 
     reply.send(updated);
+
+    // Trigger claim intelligence re-analysis on status change
+    await emitClaimEvent(companyId, id, 'timeline.updated', 'claim', id, { status, reason: reason || null });
     } catch (error) {
       reply.code(500).send({ error: 'Failed to change claim status' });
     }

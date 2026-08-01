@@ -1,0 +1,164 @@
+
+> lint
+> turbo run lint
+
+• Packages in scope: @project-atlas/ai, @project-atlas/api-utils, @project-atlas/config-eslint, @project-atlas/config-typescript, @project-atlas/database, @project-atlas/ui, project-atlas-api, tanstack_start_ts, web
+• Running lint in 9 packages
+• Remote caching disabled
+tanstack_start_ts:lint: cache miss, executing 88f82bc58ef5a750
+project-atlas-api:lint: cache hit, replaying logs 56f0a5f91c4ec974
+web:lint: cache hit, replaying logs 57e4a33a13eddce6
+project-atlas-api:lint: 
+project-atlas-api:lint: > project-atlas-api@0.1.0 lint
+project-atlas-api:lint: > eslint .
+project-atlas-api:lint: 
+project-atlas-api:lint: (node:26024) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/cyber%20sev3n/Desktop/YC%20-%20JULY%202026/Project%20Atlas/eslint.config.js?mtime=1784564838734 is not specified and it doesn't parse as CommonJS.
+project-atlas-api:lint: Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+project-atlas-api:lint: To eliminate this warning, add "type": "module" to C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\package.json.
+project-atlas-api:lint: (Use `node --trace-warnings ...` to show where the warning was created)
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\activity.ts
+project-atlas-api:lint:   139:7  warning  Unexpected console statement  no-console
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\demo-data\database-seeder.ts
+project-atlas-api:lint:   14:36  warning  'demoData' is defined but never used   @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   27:37  warning  'companyId' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\demo-data\demo-company.ts
+project-atlas-api:lint:   146:33  warning  'count' is assigned a value but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\demo-data\demo-data-service.ts
+project-atlas-api:lint:   10:3  warning  'createCustomerSeed' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   11:3  warning  'createPropertySeed' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   12:3  warning  'createClaimSeed' is defined but never used     @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   17:3  warning  'createUserSeed' is defined but never used      @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\demo-data\relationship-builders.ts
+project-atlas-api:lint:    23:3   warning  'createInterviewSeed' is defined but never used   @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    24:3   warning  'createSupplementSeed' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    50:3   warning  'users' is defined but never used                 @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   915:26  warning  'claimIndex' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\demo-data\seed-factories.ts
+project-atlas-api:lint:    87:36  warning  'index' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   126:56  warning  'index' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   229:36  warning  'index' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   270:3   warning  'index' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   312:3   warning  'index' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\intelligence\analytics-service.ts
+project-atlas-api:lint:   130:32  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   155:35  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   179:39  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   202:38  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   226:34  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   250:40  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   272:38  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   296:37  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   319:36  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   343:37  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   368:38  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   391:44  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   414:37  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   438:41  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   462:31  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   485:31  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   509:32  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   533:34  warning  'query' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\lib\intelligence\recommendation-service.ts
+project-atlas-api:lint:   180:5  warning  Unexpected console statement  no-console
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\middleware\auth.ts
+project-atlas-api:lint:   40:5  warning  Unexpected console statement  no-console
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\activity.ts
+project-atlas-api:lint:    92:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   112:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   131:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   150:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\adjusters.ts
+project-atlas-api:lint:    32:13  warning  'companyId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   120:14  warning  'error' is defined but never used               @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   178:14  warning  'error' is defined but never used               @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   188:13  warning  'userId' is assigned a value but never used     @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   222:14  warning  'error' is defined but never used               @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\ai-supplements.ts
+project-atlas-api:lint:     8:3   warning  'AIProvider' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   324:14  warning  'error' is defined but never used       @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   378:14  warning  'error' is defined but never used       @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   411:14  warning  'error' is defined but never used       @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   449:14  warning  'error' is defined but never used       @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   491:14  warning  'error' is defined but never used       @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\claims.ts
+project-atlas-api:lint:   139:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   215:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   245:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   263:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   297:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   323:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   357:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\companies.ts
+project-atlas-api:lint:    9:10  warning  'supabase' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   85:14  warning  'error' is defined but never used     @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\crud.ts
+project-atlas-api:lint:     2:21  warning  'z' is defined but never used                @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    34:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    50:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    67:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    88:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    98:13  warning  'result' is assigned a value but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   100:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\documents.ts
+project-atlas-api:lint:    85:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   147:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   167:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   217:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   257:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\interviews.ts
+project-atlas-api:lint:    10:3   warning  'InterviewStatus' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:    85:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   120:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   170:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   224:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   267:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   315:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   383:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   416:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   459:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   468:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   477:13  warning  'userId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   515:14  warning  'error' is defined but never used            @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\routes\supplements.ts
+project-atlas-api:lint:   130:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   159:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   219:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   313:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   355:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   445:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   480:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   498:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: C:\Users\cyber sev3n\Desktop\YC - JULY 2026\Project Atlas\apps\api\src\server.ts
+project-atlas-api:lint:   64:32  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+project-atlas-api:lint:   64:41  warning  'reply' is defined but never used    @typescript-eslint/no-unused-vars
+project-atlas-api:lint: 
+project-atlas-api:lint: ✖ 96 problems (0 errors, 96 warnings)
+project-atlas-api:lint: 
+web:lint: 
+web:lint: > web@0.1.0 lint
+web:lint: > echo 'Linting skipped for web package - typecheck covers TypeScript validation'
+web:lint: 
+web:lint: 'Linting skipped for web package - typecheck covers TypeScript validation'
+tanstack_start_ts:lint: 
+tanstack_start_ts:lint: > lint
+tanstack_start_ts:lint: > eslint .
+tanstack_start_ts:lint: 
