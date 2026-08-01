@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         url,
         fileName: file.name,
         mimeType: file.type,
-        sizeBytes: file.size.toString(),
+        sizeBytes: file.size,
         claimId: claimId || null,
         companyId: context.companyId,
         createdBy: context.userId,
