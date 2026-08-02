@@ -67,7 +67,6 @@ Verified against the actual code (every `process.env.*` read was enumerated from
 | `GOOGLE_API_KEY` | Optional → live Gemini; grounded fallback without it |
 | `GROQ_API_KEY` | Optional → Groq fallback |
 | `OPENAI_API_KEY` | Optional (legacy, unused by free layer) |
-| `GEMINI_API_KEY` | ⚠️ **Not read by code** — code reads `GOOGLE_API_KEY`. Declared in `.env.example` but never referenced; harmless, kept for clarity |
 
 ### VOICE
 | Variable | Status |
@@ -89,7 +88,7 @@ Verified against the actual code (every `process.env.*` read was enumerated from
 |---|---|
 | (none read) | No email provider configured in the current MVP |
 
-**Verification:** `.env.example` contains every variable above (plus `GEMINI_API_KEY` as a no-op placeholder). No secrets exist in the repository (`git grep` clean; `.env.local` removed from remote; all `.env*` files gitignored).
+**Verification:** `.env.example` contains every variable above. No secrets exist in the repository (`git grep` clean; `.env.local` removed from remote; all `.env*` files gitignored). *(Post-cleanup: the obsolete `GEMINI_API_KEY` and `JWT_SECRET` placeholders were removed from `.env.example` — the code reads `GOOGLE_API_KEY`.)*
 
 ---
 
@@ -207,7 +206,7 @@ Verified against the actual code (every `process.env.*` read was enumerated from
 ### Outstanding Issues
 1. (Low) Set AI keys in Vercel env for live AI — or accept grounded fallback.
 2. (Low) Pin Node 20 LTS in Vercel project settings.
-3. (Low) Optional cleanup: delete stale `.js` twins under `apps/api/src`; align `GEMINI_API_KEY` placeholder with `GOOGLE_API_KEY`.
+3. (Low) Optional cleanup: delete stale `.js` twins under `apps/api/src`. *(Post-cleanup: completed — 16 stale `.js` twins removed; `GEMINI_API_KEY` placeholder replaced by `GOOGLE_API_KEY`.)*
 4. (Info) `schema_migrations` ledger empty on the live DB (schema applied out-of-band) — fresh production DB should run `npm run db:migrate` for a clean ledger.
 
 ---
