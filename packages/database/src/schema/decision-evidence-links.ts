@@ -11,7 +11,7 @@ export const decisionEvidenceLinks = pgTable(
     decisionId: uuid('decision_id').notNull().references(() => decisions.id, { onDelete: 'cascade' }),
     evidenceNodeId: varchar('evidence_node_id', { length: 255 }).notNull(),
     relationshipType: varchar('relationship_type', { length: 32 }).notNull(), // SUPPORTS | PRIMARY_REASON | SECONDARY_REASON | RISK_INDICATOR
-    importanceScore: numeric('importance_score', { precision: 3, scale: 2 }).notNull().default('1'),
+    importanceScore: numeric('importance_score', { precision: 5, scale: 2 }).notNull().default('1'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (table) => ({

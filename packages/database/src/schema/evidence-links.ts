@@ -13,7 +13,7 @@ export const evidenceLinks = pgTable(
     interviewAnswerId: uuid('interview_answer_id'), // Reference to specific interview answer
     relevance: text('relevance').notNull().default('medium'), // 'high' | 'medium' | 'low'
     description: text('description').notNull(), // How this evidence supports the recommendation
-    strengthScore: numeric('strength_score', { precision: 3, scale: 2 }).notNull().default('0.50'), // 0.0-1.0
+    strengthScore: numeric('strength_score', { precision: 5, scale: 2 }).notNull().default('0.50'), // 0.0-1.0 (5,2 for 0-100 headroom)
     createdAt: timestamp('created_at').notNull().defaultNow(),
     createdBy: uuid('created_by'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),

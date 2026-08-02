@@ -20,8 +20,8 @@ export const supplementDrafts = pgTable(
     userModifications: jsonb('user_modifications'),
     aiProvider: text('ai_provider').notNull(),
     aiModel: text('ai_model').notNull(),
-    confidenceScore: numeric('confidence_score', { precision: 3, scale: 2 }).notNull(),
-    riskScore: numeric('risk_score', { precision: 3, scale: 2 }).notNull(),
+    confidenceScore: numeric('confidence_score', { precision: 5, scale: 2 }).notNull(), // 0-100 scoring model
+    riskScore: numeric('risk_score', { precision: 5, scale: 2 }).notNull(), // 0-100 scoring model
     estimatedRevenue: numeric('estimated_revenue', { precision: 12, scale: 2 }).notNull(),
     actualRevenue: numeric('actual_revenue', { precision: 12, scale: 2 }),
     reviewTimeMinutes: numeric('review_time_minutes', { precision: 5, scale: 2 }),

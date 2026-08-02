@@ -26,7 +26,7 @@ export const decisions = pgTable(
     description: text('description'),
     recommendation: text('recommendation'),
 
-    confidenceScore: numeric('confidence_score', { precision: 3, scale: 2 }),
+    confidenceScore: numeric('confidence_score', { precision: 5, scale: 2 }), // 0-100 scoring model
     riskScore: numeric('risk_score', { precision: 5, scale: 2 }),
     priority: varchar('priority', { length: 16 }).default('MEDIUM'),
 

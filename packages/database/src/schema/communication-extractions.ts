@@ -13,7 +13,7 @@ export const communicationExtractions = pgTable(
     sourceId: uuid('source_id'),
     entityType: text('entity_type').notNull(), // claim_number | policy_number | date | ...
     value: text('value').notNull(),
-    confidence: numeric('confidence', { precision: 3, scale: 2 }).notNull().default('0.5'),
+    confidence: numeric('confidence', { precision: 5, scale: 2 }).notNull().default('0.5'),
     context: text('context'), // surrounding text snippet
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },

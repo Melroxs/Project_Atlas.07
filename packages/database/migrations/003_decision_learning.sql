@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS decision_outcomes (
   adjuster_outcome VARCHAR(32),
   amount_approved NUMERIC(12,2),
   amount_denied NUMERIC(12,2),
-  confidence_accuracy NUMERIC(3,2),
+  confidence_accuracy NUMERIC(5,2), -- 0-100 scoring model
   evidence_gaps JSONB,
   time_to_approval_minutes NUMERIC(10,0),
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,

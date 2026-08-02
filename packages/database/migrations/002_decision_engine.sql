@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS decisions (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   recommendation TEXT,
-  confidence_score NUMERIC(3,2),
+  confidence_score NUMERIC(5,2), -- 0-100 scoring model
   risk_score NUMERIC(5,2),
   priority VARCHAR(16) DEFAULT 'MEDIUM',
   evidence_summary JSONB,
@@ -44,11 +44,11 @@ CREATE INDEX IF NOT EXISTS decisions_version_idx ON decisions(claim_id, version)
 CREATE TABLE IF NOT EXISTS decision_scores (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   decision_id UUID NOT NULL REFERENCES decisions(id) ON DELETE CASCADE,
-  evidence_score NUMERIC(3,2),
-  coverage_score NUMERIC(3,2),
+  evidence_score NUMERIC(5,2), -- 0-100 scoring model
+  coverage_score NUMERIC(5,2), -- 0-100 scoring model
   compliance_score NUMERIC(5,2),
   risk_factor_score NUMERIC(5,2),
-  final_score NUMERIC(3,2),
+  final_score NUMERIC(5,2), -- 0-100 scoring model
   calculation_details JSONB,
   created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS decision_evidence_links (
   decision_id UUID NOT NULL REFERENCES decisions(id) ON DELETE CASCADE,
   evidence_node_id VARCHAR(255) NOT NULL,
   relationship_type VARCHAR(32) NOT NULL,
-  importance_score NUMERIC(3,2) NOT NULL DEFAULT 1,
+  importance_score NUMERIC(5,2) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 

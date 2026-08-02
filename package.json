@@ -11,7 +11,9 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "start": "npm run start --workspace=project-atlas-api"
+    "start": "npm run start --workspace=project-atlas-api",
+    "dev:web": "npm run dev --workspace=web",
+    "build:web": "turbo run build --filter=web"
   },
   "devDependencies": {
     "@types/pg": "^8.20.0",

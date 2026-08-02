@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS supplement_drafts (
   user_modifications JSONB,
   ai_provider TEXT NOT NULL,
   ai_model TEXT NOT NULL,
-  confidence_score NUMERIC(3,2) NOT NULL,
-  risk_score NUMERIC(3,2) NOT NULL,
+  confidence_score NUMERIC(5,2) NOT NULL, -- 0-100 scoring model
+  risk_score NUMERIC(5,2) NOT NULL, -- 0-100 scoring model
   estimated_revenue NUMERIC(12,2) NOT NULL,
   actual_revenue NUMERIC(12,2),
   review_time_minutes NUMERIC(5,2),

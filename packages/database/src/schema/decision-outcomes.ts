@@ -22,7 +22,7 @@ export const decisionOutcomes = pgTable(
     adjusterOutcome: varchar('adjuster_outcome', { length: 32 }), // APPROVED | PARTIAL | DENIED | PENDING
     amountApproved: numeric('amount_approved', { precision: 12, scale: 2 }),
     amountDenied: numeric('amount_denied', { precision: 12, scale: 2 }),
-    confidenceAccuracy: numeric('confidence_accuracy', { precision: 3, scale: 2 }),
+    confidenceAccuracy: numeric('confidence_accuracy', { precision: 5, scale: 2 }), // 0-100 scoring model
     evidenceGaps: jsonb('evidence_gaps'),
     timeToApprovalMinutes: numeric('time_to_approval_minutes', { precision: 10, scale: 0 }),
 

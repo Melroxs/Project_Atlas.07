@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS evidence_links (
   interview_answer_id UUID,
   relevance TEXT NOT NULL DEFAULT 'medium',
   description TEXT NOT NULL,
-  strength_score NUMERIC(3,2) NOT NULL DEFAULT 0.50,
+  strength_score NUMERIC(5,2) NOT NULL DEFAULT 0.50,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   created_by UUID,
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -175,8 +175,8 @@ CREATE TABLE IF NOT EXISTS supplement_drafts (
   user_modifications JSONB,
   ai_provider TEXT NOT NULL,
   ai_model TEXT NOT NULL,
-  confidence_score NUMERIC(3,2) NOT NULL,
-  risk_score NUMERIC(3,2) NOT NULL,
+  confidence_score NUMERIC(5,2) NOT NULL, -- 0-100 scoring model
+  risk_score NUMERIC(5,2) NOT NULL, -- 0-100 scoring model
   estimated_revenue NUMERIC(12,2) NOT NULL,
   actual_revenue NUMERIC(12,2),
   review_time_minutes NUMERIC(5,2),

@@ -100,3 +100,38 @@ export async function POST(
     );
   }
 }
+
+// DELETE /api/decisions/:id — archive (soft-delete) a decision.
+// Version history is never overwritten, so decisions are ARCHIVED
+// rather than physically removed.
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const context = await requireAuth();
+    await setCompanyContext(context.companyId);
+    const { id } = await params;
+
+    const { repository } = buildService(context);
+    const existing = await repository.getDecision(id, context.companyId);
+    if (!existing) {
+      return NextResponse.json({ error: 'Decision not found' }, { status: 404 });
+    }
+
+    const archived = await repository.updateDecisionStatus(id, 'ARCHIVED');
+    return NextResponse.json({ success: true, decision: archived });
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    console.error('Decision delete error:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to delete decision',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
+  }
+}

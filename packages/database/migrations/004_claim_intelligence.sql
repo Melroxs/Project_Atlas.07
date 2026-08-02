@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS communication_extractions (
   source_id UUID,
   entity_type TEXT NOT NULL,     -- claim_number | policy_number | date | ...
   value TEXT NOT NULL,
-  confidence NUMERIC(3,2) NOT NULL DEFAULT '0.50',
+  confidence NUMERIC(5,2) NOT NULL DEFAULT '0.50',
   context TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT now()
 );
