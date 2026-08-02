@@ -91,6 +91,10 @@ memory/test_credentials.md
 # Freebuff app state
 .freebuff/
 
+# Local build artifacts (landing app)
+apps/landing/.output/
+apps/landing/.wrangler/
+
 # Local SQLite databases
 desktop-v2.db
 desktop-v2.db-shm
