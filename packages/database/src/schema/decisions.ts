@@ -27,7 +27,7 @@ export const decisions = pgTable(
     recommendation: text('recommendation'),
 
     confidenceScore: numeric('confidence_score', { precision: 3, scale: 2 }),
-    riskScore: numeric('risk_score', { precision: 3, scale: 2 }),
+    riskScore: numeric('risk_score', { precision: 5, scale: 2 }),
     priority: varchar('priority', { length: 16 }).default('MEDIUM'),
 
     // Structured pipeline output (DECISION-002 extension for MVP)
@@ -38,7 +38,7 @@ export const decisions = pgTable(
     reasoningTrace: jsonb('reasoning_trace'), // full pipeline trace (explainability)
     riskFactors: jsonb('risk_factors'), // persisted risk factors for voice/export
     complianceStatus: varchar('compliance_status', { length: 32 }),
-    complianceScore: numeric('compliance_score', { precision: 3, scale: 2 }),
+    complianceScore: numeric('compliance_score', { precision: 5, scale: 2 }),
     humanReviewStatus: varchar('human_review_status', { length: 32 }).notNull().default('PENDING'), // PENDING | APPROVED | REJECTED | REQUEST_CHANGES
 
     createdBy: uuid('created_by'),
