@@ -159,6 +159,21 @@ export class DecisionPipeline {
       collected.nodes.length >= MIN_EVIDENCE_FOR_DECISION &&
       collected.summary.coverage >= 0.4;
 
+    // Publish-stage trace entry: a lightweight summary ONLY — never the
+    // result object itself, which holds the trace (would create a circular
+    // reference that breaks JSON.stringify when persisting the decision).
+    trace.push({
+      stage: "PUBLISH_DECISION",
+      input: recommendations,
+      output: {
+        requiresHumanApproval,
+        sufficientEvidence,
+        recommendationCount: recommendations.length,
+        complianceStatus: compliance.status,
+        complianceScore: compliance.score,
+      },
+    });
+
     const result: DecisionPipelineResult = {
       claimId: input.claimId,
       organizationId: input.organizationId,
@@ -183,7 +198,6 @@ export class DecisionPipeline {
       }),
       reasoningTrace: trace,
     };
-    trace.push({ stage: "PUBLISH_DECISION", input: recommendations, output: result });
 
     return result;
   }
