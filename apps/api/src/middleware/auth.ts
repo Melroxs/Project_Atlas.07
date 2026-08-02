@@ -34,8 +34,9 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
   (request as AuthenticatedRequest).role = tm.role;
 
   // Set company context in database session for RLS policies
+  // NOTE: PostgreSQL does not accept bind parameters in `SET` — use set_config() instead.
   try {
-    await pool.query('SET app.current_company = $1', [tm.company_id]);
+    await pool.query('SELECT set_config(\'app.current_company\', $1, false)', [tm.company_id]);
   } catch (dbError) {
     console.error('Failed to set company context:', dbError);
     // Continue anyway as RLS will use default behavior

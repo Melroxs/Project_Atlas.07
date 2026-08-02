@@ -9,10 +9,11 @@ const pool = new Pool({
 
 export const db = drizzle(pool, { schema });
 
-// Set company context for RLS policies
+// Set company context for RLS policies.
+// NOTE: PostgreSQL does not accept bind parameters in `SET` — use set_config() instead.
 export async function setCompanyContext(companyId: string) {
   try {
-    await pool.query('SET app.current_company = $1', [companyId]);
+    await pool.query('SELECT set_config(\'app.current_company\', $1, false)', [companyId]);
   } catch (error) {
     console.error('Failed to set company context:', error);
     // Continue anyway as RLS will use default behavior
