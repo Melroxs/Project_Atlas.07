@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, setCompanyContext } from '@/lib/server-db';
 import { adjusters } from '@project-atlas/database';
-import { eq, desc } from 'drizzle-orm';
+import { eq, and, or, like, desc, count } from 'drizzle-orm';
 import { requireAuth } from '@/lib/server-auth';
 import { z } from 'zod';
 
@@ -13,21 +13,62 @@ const adjusterSchema = z.object({
   office: z.string().optional(),
   territory: z.string().optional(),
   notes: z.string().optional(),
+  active: z.boolean().optional(),
 });
 
-// GET /api/adjusters - List adjusters
+// GET /api/adjusters - List adjusters with search, filters, and pagination
 export async function GET(request: NextRequest) {
   try {
     const context = await requireAuth();
     await setCompanyContext(context.companyId);
 
-    const allAdjusters = await db
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1') || 1;
+    const limit = parseInt(searchParams.get('limit') || '20') || 20;
+    const offset = (page - 1) * limit;
+
+    const search = searchParams.get('search') || '';
+    const active = searchParams.get('active') || '';
+
+    const conditions = [eq(adjusters.companyId, context.companyId)];
+    if (active === 'true') conditions.push(eq(adjusters.active, true));
+    if (active === 'false') conditions.push(eq(adjusters.active, false));
+    if (search) {
+      const searchCondition = or(
+        like(adjusters.fullName, `%${search}%`),
+        like(adjusters.email, `%${search}%`),
+        like(adjusters.phone, `%${search}%`),
+        like(adjusters.insuranceCompany, `%${search}%`)
+      );
+      if (searchCondition) conditions.push(searchCondition);
+    }
+
+    const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+
+    const [countResult] = await db
+      .select({ value: count() })
+      .from(adjusters)
+      .where(whereClause);
+
+    const results = await db
       .select()
       .from(adjusters)
-      .where(eq(adjusters.companyId, context.companyId))
-      .orderBy(desc(adjusters.createdAt));
+      .where(whereClause)
+      .orderBy(desc(adjusters.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-    return NextResponse.json(allAdjusters);
+    const total = countResult?.value || 0;
+
+    return NextResponse.json({
+      data: results,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -56,6 +97,7 @@ export async function POST(request: NextRequest) {
         office: validated.office,
         territory: validated.territory,
         notes: validated.notes,
+        active: validated.active ?? true,
         companyId: context.companyId,
         createdBy: context.userId,
       })

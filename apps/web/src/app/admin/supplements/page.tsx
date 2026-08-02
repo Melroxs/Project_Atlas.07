@@ -35,6 +35,17 @@ interface Adjuster {
   fullName: string;
 }
 
+interface ClaimOption {
+  id: string;
+  claimNumber: string;
+  customerName: string | null;
+  insuranceCompany: string | null;
+}
+
+interface ClaimsResponse {
+  data: ClaimOption[];
+}
+
 interface SupplementsResponse {
   data: Supplement[];
   pagination: {
@@ -50,6 +61,7 @@ export default function SupplementsPage() {
   const router = useRouter();
   const [supplements, setSupplements] = useState<Supplement[]>([]);
   const [adjusters, setAdjusters] = useState<Adjuster[]>([]);
+  const [claims, setClaims] = useState<ClaimOption[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     claimId: "",
@@ -80,6 +92,7 @@ export default function SupplementsPage() {
     }
     loadSupplements();
     loadAdjusters();
+    loadClaims();
   }, [
     session,
     router,
@@ -112,11 +125,27 @@ export default function SupplementsPage() {
 
   const loadAdjusters = async () => {
     try {
-      const data = await apiFetch<Adjuster[]>("/adjusters");
-      setAdjusters(data);
+      const data = await apiFetch<Adjuster[] | { data: Adjuster[] }>("/adjusters");
+      setAdjusters(Array.isArray(data) ? data : data.data || []);
     } catch (e: any) {
       console.error("Error loading adjusters:", e);
     }
+  };
+
+  const loadClaims = async () => {
+    try {
+      const data = await apiFetch<ClaimsResponse>("/claims?limit=200");
+      setClaims(Array.isArray(data) ? data : data.data);
+    } catch (e: any) {
+      console.error("Error loading claims:", e);
+    }
+  };
+
+  const generateSupplementNumber = () => {
+    const d = new Date();
+    const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+    const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
+    return `SUP-${ymd}-${rand}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,6 +153,8 @@ export default function SupplementsPage() {
     try {
       const payload = {
         ...formData,
+        claimId: formData.claimId,
+        supplementNumber: formData.supplementNumber || generateSupplementNumber(),
         adjusterId: formData.adjusterId || null,
       };
       await apiFetch<Supplement>("/supplements", {
@@ -293,18 +324,25 @@ export default function SupplementsPage() {
                 htmlFor="claimId"
                 className="block mb-1 text-sm font-medium text-foreground"
               >
-                Claim ID
+                Claim
               </label>
-              <input
+              <select
                 id="claimId"
-                type="text"
                 value={formData.claimId}
                 onChange={(e) =>
                   setFormData({ ...formData, claimId: e.target.value })
                 }
                 className="w-full p-2 bg-muted dark:bg-card border border-input rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:border-primary"
                 required
-              />
+              >
+                <option value="">Select a claim...</option>
+                {claims.map((claim) => (
+                  <option key={claim.id} value={claim.id}>
+                    {claim.claimNumber}
+                    {claim.customerName ? ` — ${claim.customerName}` : ""}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label
@@ -317,11 +355,11 @@ export default function SupplementsPage() {
                 id="supplementNumber"
                 type="text"
                 value={formData.supplementNumber}
+                placeholder="Auto-generated if left blank"
                 onChange={(e) =>
                   setFormData({ ...formData, supplementNumber: e.target.value })
                 }
                 className="w-full p-2 bg-muted dark:bg-card border border-input rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:border-primary"
-                required
               />
             </div>
             <div>

@@ -11,6 +11,11 @@ const noteUpdateSchema = z.object({
   content: z.string().min(1).optional(),
 });
 
+// Helper: scope note queries to the current company
+function noteCompanyScope(context: { companyId: string }) {
+  return eq(notes.companyId, context.companyId);
+}
+
 // GET /api/notes/[id] - Get note by ID
 export async function GET(
   request: NextRequest,

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, setCompanyContext } from '@/lib/server-db';
 import { interviews } from '@project-atlas/database';
-import { eq, desc } from 'drizzle-orm';
+import { eq, and, desc, count } from 'drizzle-orm';
 import { requireAuth } from '@/lib/server-auth';
 import { z } from 'zod';
 
 const interviewSchema = z.object({
-  interviewNumber: z.string().min(1),
+  interviewNumber: z.string().min(1).optional(), // auto-generated when omitted
   templateId: z.string().min(1),
   templateName: z.string().min(1),
   propertyId: z.string().uuid().optional(),
@@ -19,19 +19,57 @@ const interviewSchema = z.object({
   progress: z.string().or(z.number()).optional(),
 });
 
-// GET /api/interviews - List interviews
+function generateInterviewNumber() {
+  const d = new Date();
+  const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+  const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
+  return `INT-${ymd}-${rand}`;
+}
+
+// GET /api/interviews - List interviews with filters and pagination
 export async function GET(request: NextRequest) {
   try {
     const context = await requireAuth();
     await setCompanyContext(context.companyId);
 
-    const allInterviews = await db
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1') || 1;
+    const limit = parseInt(searchParams.get('limit') || '20') || 20;
+    const offset = (page - 1) * limit;
+
+    const status = searchParams.get('status') || '';
+    const templateId = searchParams.get('templateId') || '';
+
+    const conditions = [eq(interviews.companyId, context.companyId)];
+    if (status) conditions.push(eq(interviews.status, status));
+    if (templateId) conditions.push(eq(interviews.templateId, templateId));
+
+    const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+
+    const [countResult] = await db
+      .select({ value: count() })
+      .from(interviews)
+      .where(whereClause);
+
+    const results = await db
       .select()
       .from(interviews)
-      .where(eq(interviews.companyId, context.companyId))
-      .orderBy(desc(interviews.createdAt));
+      .where(whereClause)
+      .orderBy(desc(interviews.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-    return NextResponse.json(allInterviews);
+    const total = countResult?.value || 0;
+
+    return NextResponse.json({
+      data: results,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -53,7 +91,7 @@ export async function POST(request: NextRequest) {
     const [newInterview] = await db
       .insert(interviews)
       .values({
-        interviewNumber: validated.interviewNumber,
+        interviewNumber: validated.interviewNumber || generateInterviewNumber(),
         templateId: validated.templateId,
         templateName: validated.templateName,
         propertyId: validated.propertyId,
@@ -63,7 +101,7 @@ export async function POST(request: NextRequest) {
         metadata: validated.metadata,
         status: validated.status || 'draft',
         currentSection: validated.currentSection,
-        progress: validated.progress ? String(validated.progress) : '0',
+        progress: validated.progress !== undefined ? String(validated.progress) : '0',
         companyId: context.companyId,
         createdBy: context.userId,
         updatedBy: context.userId,

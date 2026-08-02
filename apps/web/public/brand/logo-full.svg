@@ -1,6 +1,46 @@
-<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Placeholder for Full Logo - Replace with actual logo -->
-  <rect width="200" height="60" rx="8" fill="#0A1628"/>
-  <text x="100" y="35" text-anchor="middle" fill="#00D4FF" font-family="Arial, sans-serif" font-size="16" font-weight="bold">PROJECT ATLAS</text>
-  <text x="100" y="50" text-anchor="middle" fill="#7C3AED" font-family="Arial, sans-serif" font-size="8">AI Operating System</text>
+<svg width="360" height="96" viewBox="0 0 360 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ringGradF" x1="0" y1="0" x2="96" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="0.55" stop-color="#7C6CF6"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="metalGradF" x1="34" y1="12" x2="62" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.5" stop-color="#E8ECF4"/>
+      <stop offset="1" stop-color="#B9C2D4"/>
+    </linearGradient>
+    <linearGradient id="chevGradF" x1="45" y1="46" x2="51" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="wordGradF" x1="110" y1="24" x2="340" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B9C2D4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Emblem -->
+  <g transform="translate(6,6)">
+    <circle cx="42" cy="42" r="36" stroke="url(#ringGradF)" stroke-width="2.5"/>
+    <g stroke="#3B4A6B" stroke-width="1" opacity="0.5">
+      <ellipse cx="42" cy="42" rx="29" ry="12"/>
+      <ellipse cx="42" cy="42" rx="29" ry="23"/>
+      <line x1="13" y1="42" x2="71" y2="42"/>
+    </g>
+    <path d="M42 3 L47 12 L37 12 Z" fill="#00D4FF"/>
+    <path d="M3 42 L12 37 L12 47 Z" fill="#00D4FF"/>
+    <path d="M81 42 L72 37 L72 47 Z" fill="#A855F7"/>
+    <path d="M42 81 L47 72 L37 72 Z" fill="#A855F7"/>
+    <path d="M10 30 A 36 36 0 0 1 30 10" stroke="url(#ringGradF)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    <path d="M54 74 A 36 36 0 0 1 74 54" stroke="url(#ringGradF)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    <path d="M42 6 L47 14 L37 14 Z" fill="#00D4FF"/>
+    <path d="M42 18 L56 66 L48 66 L44 55 L40 55 L36 66 L28 66 Z" fill="url(#metalGradF)"/>
+    <path d="M39 50 L45 50 L48 55 L36 55 Z" fill="url(#metalGradF)" opacity="0.92"/>
+    <path d="M42 43 L49 56 L42 52 L35 56 Z" fill="url(#chevGradF)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="106" y="46" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="22" font-weight="600" letter-spacing="4" fill="#8A94AD">PROJECT</text>
+  <text x="106" y="76" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="36" font-weight="800" letter-spacing="8" fill="url(#wordGradF)">ATLAS</text>
 </svg>

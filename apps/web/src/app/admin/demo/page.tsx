@@ -28,15 +28,8 @@ export default function DemoExperiencePage() {
     try {
       const response = await apiFetch("/demo/status");
       setStatus(response as DemoStatus);
-
-      // If demo mode is not enabled, redirect to normal dashboard
-      if (!(response as DemoStatus).enabled) {
-        router.push("/admin");
-        return;
-      }
     } catch (error) {
       console.error("Error checking demo status:", error);
-      router.push("/admin");
     } finally {
       setLoading(false);
     }
@@ -52,10 +45,6 @@ export default function DemoExperiencePage() {
         </div>
       </div>
     );
-  }
-
-  if (!status?.enabled) {
-    return null;
   }
 
   return (
@@ -80,6 +69,13 @@ export default function DemoExperiencePage() {
           Choose a scenario below to experience how Atlas manages restoration
           projects from first contact through claim completion.
         </p>
+        {!status?.hasData && (
+          <p className="text-sm text-warning bg-warning/10 border border-warning/30 rounded-lg max-w-md mx-auto px-4 py-3">
+            No demo data yet — use the <strong>Generate Demo Data</strong> button
+            below to seed a realistic company with claims, supplements,
+            documents, interviews, and activity.
+          </p>
+        )}
       </div>
 
       {/* Demo Metrics */}

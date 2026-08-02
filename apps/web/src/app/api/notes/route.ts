@@ -6,8 +6,8 @@ import { requireAuth } from '@/lib/server-auth';
 import { z } from 'zod';
 
 const noteSchema = z.object({
-  entityType: z.string().min(1),
-  entityId: z.string().uuid(),
+  entityType: z.string().min(1).optional(),
+  entityId: z.string().uuid().optional(),
   content: z.string().min(1),
 });
 
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
     const [newNote] = await db
       .insert(notes)
       .values({
-        entityType: validated.entityType,
-        entityId: validated.entityId,
+        entityType: validated.entityType || 'company',
+        entityId: validated.entityId || context.companyId,
         content: validated.content,
         companyId: context.companyId,
         createdBy: context.userId,

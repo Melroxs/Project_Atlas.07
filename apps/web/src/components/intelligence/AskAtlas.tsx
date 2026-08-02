@@ -265,8 +265,12 @@ export default function AskAtlas() {
           apiFetch("/companies?limit=5"),
           apiFetch("/intelligence/recommendations"),
         ]);
-        const claimsData = (claimsRes as any)?.data || [];
-        const companiesData = (companiesRes as any)?.data || [];
+        const claimsData = Array.isArray(claimsRes)
+          ? claimsRes
+          : (claimsRes as any)?.data || [];
+        const companiesData = Array.isArray(companiesRes)
+          ? companiesRes
+          : (companiesRes as any)?.data || [];
         const recsData = (recsRes as any) || [];
         setRecentClaims(claimsData.slice(0, 5));
         setCompanies(companiesData.slice(0, 5));

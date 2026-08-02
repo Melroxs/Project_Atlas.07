@@ -19,6 +19,7 @@ export default function PropertiesPage() {
   const router = useRouter();
   const [properties, setProperties] = useState<Property[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     address: "",
     city: "",
@@ -48,17 +49,39 @@ export default function PropertiesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await apiFetch<Property>("/properties", {
-        method: "POST",
-        body: JSON.stringify(formData),
-      });
-      setStatus("Property created");
+      if (editingId) {
+        await apiFetch<Property>(`/properties/${editingId}`, {
+          method: "PUT",
+          body: JSON.stringify(formData),
+        });
+        setStatus("Property updated");
+      } else {
+        await apiFetch<Property>("/properties", {
+          method: "POST",
+          body: JSON.stringify(formData),
+        });
+        setStatus("Property created");
+      }
       setShowForm(false);
+      setEditingId(null);
       setFormData({ address: "", city: "", state: "", zip: "", ownerName: "" });
       loadProperties();
     } catch (e: any) {
       setStatus(`Error: ${e.message}`);
     }
+  };
+
+  const handleEdit = (property: Property) => {
+    setEditingId(property.id);
+    setFormData({
+      address: property.address,
+      city: property.city,
+      state: property.state,
+      zip: property.zip,
+      ownerName: property.ownerName || "",
+    });
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id: string) => {
@@ -80,8 +103,12 @@ export default function PropertiesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-foreground">Properties</h1>
         <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-info text-foreground rounded hover:bg-info"
+          onClick={() => {
+            setShowForm(!showForm);
+            setEditingId(null);
+            setFormData({ address: "", city: "", state: "", zip: "", ownerName: "" });
+          }}
+          className="px-4 py-2 bg-info text-foreground rounded hover:bg-info/90 transition-colors"
         >
           {showForm ? "Cancel" : "Add Property"}
         </button>
@@ -188,9 +215,9 @@ export default function PropertiesPage() {
           </div>
           <button
             type="submit"
-            className="mt-4 px-4 py-2 bg-success text-foreground rounded hover:bg-success"
+            className="mt-4 px-4 py-2 bg-success text-foreground rounded hover:bg-success/90 transition-colors"
           >
-            Save Property
+            {editingId ? "Update Property" : "Save Property"}
           </button>
         </form>
       )}
@@ -238,6 +265,12 @@ export default function PropertiesPage() {
                   {property.ownerName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => handleEdit(property)}
+                    className="text-info hover:text-blue-800 mr-3 transition-colors"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handleDelete(property.id)}
                     className="text-destructive hover:text-red-900"

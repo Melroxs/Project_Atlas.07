@@ -20,6 +20,10 @@ interface Claim {
   claimNumber: string;
 }
 
+interface ClaimsResponse {
+  data: Claim[];
+}
+
 export default function DocumentsPage() {
   const { session, loading } = useSupabase();
   const router = useRouter();
@@ -51,8 +55,8 @@ export default function DocumentsPage() {
 
   const loadClaims = async () => {
     try {
-      const data = await apiFetch<Claim[]>("/claims");
-      setClaims(data);
+      const data = await apiFetch<ClaimsResponse>("/claims?limit=200");
+      setClaims(Array.isArray(data) ? data : data.data);
     } catch (e: any) {
       console.error("Error loading claims:", e);
     }
@@ -79,11 +83,9 @@ export default function DocumentsPage() {
         formData.append("claimId", selectedClaimId);
       }
 
-      const endpoint = selectedClaimId
-        ? `/documents/claims/${selectedClaimId}/upload`
-        : "/documents/upload";
-
-      const response = await fetch(`${endpoint}`, {
+      // Upload always goes through /documents/upload; claimId travels in the
+      // FormData so the API can link the document to the claim.
+      const response = await fetch(`/documents/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${session?.access_token}`,

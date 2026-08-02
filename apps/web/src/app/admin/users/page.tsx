@@ -1,99 +1,141 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiFetch } from "@/lib/api";
+import { useSupabase } from "@/providers/SupabaseProvider";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
   email: string;
+  name: string;
   role: string;
   createdAt: string;
 }
 
+interface UsersResponse {
+  data: User[];
+}
+
 export default function UsersPage() {
+  const { session, loading } = useSupabase();
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   useEffect(() => {
-    // TODO: Fetch users from API
-    setUsers([]);
-    setLoading(false);
-  }, []);
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+    loadUsers();
+  }, [session, router]);
+
+  const loadUsers = async () => {
+    try {
+      const data = await apiFetch<UsersResponse>("/users");
+      setUsers(data.data || []);
+    } catch (e: any) {
+      setStatus(`Error loading: ${e.message}`);
+    }
+  };
+
+  const handleRoleChange = async (id: string, role: string) => {
+    setSavingId(id);
+    try {
+      await apiFetch(`/users/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ role }),
+      });
+      setStatus("User role updated");
+      loadUsers();
+    } catch (e: any) {
+      setStatus(`Error: ${e.message}`);
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Remove this user from the company? This does not delete their account.")) return;
+    try {
+      await apiFetch(`/users/${id}`, { method: "DELETE" });
+      setStatus("User removed");
+      loadUsers();
+    } catch (e: any) {
+      setStatus(`Error: ${e.message}`);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (!session) return null;
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Users</h1>
-          <p className="text-muted-foreground">Manage system users</p>
-        </div>
-        <button className="px-4 py-2 bg-info text-foreground rounded-lg hover:bg-info transition-colors">
-          Add User
-        </button>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground">Users</h1>
+        <p className="text-muted-foreground">Manage team members and their roles</p>
       </div>
 
-      {loading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-muted-foreground">Loading users...</p>
-        </div>
-      ) : users.length === 0 ? (
-        <div className="text-center py-12 bg-surface rounded-lg border">
-          <p className="text-muted-foreground mb-4">No users found</p>
-          <button className="px-4 py-2 bg-info text-foreground rounded-lg hover:bg-info transition-colors">
-            Add User
-          </button>
-        </div>
-      ) : (
-        <div className="bg-surface rounded-lg border overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Actions
-                </th>
+      {status && <p className="mb-4 text-sm text-muted-foreground">{status}</p>}
+
+      <div className="bg-surface rounded shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">User</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Joined</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-surface divide-y divide-border">
+            {users.map((user) => (
+              <tr key={user.id} className="hover:bg-muted">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold mr-3">
+                      {(user.name || user.email || "?").charAt(0).toUpperCase()}
+                    </div>
+                    <div className="text-sm font-medium text-foreground">{user.name}</div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{user.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <select
+                    value={user.role}
+                    disabled={savingId === user.id}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                    className="p-1 text-xs bg-muted dark:bg-card border border-input rounded text-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary disabled:opacity-50 transition-colors hover:border-primary"
+                    aria-label={`Role for ${user.email}`}
+                  >
+                    <option value="Owner">Owner</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Member">Member</option>
+                  </select>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button onClick={() => handleDelete(user.id)} className="text-destructive hover:text-red-900">
+                    Remove
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-surface divide-y divide-border">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-muted">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-foreground">
-                      {user.email}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs rounded-full bg-info/10 text-blue-800">
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-muted-foreground">
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-info hover:text-blue-900 mr-3">
-                      Edit
-                    </button>
-                    <button className="text-destructive hover:text-red-900">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+            {users.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-4 text-center text-sm text-muted-foreground">
+                  No users found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

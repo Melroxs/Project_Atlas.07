@@ -1,5 +1,41 @@
-<svg width="150" height="40" viewBox="0 0 150 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Placeholder for Horizontal Logo - Replace with actual logo -->
-  <rect width="150" height="40" rx="6" fill="#0A1628"/>
-  <text x="75" y="25" text-anchor="middle" fill="#00D4FF" font-family="Arial, sans-serif" font-size="14" font-weight="bold">PROJECT ATLAS</text>
+<svg width="260" height="72" viewBox="0 0 260 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ringGradH" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="0.55" stop-color="#7C6CF6"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="metalGradH" x1="26" y1="10" x2="46" y2="62" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.5" stop-color="#E8ECF4"/>
+      <stop offset="1" stop-color="#B9C2D4"/>
+    </linearGradient>
+    <linearGradient id="chevGradH" x1="34" y1="34" x2="38" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="wordGrad" x1="84" y1="20" x2="240" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B9C2D4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Emblem (mark only, no full bg rect so it sits on any surface) -->
+  <g transform="translate(4,4)">
+    <circle cx="32" cy="32" r="28" stroke="url(#ringGradH)" stroke-width="2"/>
+    <g stroke="#3B4A6B" stroke-width="0.8" opacity="0.5">
+      <ellipse cx="32" cy="32" rx="23" ry="9"/>
+      <line x1="9" y1="32" x2="55" y2="32"/>
+    </g>
+    <path d="M32 2 L36 9 L28 9 Z" fill="#00D4FF"/>
+    <path d="M2 32 L9 28 L9 36 Z" fill="#00D4FF"/>
+    <path d="M62 32 L55 28 L55 36 Z" fill="#A855F7"/>
+    <path d="M32 62 L36 55 L28 55 Z" fill="#A855F7"/>
+    <path d="M32 14 L42 50 L36 50 L33 42 L31 42 L28 50 L22 50 Z" fill="url(#metalGradH)"/>
+    <path d="M30 37 L34 37 L36 41 L28 41 Z" fill="url(#metalGradH)" opacity="0.92"/>
+    <path d="M32 32 L36 42 L32 39 L28 42 Z" fill="url(#chevGradH)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="80" y="46" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="6" fill="url(#wordGrad)">ATLAS</text>
 </svg>

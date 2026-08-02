@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, setCompanyContext } from '@/lib/server-db';
 import { activityLogs } from '@project-atlas/database';
-import { eq, desc } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sql } from 'drizzle-orm';
 import { requireAuth } from '@/lib/server-auth';
 import { z } from 'zod';
 
@@ -16,19 +16,74 @@ const activitySchema = z.object({
   ipAddress: z.string().optional(),
 });
 
-// GET /api/activity - List activity logs
+// GET /api/activity - List activity logs with filters and pagination
 export async function GET(request: NextRequest) {
   try {
     const context = await requireAuth();
     await setCompanyContext(context.companyId);
 
-    const allActivity = await db
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1') || 1;
+    const limit = parseInt(searchParams.get('limit') || '50') || 50;
+    const offset = (page - 1) * limit;
+
+    const userId = searchParams.get('userId') || '';
+    const entityType = searchParams.get('entityType') || '';
+    const action = searchParams.get('action') || '';
+    const search = searchParams.get('search') || '';
+    const startDate = searchParams.get('startDate') || '';
+    const endDate = searchParams.get('endDate') || '';
+
+    const conditions = [eq(activityLogs.companyId, context.companyId)];
+    if (userId) conditions.push(eq(activityLogs.userId, userId));
+    if (entityType) conditions.push(eq(activityLogs.entityType, entityType));
+    if (action) conditions.push(eq(activityLogs.action, action));
+    if (search) {
+      const searchCondition = or(
+        like(activityLogs.entityName, `%${search}%`),
+        like(activityLogs.description, `%${search}%`)
+      );
+      if (searchCondition) conditions.push(searchCondition);
+    }
+    if (startDate) {
+      const start = new Date(`${startDate}T00:00:00`);
+      if (!isNaN(start.getTime())) {
+        conditions.push(sql`${activityLogs.createdAt} >= ${start}`);
+      }
+    }
+    if (endDate) {
+      const end = new Date(`${endDate}T23:59:59.999`);
+      if (!isNaN(end.getTime())) {
+        conditions.push(sql`${activityLogs.createdAt} <= ${end}`);
+      }
+    }
+
+    const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+
+    const [countResult] = await db
+      .select({ value: count() })
+      .from(activityLogs)
+      .where(whereClause);
+
+    const results = await db
       .select()
       .from(activityLogs)
-      .where(eq(activityLogs.companyId, context.companyId))
-      .orderBy(desc(activityLogs.createdAt));
+      .where(whereClause)
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-    return NextResponse.json(allActivity);
+    const total = countResult?.value || 0;
+
+    return NextResponse.json({
+      data: results,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

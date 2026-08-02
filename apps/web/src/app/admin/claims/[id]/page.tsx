@@ -589,16 +589,44 @@ export default function ClaimDetailPage() {
           <div className="bg-surface rounded shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
             <div className="space-y-2">
-              <button className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left">
+              <button
+                onClick={() => router.push("/admin/documents")}
+                className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left transition-colors"
+              >
                 View Documents
               </button>
-              <button className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left">
+              <button
+                onClick={() => router.push("/admin/supplements")}
+                className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left transition-colors"
+              >
                 View Supplements
               </button>
-              <button className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left">
+              <button
+                onClick={() => router.push("/admin/activity")}
+                className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left transition-colors"
+              >
                 View Activity Timeline
               </button>
-              <button className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left">
+              <button
+                onClick={async () => {
+                  const note = window.prompt("Add a note to this claim:");
+                  if (!note || !note.trim()) return;
+                  try {
+                    await apiFetch("/notes", {
+                      method: "POST",
+                      body: JSON.stringify({
+                        entityType: "claim",
+                        entityId: claim.id,
+                        content: note.trim(),
+                      }),
+                    });
+                    setStatus("Note added");
+                  } catch (e: any) {
+                    setError(`Error adding note: ${e.message}`);
+                  }
+                }}
+                className="w-full px-4 py-2 bg-muted text-foreground rounded hover:bg-muted text-left transition-colors"
+              >
                 Add Note
               </button>
             </div>
@@ -612,7 +640,10 @@ export default function ClaimDetailPage() {
                 <p className="text-sm text-foreground">
                   Adjuster ID: {claim.adjusterId}
                 </p>
-                <button className="mt-2 text-sm text-info hover:text-blue-800">
+                <button
+                  onClick={() => router.push("/admin/adjusters")}
+                  className="mt-2 text-sm text-info hover:text-blue-800"
+                >
                   View Adjuster Details
                 </button>
               </div>
@@ -631,7 +662,10 @@ export default function ClaimDetailPage() {
                 <p className="text-sm text-foreground">
                   Property ID: {claim.propertyId}
                 </p>
-                <button className="mt-2 text-sm text-info hover:text-blue-800">
+                <button
+                  onClick={() => router.push("/admin/properties")}
+                  className="mt-2 text-sm text-info hover:text-blue-800"
+                >
                   View Property Details
                 </button>
               </div>

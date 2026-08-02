@@ -108,8 +108,8 @@ export default function ClaimsPage() {
 
   const loadAdjusters = async () => {
     try {
-      const data = await apiFetch<Adjuster[]>("/adjusters");
-      setAdjusters(data);
+      const data = await apiFetch<Adjuster[] | { data: Adjuster[] }>("/adjusters");
+      setAdjusters(Array.isArray(data) ? data : data.data || []);
     } catch (e: any) {
       console.error("Error loading adjusters:", e);
     }
