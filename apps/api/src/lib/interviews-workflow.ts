@@ -90,7 +90,7 @@ export class InterviewWorkflowService {
 
     switch (question.type) {
       case 'number':
-      case 'currency':
+      case 'currency': {
         const numValue = typeof value === 'string' ? parseFloat(value) : value;
         if (isNaN(numValue)) {
           return { valid: false, error: 'Must be a valid number' };
@@ -102,6 +102,7 @@ export class InterviewWorkflowService {
           return { valid: false, error: `Must be at most ${validation.max}` };
         }
         break;
+      }
 
       case 'short_text':
       case 'long_text':
@@ -125,7 +126,7 @@ export class InterviewWorkflowService {
         }
         break;
 
-      case 'multi_select':
+      case 'multi_select': {
         if (!Array.isArray(value)) {
           return { valid: false, error: 'Must be an array' };
         }
@@ -134,6 +135,7 @@ export class InterviewWorkflowService {
           return { valid: false, error: 'Invalid selections' };
         }
         break;
+      }
 
       case 'yes_no':
         if (typeof value !== 'boolean') {
@@ -141,19 +143,21 @@ export class InterviewWorkflowService {
         }
         break;
 
-      case 'date':
+      case 'date': {
         const dateValue = new Date(value);
         if (isNaN(dateValue.getTime())) {
           return { valid: false, error: 'Invalid date' };
         }
         break;
+      }
 
-      case 'time':
+      case 'time': {
         const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
         if (!timeRegex.test(value)) {
           return { valid: false, error: 'Invalid time format (HH:MM)' };
         }
         break;
+      }
     }
 
     return { valid: true };

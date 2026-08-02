@@ -69,7 +69,7 @@ export const buildFastify = () => {
   server.register(registerRoutes, { prefix: '/api/v1' });
 
   // Health check
-  server.get('/health', async (request, reply) => {
+  server.get('/health', async () => {
     return { status: 'ok' };
   });
 
