@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { useSupabase } from "@/providers/SupabaseProvider";
+import { useVoiceContext } from "@project-atlas/voice";
 import {
   STATUS_LABELS,
   STATUS_COLORS,
@@ -62,6 +63,7 @@ export default function InterviewDetailPage() {
   );
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [newStatus, setNewStatus] = useState<InterviewStatus>("draft");
+  const [generatingClaim, setGeneratingClaim] = useState(false);
 
   useEffect(() => {
     if (!session) {
@@ -156,16 +158,22 @@ export default function InterviewDetailPage() {
 
   const generateClaim = async () => {
     try {
-      const data = await apiFetch<{ claimData: any; message: string }>(
+      setGeneratingClaim(true);
+      const data = await apiFetch<{ claim: { id: string } | null; message: string }>(
         `/interviews/${interviewId}/generate-claim`,
         {
           method: "POST",
         },
       );
-      alert("Claim data extracted. Claim generation not yet implemented.");
-      console.log("Claim data:", data.claimData);
+      if (data?.claim?.id) {
+        router.push(`/admin/claims/${data.claim.id}`);
+      } else {
+        setError(data?.message || "Claim generation failed.");
+      }
     } catch (e: any) {
       setError(`Error generating claim: ${e.message}`);
+    } finally {
+      setGeneratingClaim(false);
     }
   };
 
@@ -392,6 +400,8 @@ export default function InterviewDetailPage() {
     }
   });
 
+  useVoiceContext({ mode: "interview", interviewId: params?.id as string | undefined });
+
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -417,9 +427,10 @@ export default function InterviewDetailPage() {
           {interview.status === "completed" && (
             <button
               onClick={generateClaim}
-              className="px-4 py-2 bg-success text-foreground rounded hover:bg-success"
+              disabled={generatingClaim}
+              className="px-4 py-2 bg-success text-foreground rounded hover:bg-success disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Generate Claim
+              {generatingClaim ? "Generating..." : "Generate Claim"}
             </button>
           )}
         </div>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { useSupabase } from "@/providers/SupabaseProvider";
+import { useVoiceContext } from "@project-atlas/voice";
 import {
   ArrowLeft,
   Check,
@@ -418,6 +419,8 @@ export default function DecisionDetailPage() {
 
   const d = ctx.decision;
   const evidenceSummary = d.evidenceSummary;
+
+  useVoiceContext({ mode: "decision", decisionId: params?.id as string | undefined });
 
   return (
     <div className="max-w-7xl mx-auto p-6">

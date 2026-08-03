@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useRouter } from "next/navigation";
+import VoiceSettingsSection from "@/components/settings/VoiceSettingsSection";
 
 interface Settings {
   companyName: string;
@@ -216,6 +217,9 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Voice Settings (Atlas Voice Orchestration Engine) */}
+        <VoiceSettingsSection />
 
         {/* Save Button */}
         <div className="flex justify-end">

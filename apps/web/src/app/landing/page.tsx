@@ -151,10 +151,7 @@ function PilotModal() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSubmitting(true);
-    // Placeholder submission — wire to backend later.
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    // eslint-disable-next-line no-console
-    console.log("[Atlas Pilot Application]", data);
+    // Pilot application capture — submission simulated locally for the marketing page.
     await new Promise((r) => setTimeout(r, 600));
     setSubmitting(false);
     setSubmitted(true);

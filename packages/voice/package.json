@@ -1,0 +1,19 @@
+{
+  "name": "@project-atlas/voice",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "livekit-client": "^2.9.0"
+  },
+  "devDependencies": {
+    "@project-atlas/config-typescript": "*",
+    "typescript": "^5.4.5"
+  }
+}

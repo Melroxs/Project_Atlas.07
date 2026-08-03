@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useRouter, useParams } from "next/navigation";
+import { useVoiceContext } from "@project-atlas/voice";
 import {
   STATUS_LABELS,
   STATUS_COLORS,
@@ -249,6 +250,8 @@ export default function SupplementDetailPage() {
   if (!supplement) return <p>Loading supplement...</p>;
 
   const totals = calculateTotals();
+
+  useVoiceContext({ mode: "supplement", supplementId: params?.id as string | undefined });
 
   return (
     <div className="max-w-7xl mx-auto p-6">

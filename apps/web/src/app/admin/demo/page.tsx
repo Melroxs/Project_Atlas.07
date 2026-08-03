@@ -1,6 +1,8 @@
 'use client';
 
 // apps/web/src/app/admin/demo/page.tsx
+import { useVoiceContext } from "@project-atlas/voice";
+
 // Full guided demo experience: flagship Carter Residence story, live metrics,
 // quick actions, animated walkthroughs, personas, AI capabilities, live
 // interactive modules (evidence graph, photo intelligence, decision review,
@@ -45,6 +47,10 @@ function DemoExperienceInner() {
   const [status, setStatus] = useState<DemoStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [fullDemoOpen, setFullDemoOpen] = useState(false);
+
+  // Tell the voice assistant we're on the Demo page so commands like
+  // "run the demo" or "export the final package" resolve correctly.
+  useVoiceContext({ mode: "demo", page: "/admin/demo" });
 
   useEffect(() => {
     checkDemoStatus();

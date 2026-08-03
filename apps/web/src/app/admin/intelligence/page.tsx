@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
 import { notifyDemoChanged } from "@/lib/demo-events";
+import { useVoiceContext } from "@project-atlas/voice";
 import AskAtlas from "@/components/intelligence/AskAtlas";
 import BusinessInsights from "@/components/intelligence/BusinessInsights";
 import Recommendations from "@/components/intelligence/Recommendations";
@@ -25,6 +26,11 @@ const tabs: Array<{ id: TabId; label: string; icon: string }> = [
 export default function IntelligencePage() {
   const [activeTab, setActiveTab] = useState<TabId>("ask");
   const [flagshipClaimId, setFlagshipClaimId] = useState<string | null>(null);
+
+  // Tell the voice assistant we're in the Intelligence Center (Evidence
+  // Graph, Photo Intelligence, Decision Review) so commands like
+  // "run the evidence graph" resolve to this module.
+  useVoiceContext({ mode: "evidence", page: "/admin/intelligence" });
 
   // Resolve the flagship claim so the timeline can deep-link into it.
   useEffect(() => {
