@@ -180,6 +180,16 @@ export default function AIShowcase() {
     };
   }, []);
 
+  // Close the capability modal on Escape.
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelected(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selected]);
+
   return (
     <div className="bg-[var(--surface)] rounded-xl shadow-lg border border-[var(--neutral-gray-200)] p-6">
       <div className="flex items-center justify-between mb-6">

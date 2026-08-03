@@ -84,6 +84,16 @@ export default function WalkthroughPlayer({ open, walkthrough, onClose, live = f
     if (open && walkthrough) reset();
   }, [open, walkthrough, reset]);
 
+  // Close on Escape (standard modal behavior / keyboard accessibility).
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   // Narrative thinking timer
   useEffect(() => {
     if (!open || !walkthrough || finished || live) return;

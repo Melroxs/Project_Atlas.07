@@ -80,6 +80,18 @@ export default function FullDemoPlayer({
     return () => document.removeEventListener('fullscreenchange', onFs);
   }, []);
 
+  // Close on Escape — leaves presentation mode first if active.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (document.fullscreenElement) void document.exitFullscreen();
+      onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   // Auto-scroll the AI console.
   useEffect(() => {
     consoleRef.current?.scrollTo({ top: consoleRef.current.scrollHeight, behavior: 'smooth' });

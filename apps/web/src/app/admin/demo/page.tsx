@@ -200,8 +200,8 @@ function DemoExperienceInner() {
       {/* Demo Metrics */}
       <DemoMetrics />
 
-      {/* Quick Actions */}
-      <QuickActions />
+      {/* Quick Actions — prop-driven from the single /demo/status fetch above */}
+      <QuickActions hasData={!!status?.hasData} enabled={!!status?.enabled} />
 
       {/* Demo Scenarios — switch the story */}
       <ScenarioGallery hasData={!!status?.hasData} />

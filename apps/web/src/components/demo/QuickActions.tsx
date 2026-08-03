@@ -4,18 +4,16 @@
 // Every action is live: generate / reset / clear demo data, toggle demo mode
 // and deep links into populated admin screens. Generation shows the animated
 // pipeline overlay, and every result reports via toast + refreshes the page.
+//
+// hasData / enabled are passed from the page (which owns the single
+// /demo/status fetch) to avoid a duplicate request on page load.
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { notifyDemoChanged, subscribeDemoChanged } from '@/lib/demo-events';
+import { notifyDemoChanged } from '@/lib/demo-events';
 import { useDemoToast } from './DemoToast';
 import GenerationOverlay from './GenerationOverlay';
-
-interface DemoStatus {
-  enabled: boolean;
-  hasData: boolean;
-}
 
 interface Action {
   label: string;
@@ -26,28 +24,11 @@ interface Action {
   requireData?: boolean;
 }
 
-export default function QuickActions() {
+export default function QuickActions({ hasData, enabled }: { hasData: boolean; enabled: boolean }) {
   const router = useRouter();
   const toast = useDemoToast();
-  const [status, setStatus] = useState<DemoStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [overlay, setOverlay] = useState<{ active: boolean; label: string }>({ active: false, label: '' });
-
-  useEffect(() => {
-    fetchStatus();
-    const unsubscribe = subscribeDemoChanged(() => fetchStatus());
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchStatus = async () => {
-    try {
-      const response = (await apiFetch('/demo/status')) as DemoStatus;
-      setStatus(response);
-    } catch (err) {
-      console.error('Error fetching demo status:', err);
-    }
-  };
 
   const generateDemoData = async (reset = false) => {
     setBusy(true);
@@ -91,7 +72,7 @@ export default function QuickActions() {
   };
 
   const toggleDemoMode = async () => {
-    const next = !status?.enabled;
+    const next = !enabled;
     setBusy(true);
     try {
       await apiFetch('/demo/toggle-mode', { method: 'POST', body: JSON.stringify({ enabled: next }) });
@@ -109,12 +90,12 @@ export default function QuickActions() {
 
   const actions: Action[] = [
     { label: 'Generate Demo Data', icon: '🎲', color: 'bg-[var(--brand-cyan)] hover:bg-[var(--brand-cyan-light)] text-[var(--brand-navy)]', onClick: () => generateDemoData(false), disabled: busy },
-    { label: 'Reset Demo', icon: '🔄', color: 'bg-[var(--brand-purple)] hover:bg-[var(--brand-purple-light)] text-[var(--foreground)]', onClick: () => generateDemoData(true), disabled: busy || !status?.hasData, requireData: true },
-    { label: 'Clear Demo', icon: '🗑️', color: 'bg-[var(--color-error)] hover:bg-red-600 text-[var(--foreground)]', onClick: clearDemoData, disabled: busy || !status?.hasData, requireData: true },
+    { label: 'Reset Demo', icon: '🔄', color: 'bg-[var(--brand-purple)] hover:bg-[var(--brand-purple-light)] text-[var(--foreground)]', onClick: () => generateDemoData(true), disabled: busy || !hasData, requireData: true },
+    { label: 'Clear Demo', icon: '🗑️', color: 'bg-[var(--color-error)] hover:bg-red-600 text-[var(--foreground)]', onClick: clearDemoData, disabled: busy || !hasData, requireData: true },
     {
-      label: status?.enabled ? 'Turn Demo Mode Off' : 'Enable Demo Mode',
-      icon: status?.enabled ? '🔴' : '🟢',
-      color: status?.enabled
+      label: enabled ? 'Turn Demo Mode Off' : 'Enable Demo Mode',
+      icon: enabled ? '🔴' : '🟢',
+      color: enabled
         ? 'bg-[var(--neutral-gray-500)] hover:bg-gray-600 text-[var(--foreground)]'
         : 'bg-[var(--color-success)] hover:bg-green-600 text-[var(--foreground)]',
       onClick: toggleDemoMode,
@@ -140,17 +121,17 @@ export default function QuickActions() {
         <div>
           <h2 className="text-xl font-semibold text-[var(--foreground)]">Quick Actions</h2>
           <p className="text-sm text-[var(--neutral-gray-500)] mt-1">
-            {status?.hasData ? 'Demo data is live — everything below is populated' : 'Generate demo data to populate every screen'}
+            {hasData ? 'Demo data is live — everything below is populated' : 'Generate demo data to populate every screen'}
           </p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${status?.enabled ? 'bg-[var(--color-success)]/15 text-[var(--color-success)]' : 'bg-[var(--neutral-gray-200)] text-[var(--neutral-gray-500)]'}`}>
-          {status?.enabled ? 'Demo mode on' : 'Demo mode off'}
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${enabled ? 'bg-[var(--color-success)]/15 text-[var(--color-success)]' : 'bg-[var(--neutral-gray-200)] text-[var(--neutral-gray-500)]'}`}>
+          {enabled ? 'Demo mode on' : 'Demo mode off'}
         </span>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
         {actions.map((action, index) => {
-          const disabled = action.disabled || (action.requireData && !status?.hasData);
+          const disabled = action.disabled || (action.requireData && !hasData);
           return (
             <button
               key={index}

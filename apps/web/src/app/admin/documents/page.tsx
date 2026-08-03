@@ -94,6 +94,16 @@ export default function DocumentsPage() {
     }
   };
 
+  // Close the preview modal on Escape (backdrop click already closes).
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPreview(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [preview]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return documents;
