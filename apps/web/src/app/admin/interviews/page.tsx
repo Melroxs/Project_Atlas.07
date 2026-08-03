@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { useLiveRefresh } from "@/lib/data-events";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import {
   STATUS_LABELS,
@@ -44,6 +45,8 @@ export default function InterviewsPage() {
     }
     loadInterviews();
   }, [session, loading, router, statusFilter, templateFilter, page]);
+
+  useLiveRefresh(() => loadInterviews());
 
   const loadInterviews = async () => {
     try {

@@ -649,6 +649,26 @@ html {
   100% { background-position: 200% 0; }
 }
 
+@keyframes toast-enter {
+  from { opacity: 0; transform: translateX(24px) scale(0.96); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toast-timer {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+@keyframes count-up-glow {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--atlas-cyan) 55%, transparent); }
+  100% { box-shadow: 0 0 0 12px transparent; }
+}
+
+@keyframes overlay-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
 @layer base {
   * { border-color: var(--color-border); }
   html { scroll-behavior: smooth; }
@@ -662,8 +682,68 @@ html {
   ::selection { background: color-mix(in oklab, var(--atlas-cyan) 40%, transparent); color: white; }
 }
 
+.toast-enter { animation: toast-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+.toast-timer { animation: toast-timer 4.2s linear forwards; }
+.count-up-flash { animation: count-up-glow 0.9s ease-out; }
+.overlay-pulse { animation: overlay-pulse 1.6s ease-in-out infinite; }
+
+/* --- Demo 2.0 animations --- */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.4s ease-out both; }
+
+@keyframes scanline {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 24px; }
+}
+.scanline {
+  background-image: repeating-linear-gradient(
+    0deg,
+    color-mix(in oklab, var(--atlas-cyan) 18%, transparent) 0 2px,
+    transparent 2px 6px
+  ) !important;
+  animation: scanline 0.7s linear infinite;
+}
+
+@keyframes typing-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.typing-caret { animation: typing-caret 0.8s step-end infinite; }
+
+@keyframes mic-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-error) 55%, transparent); }
+  50% { transform: scale(1.25); box-shadow: 0 0 0 8px transparent; }
+}
+.mic-pulse { animation: mic-pulse 1.1s ease-in-out infinite; }
+
+@keyframes metric-flash {
+  0% { background-color: color-mix(in oklab, var(--atlas-cyan) 22%, transparent); border-color: color-mix(in oklab, var(--atlas-cyan) 55%, transparent); }
+  100% { background-color: var(--background-alt); border-color: var(--neutral-gray-200); }
+}
+.metric-flash { animation: metric-flash 1.4s ease-out; }
+
+@keyframes graph-pulse {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.graph-pulse { animation: graph-pulse 1.4s ease-out infinite; transform-origin: center; }
+
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-drift, .animate-pulse-glow, .animate-scan, .animate-reveal {
+  .animate-drift, .animate-pulse-glow, .animate-scan, .animate-reveal,
+  .toast-enter, .toast-timer, .count-up-flash, .overlay-pulse,
+  .fade-up, .scanline, .typing-caret, .mic-pulse, .metric-flash, .graph-pulse {
     animation: none !important;
+  }
+  /* Global catch-all: respect reduced-motion for every animation/transition. */
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

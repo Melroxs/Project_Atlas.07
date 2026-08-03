@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { subscribeDemoChanged } from '@/lib/demo-events';
 
 interface Persona {
   id: string;
@@ -37,6 +38,9 @@ export default function PersonaCards() {
 
   useEffect(() => {
     fetchPersonas();
+    const unsubscribe = subscribeDemoChanged(() => fetchPersonas());
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPersonas = async () => {

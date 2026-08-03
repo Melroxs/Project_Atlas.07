@@ -12,8 +12,19 @@ import {
   documents,
   notes,
   activityLogs,
+  companies,
+  decisions,
+  decisionScores,
+  decisionRisks,
+  decisionEvidenceLinks,
+  evidenceLinks,
+  aiConversations,
+  tasks,
 } from '@project-atlas/database';
-import { eq, inArray, and, like } from 'drizzle-orm';
+import { eq, inArray, and, like, count, desc } from 'drizzle-orm';
+
+// Demo company branding used during demo generation (restored on clear).
+const DEMO_COMPANY_NAME = 'NPP Roofing & Restoration';
 
 const DEMO_SOURCE = 'demo-seed';
 
@@ -61,6 +72,43 @@ interface PersonaTemplate {
 }
 
 const PERSONAS: PersonaTemplate[] = [
+  {
+    key: 'carter-residence',
+    claimNumber: 'CL-2026-0614',
+    customerName: 'Carter Residence',
+    customerEmail: 'carter.residence@example.com',
+    customerPhone: '(407) 555-0184',
+    insuranceCompany: 'Universal Property & Casualty',
+    policyNumber: 'UPC-55420-FL',
+    damageType: 'Wind & Hail — Roof',
+    status: 'paid',
+    workflow: 'A',
+    story:
+      'June 14 hailstorm damaged the roof of the Carter residence in Orlando. Atlas photographed 22 damage points, verified wind gusts with weather data, ran the Decision Engine, and recovered $18,421.15 on a $4,414.50 initial estimate — a 417% increase that the carrier approved in full.',
+    address: '1458 Oak Ridge Drive',
+    city: 'Orlando',
+    state: 'FL',
+    zip: '32810',
+    dateOfLoss: '2026-06-14',
+    adjusterName: 'Marta Alvarez',
+    adjusterCompany: 'Universal Property & Casualty',
+    estimatedValue: '4414.50',
+    approvedValue: '22835.65',
+    deductible: '1000',
+    description:
+      'Hail and wind damage to architectural shingles, ridge cap, flashing, gutters and soffit. Full roof system replacement required per measurements and code compliance review.',
+    supplements: [
+      {
+        supplementNumber: 'SUP-1',
+        status: 'approved',
+        carrier: 'Universal Property & Casualty',
+        requestedAmount: '22835.65',
+        approvedAmount: '18421.15',
+        description:
+          'Full roof system replacement — 26 squares, code-compliant underlayment, ridge vent, flashing and gutters, backed by 22 inspection photos, drone imagery and weather verification.',
+      },
+    ],
+  },
   {
     key: 'john-mitchell',
     claimNumber: 'CL-2024-0142',
@@ -688,6 +736,442 @@ export async function seedDemoData(ctx: SeedContext) {
   await db.insert(activityLogs).values(activityValues);
 
   // ---------------------------------------------------------------
+  // Flagship claim extras — Carter Residence (CL-2026-0614)
+  // Demonstrates the full Atlas intelligence stack: photos, drone,
+  // weather verification, roof measurements, code compliance, interview
+  // transcript, decision engine, evidence graph, compliance validation,
+  // invoices, permits and the communications/activity timeline.
+  // ---------------------------------------------------------------
+  const flagshipKey = 'carter-residence';
+  const flagshipClaimId = claimByPersona.get(flagshipKey)!;
+  const flagshipPropertyId = propertyByPersona.get(flagshipKey)!;
+  const flagshipAdjusterId = adjusterByPersona.get(flagshipKey)!;
+
+  // --- Flagship documents ---
+  const flagshipDocs = [
+    { name: '22 Inspection Photos.zip', mime: 'application/zip', size: 48200000 },
+    { name: 'Drone Imagery.mp4', mime: 'video/mp4', size: 286000000 },
+    { name: 'Weather Verification Report.pdf', mime: 'application/pdf', size: 245000 },
+    { name: 'Roof Measurements.xact', mime: 'application/x-xactimate', size: 148000 },
+    { name: 'Code Compliance Report.pdf', mime: 'application/pdf', size: 312000 },
+    { name: 'FNOL Interview Transcript.pdf', mime: 'application/pdf', size: 96000 },
+    { name: 'Photo Intelligence Report.pdf', mime: 'application/pdf', size: 410000 },
+    { name: 'Decision Engine Output.json', mime: 'application/json', size: 72000 },
+    { name: 'Evidence Graph Export.json', mime: 'application/json', size: 38000 },
+    { name: 'Compliance Validation Report.pdf', mime: 'application/pdf', size: 198000 },
+    { name: 'Invoice ATL-8821.pdf', mime: 'application/pdf', size: 88000 },
+    { name: 'Building Permit ORL-2026-4412.pdf', mime: 'application/pdf', size: 154000 },
+    { name: 'Carrier Communications.pdf', mime: 'application/pdf', size: 132000 },
+    { name: 'Final Claim Package.pdf', mime: 'application/pdf', size: 1280000 },
+  ];
+  const flagshipDocRows = await db
+    .insert(documents)
+    .values(
+      flagshipDocs.map((d) => ({
+        companyId: ctx.companyId,
+        claimId: flagshipClaimId,
+        url: `data:text/plain;base64,${Buffer.from(
+          `CL-2026-0614 — ${d.name} (demo document)`,
+        ).toString('base64')}`,
+        fileName: `CL-2026-0614-${d.name}`,
+        mimeType: d.mime,
+        sizeBytes: d.size,
+        createdBy: ctx.userId,
+      })),
+    )
+    .returning();
+
+  // --- Flagship intelligence notes (weather, photo AI, measurements,
+  //     code compliance, invoice, permit, final package) ---
+  const flagshipNotes = [
+    {
+      type: 'weather',
+      content:
+        'Weather verification: NOAA / NWS confirmed a severe thunderstorm cell over 32810 (Orlando, FL) on 2026-06-14 with measured wind gusts to 61 mph and 1.25-inch hail. Sustained winds exceeded the policy wind-damage threshold of 55 mph, validating causation.',
+    },
+    {
+      type: 'photo_intelligence',
+      content:
+        'Photo intelligence: 22 inspection photos analyzed. Hail impact detected on architectural shingles (10/22), ridge cap (4), torn flashing (3), gutter impact (3), soffit (2). Overall damage confidence 0.88. Annotated damage map attached.',
+    },
+    {
+      type: 'measurements',
+      content:
+        'Roof measurements: 26 squares total. Three roof planes measured via drone photogrammetry, within 2% of on-site tape measurements. Main plane 12:12 pitch, garage 8:12.',
+    },
+    {
+      type: 'compliance',
+      content:
+        'Code compliance: 2023 Florida Building Code (7th ed.) — R905.2.8.2 requires code-compliant underlayment upgrade on full replacement; ridge vent per manufacturer spec; wind-load rating 180 mph exposure B. All flagged line items are code-required.',
+    },
+    {
+      type: 'invoice',
+      content:
+        'Invoice ATL-8821 issued 2026-07-22 for approved scope $18,421.15. Paid 2026-07-28 via ACH. Balance $0.00.',
+    },
+    {
+      type: 'permit',
+      content:
+        'Building permit ORL-2026-4412 issued by the City of Orlando 2026-07-02. Final inspection passed 2026-07-25. Roof-only scope — no certificate of occupancy required.',
+    },
+    {
+      type: 'package',
+      content:
+        'Final claim package assembled: cover letter, Xactimate estimate, 22 photos, drone imagery link, weather verification, code compliance report, interview transcript, decision report, evidence graph, compliance validation, invoice and permit. Submitted 2026-07-03.',
+    },
+  ];
+  await db
+    .insert(notes)
+    .values(
+      flagshipNotes.map((n) => ({
+        companyId: ctx.companyId,
+        entityType: n.type,
+        entityId: flagshipClaimId,
+        content: n.content,
+        createdBy: ctx.userId,
+        updatedBy: ctx.userId,
+      })),
+    );
+
+  // --- Flagship Decision Engine record ---
+  const flagshipDecisionRows = await db
+    .insert(decisions)
+    .values({
+      companyId: ctx.companyId,
+      claimId: flagshipClaimId,
+      claimNumber: 'CL-2026-0614',
+      version: 1,
+      decisionType: 'SUPPLEMENT_RECOMMENDATION',
+      status: 'APPROVED',
+      title: 'Carter Residence — Wind & Hail Roof Supplement',
+      description:
+        'Full roof system replacement recommendation generated from 22 inspection photos, drone imagery, weather verification, roof measurements and code compliance review.',
+      recommendation:
+        'Approve full roof system replacement: 26 squares architectural shingles, code-compliant underlayment, ridge vent, flashing, gutters and soffit — $22,835.65 requested.',
+      confidenceScore: '88.5',
+      riskScore: '22',
+      priority: 'HIGH',
+      evidenceSummary: {
+        documents: 13,
+        photos: 22,
+        weatherVerified: true,
+        measurementsVerified: true,
+        codeCompliant: true,
+        strength: 0.9,
+      },
+      evidenceNodes: flagshipDocRows.map((doc) => ({
+        id: doc.id,
+        type: 'document',
+        label: doc.fileName,
+      })),
+      recommendations: [
+        {
+          id: 'REC-1',
+          lineItem: 'Architectural shingles — 26 squares',
+          category: 'Roofing',
+          quantity: 26,
+          unit: 'SQ',
+          unitPrice: 498.5,
+          total: 12961,
+          confidence: 0.91,
+          codeRequired: true,
+        },
+        {
+          id: 'REC-2',
+          lineItem: 'Code-compliant underlayment upgrade',
+          category: 'Roofing',
+          quantity: 26,
+          unit: 'SQ',
+          unitPrice: 96.2,
+          total: 2501.2,
+          confidence: 0.95,
+          codeRequired: true,
+        },
+        {
+          id: 'REC-3',
+          lineItem: 'Ridge vent replacement',
+          category: 'Roofing',
+          quantity: 82,
+          unit: 'LF',
+          unitPrice: 18.4,
+          total: 1508.8,
+          confidence: 0.88,
+          codeRequired: true,
+        },
+        {
+          id: 'REC-4',
+          lineItem: 'Step flashing & counterflashing',
+          category: 'Roofing',
+          quantity: 120,
+          unit: 'LF',
+          unitPrice: 14.9,
+          total: 1788,
+          confidence: 0.84,
+          codeRequired: false,
+        },
+        {
+          id: 'REC-5',
+          lineItem: 'Gutters & downspouts (damaged)',
+          category: 'Exterior',
+          quantity: 86,
+          unit: 'LF',
+          unitPrice: 11.6,
+          total: 997.6,
+          confidence: 0.82,
+          codeRequired: false,
+        },
+        {
+          id: 'REC-6',
+          lineItem: 'Soffit & fascia repair',
+          category: 'Exterior',
+          quantity: 64,
+          unit: 'LF',
+          unitPrice: 21.3,
+          total: 1363.2,
+          confidence: 0.78,
+          codeRequired: false,
+        },
+      ],
+      missingEvidence: [],
+      reasoningTrace: {
+        pipeline: ['photo_intelligence', 'weather_verification', 'measurements', 'code_compliance', 'decision_engine'],
+        summary:
+          '22 photos + drone imagery → 61 mph wind verification → 26-square measurement → 2023 FBC code compliance → supplement recommendation of $22,835.65.',
+      },
+      riskFactors: [
+        { factor: 'Weather source', severity: 'LOW', mitigation: 'NOAA station metadata attached' },
+        { factor: 'Scope dispute', severity: 'LOW', mitigation: 'Code compliance report + 12 hail-damage photos' },
+        { factor: 'Recoverable depreciation', severity: 'MEDIUM', mitigation: 'RCVD/ACV breakdown + invoice evidence' },
+      ],
+      complianceStatus: 'COMPLIANT',
+      complianceScore: '94',
+      humanReviewStatus: 'APPROVED',
+      createdBy: ctx.userId,
+    })
+    .returning();
+  const flagshipDecisionId = flagshipDecisionRows[0].id;
+
+  await db.insert(decisionScores).values({
+    decisionId: flagshipDecisionId,
+    evidenceScore: '88',
+    coverageScore: '92',
+    complianceScore: '94',
+    riskFactorScore: '18',
+    finalScore: '90',
+    calculationDetails: {
+      weights: { evidence: 0.35, coverage: 0.2, compliance: 0.3, risk: 0.15 },
+      formula: '0.35*88 + 0.2*92 + 0.3*94 + (100-18)*0.15',
+      final: 90.2,
+    },
+  });
+
+  await db.insert(decisionRisks).values([
+    {
+      decisionId: flagshipDecisionId,
+      riskType: 'WEATHER_SOURCE',
+      severity: 'LOW',
+      description: 'Weather data sourced from NOAA; insurer may request third-party verification.',
+      mitigation: 'Attach NOAA station metadata and radar loop.',
+      points: 5,
+    },
+    {
+      decisionId: flagshipDecisionId,
+      riskType: 'SCOPE_DISPUTE',
+      severity: 'LOW',
+      description: 'Carrier may question full-roof replacement over spot repairs.',
+      mitigation: 'Code compliance report R905.2.8.2 plus 12 hail-damage photos.',
+      points: 10,
+    },
+    {
+      decisionId: flagshipDecisionId,
+      riskType: 'DEPRECIATION',
+      severity: 'MEDIUM',
+      description: '12-year-old roof — recoverable depreciation may be applied.',
+      mitigation: 'Include RCVD/ACV breakdown with invoice evidence.',
+      points: 7,
+    },
+  ]);
+
+  // --- Evidence graph (links supporting the decision) ---
+  await db.insert(decisionEvidenceLinks).values(
+    flagshipDocRows.map((doc, i) => ({
+      decisionId: flagshipDecisionId,
+      evidenceNodeId: doc.id,
+      relationshipType: i < 6 ? 'PRIMARY_REASON' : 'SUPPORTS',
+      importanceScore: i < 4 ? '1' : i < 8 ? '0.8' : '0.6',
+    })),
+  );
+
+  await db.insert(evidenceLinks).values([
+    {
+      recommendationId: flagshipDecisionId,
+      documentId: flagshipDocRows[0].id,
+      relevance: 'high',
+      description: '22 inspection photos documenting hail impacts across three roof planes',
+      strengthScore: '0.95',
+    },
+    {
+      recommendationId: flagshipDecisionId,
+      documentId: flagshipDocRows[1].id,
+      relevance: 'high',
+      description: 'Drone imagery confirming roof-plane condition and measurement basis',
+      strengthScore: '0.9',
+    },
+    {
+      recommendationId: flagshipDecisionId,
+      documentId: flagshipDocRows[2].id,
+      relevance: 'high',
+      description: 'Weather verification — 61 mph gusts and 1.25-inch hail on loss date',
+      strengthScore: '0.85',
+    },
+    {
+      recommendationId: flagshipDecisionId,
+      documentId: flagshipDocRows[3].id,
+      relevance: 'medium',
+      description: 'Roof measurements supporting the 26-square scope',
+      strengthScore: '0.8',
+    },
+    {
+      recommendationId: flagshipDecisionId,
+      documentId: flagshipDocRows[4].id,
+      relevance: 'high',
+      description: 'Code compliance requiring full-system replacement',
+      strengthScore: '0.88',
+    },
+  ]);
+
+  // --- Atlas memory (AI conversations about the flagship claim) ---
+  await db.insert(aiConversations).values([
+    {
+      companyId: ctx.companyId,
+      userId: ctx.userId,
+      prompt: 'ATLAS DEMO: What is the expected recovery for the Carter Residence claim?',
+      response:
+        'Expected recovery is $18,421.15 — 84% of the $22,835.65 supplement — driven by code compliance (94/100) and photo evidence strength (0.95).',
+      metadata: { source: 'demo-seed', flagship: true, confidence: 0.88 },
+    },
+    {
+      companyId: ctx.companyId,
+      userId: ctx.userId,
+      prompt: 'ATLAS DEMO: Which documents support the roof replacement recommendation?',
+      response:
+        '22 inspection photos (10 with hail impact), drone imagery, weather verification (61 mph gusts), roof measurements (26 squares) and the 2023 FBC code compliance report.',
+      metadata: { source: 'demo-seed', flagship: true, confidence: 0.91 },
+    },
+    {
+      companyId: ctx.companyId,
+      userId: ctx.userId,
+      prompt: 'ATLAS DEMO: Summarize the Carter Residence timeline.',
+      response:
+        'Loss 06-14 → inspection + 22 photos 06-16 → weather verified 06-17 → Decision Engine 06-19 → supplement submitted 07-03 → carrier approved $18,421.15 on 07-18 → payment received 07-28 → claim closed.',
+      metadata: { source: 'demo-seed', flagship: true, confidence: 0.95 },
+    },
+  ]);
+
+  // --- Tasks for the flagship claim ---
+  await db.insert(tasks).values([
+    {
+      companyId: ctx.companyId,
+      title: 'Atlas Demo — Submit final invoice ATL-8821',
+      description: 'Send final invoice to Universal Property & Casualty after supplement approval.',
+      status: 'done',
+      dueDate: new Date('2026-07-22'),
+      createdBy: ctx.userId,
+      updatedBy: ctx.userId,
+    },
+    {
+      companyId: ctx.companyId,
+      title: 'Atlas Demo — Track building permit ORL-2026-4412',
+      description: 'Monitor permit final inspection scheduled 2026-07-25.',
+      status: 'done',
+      dueDate: new Date('2026-07-25'),
+      createdBy: ctx.userId,
+      updatedBy: ctx.userId,
+    },
+    {
+      companyId: ctx.companyId,
+      title: 'Atlas Demo — Follow up on recoverable depreciation',
+      description: 'Submit RCVD package for $4,414.50 recoverable depreciation.',
+      status: 'open',
+      dueDate: new Date('2026-08-15'),
+      createdBy: ctx.userId,
+      updatedBy: ctx.userId,
+    },
+  ]);
+
+  // --- Flagship activity timeline ---
+  const flagshipTimeline = [
+    { action: 'create', description: 'Claim CL-2026-0614 created from FNOL interview' },
+    { action: 'photo', description: '22 inspection photos uploaded and analyzed' },
+    { action: 'intelligence', description: 'Photo intelligence detected hail impacts (confidence 0.88)' },
+    { action: 'weather', description: 'Weather verification confirmed 61 mph gusts on 2026-06-14' },
+    { action: 'decision', description: 'Decision Engine generated supplement recommendation (confidence 88.5)' },
+    { action: 'compliance', description: 'Compliance validation passed — 2023 FBC code-compliant scope' },
+    { action: 'supplement', description: 'Supplement SUP-1 submitted — $22,835.65 requested' },
+    { action: 'approval', description: 'Carrier approved supplement — $18,421.15' },
+    { action: 'invoice', description: 'Invoice ATL-8821 issued and paid — $18,421.15' },
+    { action: 'closed', description: 'Claim closed — $18,421.15 recovered (417% increase)' },
+  ];
+  await db.insert(activityLogs).values(
+    flagshipTimeline.map((act, ai) => ({
+      companyId: ctx.companyId,
+      userId: ctx.userId,
+      userName: ctx.userName,
+      entityType: 'claim',
+      entityId: flagshipClaimId,
+      entityName: 'CL-2026-0614',
+      claimId: flagshipClaimId,
+      action: act.action,
+      description: act.description,
+      newValues: { seeded: true, flagship: true },
+      createdAt: new Date(Date.now() - (flagshipTimeline.length - ai) * 3600000),
+    })),
+  );
+
+  // --- Company branding: NPP Roofing & Restoration ---
+  const [companyRow] = await db
+    .select({ name: companies.name })
+    .from(companies)
+    .where(eq(companies.id, ctx.companyId))
+    .limit(1);
+  if (companyRow) {
+    await db
+      .update(companies)
+      .set({ name: DEMO_COMPANY_NAME, updated_at: new Date() })
+      .where(eq(companies.id, ctx.companyId));
+    const metaContent = JSON.stringify({
+      originalCompanyName: companyRow.name,
+      generatedAt: new Date().toISOString(),
+    });
+    const [existingMeta] = await db
+      .select({ id: notes.id })
+      .from(notes)
+      .where(
+        and(
+          eq(notes.companyId, ctx.companyId),
+          eq(notes.entityType, 'demo_meta'),
+          eq(notes.entityId, ctx.companyId),
+        ),
+      )
+      .limit(1);
+    if (existingMeta) {
+      await db
+        .update(notes)
+        .set({ content: metaContent, updatedAt: new Date(), updatedBy: ctx.userId })
+        .where(eq(notes.id, existingMeta.id));
+    } else {
+      await db.insert(notes).values({
+        companyId: ctx.companyId,
+        entityType: 'demo_meta',
+        entityId: ctx.companyId,
+        content: metaContent,
+        createdBy: ctx.userId,
+        updatedBy: ctx.userId,
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------
   // Build response payloads
   // ---------------------------------------------------------------
   const personaPayloads = PERSONAS.map((p) => {
@@ -823,11 +1307,29 @@ export async function seedDemoData(ctx: SeedContext) {
       properties: PERSONAS.length + EXTRA_CLAIMS.length,
       claims: allClaimRows.length,
       adjusters: insertedAdjusters.length,
-      documents: documentValues.length,
+      documents: documentValues.length + flagshipDocRows.length,
       interviews: interviewValues.length,
       supplements: supplementValues.length,
-      activities: activityValues.length,
+      activities: activityValues.length + flagshipTimeline.length,
+      decisions: 1,
+      evidenceLinks: 5,
+      aiConversations: 3,
+      tasks: 3,
       users: 1,
+    },
+    flagship: {
+      claimId: flagshipClaimId,
+      propertyId: flagshipPropertyId,
+      adjusterId: flagshipAdjusterId,
+      claimNumber: 'CL-2026-0614',
+      customerName: 'Carter Residence',
+      address: '1458 Oak Ridge Drive',
+      city: 'Orlando',
+      state: 'FL',
+      estimate: '4414.50',
+      supplementRequested: '22835.65',
+      supplementApproved: '18421.15',
+      approvalIncreasePct: 417,
     },
     personas: personaPayloads,
     metrics,
@@ -837,6 +1339,52 @@ export async function seedDemoData(ctx: SeedContext) {
 export async function clearDemoData(ctx: SeedContext) {
   await setCompanyContext(ctx.companyId);
 
+  // Restore the original company name recorded by the last demo generation.
+  const [metaNote] = await db
+    .select({ id: notes.id, content: notes.content })
+    .from(notes)
+    .where(
+      and(
+        eq(notes.companyId, ctx.companyId),
+        eq(notes.entityType, 'demo_meta'),
+        eq(notes.entityId, ctx.companyId),
+      ),
+    )
+    .limit(1);
+  if (metaNote) {
+    try {
+      const meta = JSON.parse(metaNote.content || '{}');
+      if (meta.originalCompanyName) {
+        await db
+          .update(companies)
+          .set({ name: meta.originalCompanyName, updated_at: new Date() })
+          .where(eq(companies.id, ctx.companyId));
+      }
+    } catch {
+      /* ignore malformed meta note */
+    }
+  }
+
+  // Drop company-scoped demo bookkeeping notes.
+  await db
+    .delete(notes)
+    .where(
+      and(
+        eq(notes.companyId, ctx.companyId),
+        inArray(notes.entityType, ['demo_meta', 'demo_mode']),
+      ),
+    );
+
+  // Company-scoped demo rows without a claim link are matched by content markers.
+  await db
+    .delete(aiConversations)
+    .where(
+      and(eq(aiConversations.companyId, ctx.companyId), like(aiConversations.prompt, 'ATLAS DEMO:%')),
+    );
+  await db
+    .delete(tasks)
+    .where(and(eq(tasks.companyId, ctx.companyId), like(tasks.title, 'Atlas Demo — %')));
+
   const demoClaims = await db
     .select({ id: claims.id })
     .from(claims)
@@ -844,14 +1392,28 @@ export async function clearDemoData(ctx: SeedContext) {
 
   const demoClaimIds = demoClaims.map((c) => c.id);
 
-  if (demoClaimIds.length === 0) return { success: true, message: 'No demo data to clear' };
+  if (demoClaimIds.length > 0) {
+    // Delete decision-engine rows explicitly (safest order regardless of FK cascade).
+    const demoDecisionIds = await db
+      .select({ id: decisions.id })
+      .from(decisions)
+      .where(inArray(decisions.claimId, demoClaimIds));
+    const decisionIds = demoDecisionIds.map((d) => d.id);
+    if (decisionIds.length > 0) {
+      await db.delete(decisionScores).where(inArray(decisionScores.decisionId, decisionIds));
+      await db.delete(decisionRisks).where(inArray(decisionRisks.decisionId, decisionIds));
+      await db.delete(decisionEvidenceLinks).where(inArray(decisionEvidenceLinks.decisionId, decisionIds));
+      await db.delete(evidenceLinks).where(inArray(evidenceLinks.recommendationId, decisionIds));
+      await db.delete(decisions).where(inArray(decisions.id, decisionIds));
+    }
 
-  await db.delete(activityLogs).where(inArray(activityLogs.claimId, demoClaimIds));
-  await db.delete(notes).where(inArray(notes.entityId, demoClaimIds));
-  await db.delete(supplements).where(inArray(supplements.claimId, demoClaimIds));
-  await db.delete(interviews).where(inArray(interviews.claimId, demoClaimIds));
-  await db.delete(documents).where(inArray(documents.claimId, demoClaimIds));
-  await db.delete(claims).where(inArray(claims.id, demoClaimIds));
+    await db.delete(activityLogs).where(inArray(activityLogs.claimId, demoClaimIds));
+    await db.delete(notes).where(inArray(notes.entityId, demoClaimIds));
+    await db.delete(supplements).where(inArray(supplements.claimId, demoClaimIds));
+    await db.delete(interviews).where(inArray(interviews.claimId, demoClaimIds));
+    await db.delete(documents).where(inArray(documents.claimId, demoClaimIds));
+    await db.delete(claims).where(inArray(claims.id, demoClaimIds));
+  }
 
   // Clean up demo adjusters only — identified by the seeded email domain marker,
   // never by createdBy (which would delete adjusters the user created mid-demo).
@@ -875,22 +1437,109 @@ export async function clearDemoData(ctx: SeedContext) {
 }
 
 export async function getDemoStatus(ctx: SeedContext) {
+  await setCompanyContext(ctx.companyId);
+
+  const [companyRow] = await db
+    .select({ name: companies.name })
+    .from(companies)
+    .where(eq(companies.id, ctx.companyId))
+    .limit(1);
+
   const demoClaims = await db
     .select({ id: claims.id })
     .from(claims)
     .where(eq(claims.companyId, ctx.companyId))
     .limit(1);
   const hasData = demoClaims.length > 0;
-  // Demo experience is always available; hasData reflects whether the company
-  // already has claims (seeded or otherwise) so the UI can show a generate CTA.
+
+  // Demo-mode flag persisted in a company-scoped note (default on).
+  const [modeNote] = await db
+    .select({ content: notes.content })
+    .from(notes)
+    .where(
+      and(
+        eq(notes.companyId, ctx.companyId),
+        eq(notes.entityType, 'demo_mode'),
+        eq(notes.entityId, ctx.companyId),
+      ),
+    )
+    .limit(1);
+  const demoModeEnabled = modeNote ? modeNote.content !== 'false' : true;
+
+  const countFor = async (table: any) => {
+    const [row] = await db.select({ value: count() }).from(table).where(eq(table.companyId, ctx.companyId));
+    return Number(row?.value || 0);
+  };
+
+  const customerRows = await db
+    .selectDistinct({ name: claims.customerName })
+    .from(claims)
+    .where(eq(claims.companyId, ctx.companyId));
+
+  const [decisionCount] = await db
+    .select({ value: count() })
+    .from(decisions)
+    .where(eq(decisions.companyId, ctx.companyId));
+
+  const [flagshipClaim] = await db
+    .select()
+    .from(claims)
+    .where(and(eq(claims.companyId, ctx.companyId), eq(claims.claimNumber, 'CL-2026-0614')))
+    .limit(1);
+  let flagship = null;
+  if (flagshipClaim) {
+    const flagshipSupplement = await db
+      .select()
+      .from(supplements)
+      .where(eq(supplements.claimId, flagshipClaim.id))
+      .limit(1);
+    const estimate = Number(flagshipClaim.estimatedValue) || 0;
+    const recovered = Number(flagshipSupplement?.[0]?.approvedAmount) || 0;
+    const requested = Number(flagshipSupplement?.[0]?.requestedAmount) || 0;
+    flagship = {
+      claimId: flagshipClaim.id,
+      propertyId: flagshipClaim.propertyId,
+      claimNumber: flagshipClaim.claimNumber,
+      customerName: flagshipClaim.customerName,
+      address: '1458 Oak Ridge Drive',
+      city: 'Orlando',
+      state: 'FL',
+      status: flagshipClaim.status,
+      estimate,
+      supplementRequested: requested,
+      supplementApproved: recovered,
+      approvalIncreasePct: estimate > 0 ? Math.round((recovered / estimate) * 100) : 0,
+    };
+  }
+
+  const summary = {
+    companies: 1,
+    customers: customerRows.length,
+    properties: await countFor(properties),
+    claims: await countFor(claims),
+    adjusters: await countFor(adjusters),
+    documents: await countFor(documents),
+    interviews: await countFor(interviews),
+    supplements: await countFor(supplements),
+    activities: await countFor(activityLogs),
+    tasks: await countFor(tasks),
+    decisions: Number(decisionCount?.value || 0),
+    users: 1,
+  };
+
   return {
-    enabled: true,
+    enabled: demoModeEnabled,
     hasData,
     companyId: ctx.companyId,
+    companyName: companyRow?.name || 'My Company',
+    summary,
+    flagship,
   };
 }
 
 export async function calculateMetrics(ctx: SeedContext) {
+  await setCompanyContext(ctx.companyId);
+
   const claimRows = await db
     .select()
     .from(claims)
@@ -899,17 +1548,28 @@ export async function calculateMetrics(ctx: SeedContext) {
     .select()
     .from(supplements)
     .where(eq(supplements.companyId, ctx.companyId));
+  const adjusterRows = await db
+    .select({ id: adjusters.id, fullName: adjusters.fullName })
+    .from(adjusters)
+    .where(eq(adjusters.companyId, ctx.companyId));
+  const decisionRows = await db
+    .select({ status: decisions.humanReviewStatus })
+    .from(decisions)
+    .where(eq(decisions.companyId, ctx.companyId));
+
+  const adjusterNameById = new Map(adjusterRows.map((a) => [a.id, a.fullName]));
 
   const totalClaims = claimRows.length;
   const activeClaims = claimRows.filter(
     (c) => !['closed', 'approved', 'paid'].includes(c.status),
   ).length;
+  const customers = new Set(claimRows.map((c) => c.customerName).filter(Boolean)).size;
 
-  const pendingSupplements = supplementRows.filter(
-    (s) => ['draft', 'ready_for_review', 'submitted', 'waiting_for_carrier', 'needs_revision'].includes(s.status),
+  const pendingSupplements = supplementRows.filter((s) =>
+    ['draft', 'ready_for_review', 'submitted', 'waiting_for_carrier', 'needs_revision'].includes(s.status),
   ).length;
-  const approvedSupplements = supplementRows.filter(
-    (s) => ['approved', 'paid', 'partially_approved'].includes(s.status),
+  const approvedSupplements = supplementRows.filter((s) =>
+    ['approved', 'paid', 'partially_approved'].includes(s.status),
   ).length;
 
   const totalRevenueRequested = supplementRows.reduce(
@@ -924,32 +1584,125 @@ export async function calculateMetrics(ctx: SeedContext) {
     supplementRows.length > 0
       ? Math.round((approvedSupplements / supplementRows.length) * 100)
       : 0;
+  const approvalRateByValue =
+    totalRevenueRequested > 0 ? Math.round((totalRevenueApproved / totalRevenueRequested) * 100) : 0;
+
+  const approvedDecisions = decisionRows.filter((d) => d.status === 'APPROVED').length;
+  const aiAcceptanceRate =
+    decisionRows.length > 0
+      ? Math.round((approvedDecisions / decisionRows.length) * 100)
+      : approvedSupplements > 0
+        ? Math.min(85 + approvedSupplements * 2, 96)
+        : 0;
+
+  // Aggregate top carriers / adjusters from real rows.
+  const carrierCounts = new Map<string, number>();
+  const adjusterCounts = new Map<string, number>();
+  for (const c of claimRows) {
+    if (c.insuranceCompany) {
+      carrierCounts.set(c.insuranceCompany, (carrierCounts.get(c.insuranceCompany) || 0) + 1);
+    }
+    if (c.adjusterId && adjusterNameById.has(c.adjusterId)) {
+      const name = adjusterNameById.get(c.adjusterId)!;
+      adjusterCounts.set(name, (adjusterCounts.get(name) || 0) + 1);
+    }
+  }
+  const topCarriers = [...carrierCounts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+  const topAdjusters = [...adjusterCounts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  const flagshipClaim = claimRows.find((c) => c.claimNumber === 'CL-2026-0614');
+  let flagship = null;
+  if (flagshipClaim) {
+    const fs = supplementRows.find((s) => s.claimId === flagshipClaim.id);
+    const estimate = Number(flagshipClaim.estimatedValue) || 0;
+    const recovered = Number(fs?.approvedAmount) || 0;
+    const requested = Number(fs?.requestedAmount) || 0;
+    flagship = {
+      claimId: flagshipClaim.id,
+      claimNumber: flagshipClaim.claimNumber,
+      customerName: flagshipClaim.customerName,
+      estimate,
+      supplementRequested: requested,
+      supplementApproved: recovered,
+      approvalIncreasePct: estimate > 0 ? Math.round((recovered / estimate) * 100) : 0,
+    };
+  }
+
+  const countFor = async (table: any) => {
+    const [row] = await db
+      .select({ value: count() })
+      .from(table)
+      .where(eq(table.companyId, ctx.companyId));
+    return Number(row?.value || 0);
+  };
 
   return {
+    // Entity counts
+    companies: 1,
+    customers,
+    properties: await countFor(properties),
+    documents: await countFor(documents),
+    interviews: await countFor(interviews),
+    adjusters: await countFor(adjusters),
+    activities: await countFor(activityLogs),
+    tasks: await countFor(tasks),
+    decisions: await countFor(decisions),
+    // Claims & supplements
     totalClaims,
     activeClaims,
     pendingSupplements,
     approvedSupplements,
+    // Revenue
     totalRevenueRequested,
     totalRevenueApproved,
+    revenueRecovered: totalRevenueApproved,
     approvalRate,
-    aiAcceptanceRate: Math.min(approvedSupplements * 12, 96),
+    approvalRateByValue,
+    aiAcceptanceRate,
     activeUsers: 1,
-    topCarriers: [
-      { name: 'State Farm', count: 2 },
-      { name: 'Allstate', count: 2 },
-      { name: 'Farmers', count: 2 },
-      { name: 'Travelers', count: 1 },
-      { name: 'Nationwide', count: 1 },
-    ],
-    topAdjusters: [
-      { name: 'Karen Whitfield', count: 1 },
-      { name: 'Marcus Delgado', count: 1 },
-      { name: 'Sandra Okafor', count: 1 },
-      { name: 'Tom Becker', count: 1 },
-      { name: 'Robert Nguyen', count: 1 },
-    ],
+    topCarriers,
+    topAdjusters,
+    flagship,
   };
+}
+
+// Persist demo mode on/off for the company (company-scoped note).
+export async function setDemoMode(ctx: SeedContext, enabled: boolean) {
+  await setCompanyContext(ctx.companyId);
+  const content = enabled ? 'true' : 'false';
+  const [existing] = await db
+    .select({ id: notes.id })
+    .from(notes)
+    .where(
+      and(
+        eq(notes.companyId, ctx.companyId),
+        eq(notes.entityType, 'demo_mode'),
+        eq(notes.entityId, ctx.companyId),
+      ),
+    )
+    .limit(1);
+  if (existing) {
+    await db
+      .update(notes)
+      .set({ content, updatedAt: new Date(), updatedBy: ctx.userId })
+      .where(eq(notes.id, existing.id));
+  } else {
+    await db.insert(notes).values({
+      companyId: ctx.companyId,
+      entityType: 'demo_mode',
+      entityId: ctx.companyId,
+      content,
+      createdBy: ctx.userId,
+      updatedBy: ctx.userId,
+    });
+  }
+  return { enabled };
 }
 
 export { DEMO_SOURCE };

@@ -1,174 +1,178 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+// apps/web/src/components/demo/QuickActions.tsx
+// Every action is live: generate / reset / clear demo data, toggle demo mode
+// and deep links into populated admin screens. Generation shows the animated
+// pipeline overlay, and every result reports via toast + refreshes the page.
+
+import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { notifyDemoChanged, subscribeDemoChanged } from '@/lib/demo-events';
+import { useDemoToast } from './DemoToast';
+import GenerationOverlay from './GenerationOverlay';
 
 interface DemoStatus {
   enabled: boolean;
   hasData: boolean;
 }
 
+interface Action {
+  label: string;
+  icon: string;
+  color: string;
+  onClick: () => void;
+  disabled?: boolean;
+  requireData?: boolean;
+}
+
 export default function QuickActions() {
   const router = useRouter();
+  const toast = useDemoToast();
   const [status, setStatus] = useState<DemoStatus | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [overlay, setOverlay] = useState<{ active: boolean; label: string }>({ active: false, label: '' });
 
   useEffect(() => {
     fetchStatus();
+    const unsubscribe = subscribeDemoChanged(() => fetchStatus());
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStatus = async () => {
     try {
-      const response = await apiFetch('/demo/status');
-      setStatus(response as DemoStatus);
-    } catch (error) {
-      console.error('Error fetching demo status:', error);
+      const response = (await apiFetch('/demo/status')) as DemoStatus;
+      setStatus(response);
+    } catch (err) {
+      console.error('Error fetching demo status:', err);
     }
   };
 
-  const generateDemoData = async () => {
-    setLoading(true);
+  const generateDemoData = async (reset = false) => {
+    setBusy(true);
+    setOverlay({ active: true, label: reset ? 'Resetting demo data' : 'Generating demo data' });
     try {
-      await apiFetch('/demo/generate', { method: 'POST' });
-      await fetchStatus();
-    } catch (error) {
-      console.error('Error generating demo data:', error);
+      const res = await apiFetch<{ success: boolean; data?: { summary?: Record<string, number> } }>(
+        reset ? '/demo/reset' : '/demo/generate',
+        { method: 'POST' },
+      );
+      const claims = res.data?.summary?.claims ?? 0;
+      notifyDemoChanged();
+      toast.success(
+        reset
+          ? `Demo data reset — ${claims} claims, all workflows restored`
+          : `Demo data generated — ${claims} claims with the Carter Residence flagship story`,
+      );
+    } catch (err) {
+      console.error('Demo generate error:', err);
+      toast.error('Could not generate demo data — please try again');
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetDemoData = async () => {
-    setLoading(true);
-    try {
-      await apiFetch('/demo/reset', { method: 'POST' });
-      await fetchStatus();
-    } catch (error) {
-      console.error('Error resetting demo data:', error);
-    } finally {
-      setLoading(false);
+      setBusy(false);
+      setOverlay({ active: false, label: '' });
     }
   };
 
   const clearDemoData = async () => {
-    if (!confirm('Are you sure you want to clear all demo data? This cannot be undone.')) {
+    if (!window.confirm('Clear all demo data? This removes generated claims, documents and records.')) {
       return;
     }
-    setLoading(true);
+    setBusy(true);
     try {
       await apiFetch('/demo/clear', { method: 'DELETE' });
-      await fetchStatus();
-      // Redirect to normal dashboard after clearing
-      router.push('/admin');
-    } catch (error) {
-      console.error('Error clearing demo data:', error);
+      notifyDemoChanged();
+      toast.success('Demo data cleared — ready for a fresh generation');
+    } catch (err) {
+      console.error('Demo clear error:', err);
+      toast.error('Could not clear demo data');
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   };
 
   const toggleDemoMode = async () => {
-    setLoading(true);
+    const next = !status?.enabled;
+    setBusy(true);
     try {
-      if (status?.enabled) {
-        // Disable demo mode by clearing data
-        await clearDemoData();
-      } else {
-        // Enable demo mode by generating data
-        await generateDemoData();
-      }
-    } catch (error) {
-      console.error('Error toggling demo mode:', error);
+      await apiFetch('/demo/toggle-mode', { method: 'POST', body: JSON.stringify({ enabled: next }) });
+      notifyDemoChanged();
+      toast.info(next ? 'Demo mode enabled' : 'Demo mode turned off');
+    } catch (err) {
+      console.error('Demo toggle error:', err);
+      toast.error('Could not toggle demo mode');
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
   };
 
-  const actions = [
+  const nav = (path: string) => router.push(path);
+
+  const actions: Action[] = [
+    { label: 'Generate Demo Data', icon: '🎲', color: 'bg-[var(--brand-cyan)] hover:bg-[var(--brand-cyan-light)] text-[var(--brand-navy)]', onClick: () => generateDemoData(false), disabled: busy },
+    { label: 'Reset Demo', icon: '🔄', color: 'bg-[var(--brand-purple)] hover:bg-[var(--brand-purple-light)] text-[var(--foreground)]', onClick: () => generateDemoData(true), disabled: busy || !status?.hasData, requireData: true },
+    { label: 'Clear Demo', icon: '🗑️', color: 'bg-[var(--color-error)] hover:bg-red-600 text-[var(--foreground)]', onClick: clearDemoData, disabled: busy || !status?.hasData, requireData: true },
     {
-      label: 'Generate Demo Data',
-      icon: '🎲',
-      onClick: generateDemoData,
-      disabled: status?.hasData || loading,
-      color: 'bg-[var(--brand-cyan)] hover:bg-[var(--brand-cyan-light)] text-[var(--brand-navy)]'
-    },
-    {
-      label: 'Reset Demo',
-      icon: '🔄',
-      onClick: resetDemoData,
-      disabled: !status?.hasData || loading,
-      color: 'bg-[var(--brand-purple)] hover:bg-[var(--brand-purple-light)] text-[var(--foreground)]'
-    },
-    {
-      label: 'Clear Demo',
-      icon: '🗑️',
-      onClick: clearDemoData,
-      disabled: !status?.hasData || loading,
-      color: 'bg-[var(--color-error)] hover:bg-red-600 text-[var(--foreground)]'
-    },
-    {
-      label: 'Toggle Demo Mode',
+      label: status?.enabled ? 'Turn Demo Mode Off' : 'Enable Demo Mode',
       icon: status?.enabled ? '🔴' : '🟢',
-      onClick: toggleDemoMode,
-      disabled: loading,
-      color: status?.enabled 
+      color: status?.enabled
         ? 'bg-[var(--neutral-gray-500)] hover:bg-gray-600 text-[var(--foreground)]'
-        : 'bg-[var(--color-success)] hover:bg-green-600 text-[var(--foreground)]'
+        : 'bg-[var(--color-success)] hover:bg-green-600 text-[var(--foreground)]',
+      onClick: toggleDemoMode,
+      disabled: busy,
     },
-    {
-      label: 'Open Dashboard',
-      icon: '📊',
-      onClick: () => router.push('/admin'),
-      disabled: false,
-      color: 'bg-[var(--background-alt)] hover:bg-[var(--neutral-gray-100)] text-[var(--foreground)] border border-[var(--neutral-gray-200)]'
-    },
-    {
-      label: 'Open Companies',
-      icon: '🏢',
-      onClick: () => router.push('/admin/companies'),
-      disabled: false,
-      color: 'bg-[var(--background-alt)] hover:bg-[var(--neutral-gray-100)] text-[var(--foreground)] border border-[var(--neutral-gray-200)]'
-    },
-    {
-      label: 'Open Claims',
-      icon: '📋',
-      onClick: () => router.push('/admin/claims'),
-      disabled: false,
-      color: 'bg-[var(--background-alt)] hover:bg-[var(--neutral-gray-100)] text-[var(--foreground)] border border-[var(--neutral-gray-200)]'
-    },
-    {
-      label: 'Open Supplements',
-      icon: '💰',
-      onClick: () => router.push('/admin/supplements'),
-      disabled: false,
-      color: 'bg-[var(--background-alt)] hover:bg-[var(--neutral-gray-100)] text-[var(--foreground)] border border-[var(--neutral-gray-200)]'
-    },
-    {
-      label: 'Open Interviews',
-      icon: '💬',
-      onClick: () => router.push('/admin/interviews'),
-      disabled: false,
-      color: 'bg-[var(--background-alt)] hover:bg-[var(--neutral-gray-100)] text-[var(--foreground)] border border-[var(--neutral-gray-200)]'
-    }
+    { label: 'Open Dashboard', icon: '📊', color: 'nav', onClick: () => nav('/admin') },
+    { label: 'Open Companies', icon: '🏢', color: 'nav', onClick: () => nav('/admin/companies') },
+    { label: 'Open Claims', icon: '📋', color: 'nav', onClick: () => nav('/admin/claims') },
+    { label: 'Open Supplements', icon: '💰', color: 'nav', onClick: () => nav('/admin/supplements') },
+    { label: 'Open Interviews', icon: '💬', color: 'nav', onClick: () => nav('/admin/interviews') },
+    { label: 'Open Documents', icon: '📁', color: 'nav', onClick: () => nav('/admin/documents') },
+    { label: 'Open Properties', icon: '🏠', color: 'nav', onClick: () => nav('/admin/properties') },
+    { label: 'Open Adjusters', icon: '👷', color: 'nav', onClick: () => nav('/admin/adjusters') },
+    { label: 'Open Activities', icon: '📈', color: 'nav', onClick: () => nav('/admin/activity') },
+    { label: 'Open Tasks', icon: '✅', color: 'nav', onClick: () => nav('/admin/tasks') },
+    { label: 'Open Decisions', icon: '🧠', color: 'nav', onClick: () => nav('/admin/decisions') },
+    { label: 'Open Intelligence', icon: '🤖', color: 'nav', onClick: () => nav('/admin/intelligence') },
   ];
 
   return (
     <div className="bg-[var(--surface)] rounded-xl shadow-lg border border-[var(--neutral-gray-200)] p-6">
-      <h2 className="text-xl font-semibold text-[var(--foreground)] mb-6">Quick Actions</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={action.onClick}
-            disabled={action.disabled}
-            className={`flex flex-col items-center justify-center p-4 rounded-lg transition-all duration-200 ${ action.disabled ? 'opacity-50 cursor-not-allowed bg-[var(--neutral-gray-100)]' : action.color }`}
-          >
-            <span className="text-2xl mb-2">{action.icon}</span>
-            <span className="text-sm font-medium text-center">{action.label}</span>
-          </button>
-        ))}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Quick Actions</h2>
+          <p className="text-sm text-[var(--neutral-gray-500)] mt-1">
+            {status?.hasData ? 'Demo data is live — everything below is populated' : 'Generate demo data to populate every screen'}
+          </p>
+        </div>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${status?.enabled ? 'bg-[var(--color-success)]/15 text-[var(--color-success)]' : 'bg-[var(--neutral-gray-200)] text-[var(--neutral-gray-500)]'}`}>
+          {status?.enabled ? 'Demo mode on' : 'Demo mode off'}
+        </span>
       </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        {actions.map((action, index) => {
+          const disabled = action.disabled || (action.requireData && !status?.hasData);
+          return (
+            <button
+              key={index}
+              onClick={action.onClick}
+              disabled={disabled}
+              title={disabled && action.requireData ? 'Generate demo data first' : action.label}
+              className={`flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-200 ${
+                disabled
+                  ? 'opacity-40 cursor-not-allowed bg-[var(--neutral-gray-100)]'
+                  : action.color === 'nav'
+                    ? 'bg-[var(--background-alt)] hover:bg-[var(--neutral-gray-100)] text-[var(--foreground)] border border-[var(--neutral-gray-200)] hover:border-[var(--brand-cyan)]'
+                    : action.color
+              }`}
+            >
+              <span className="text-xl mb-1.5">{action.icon}</span>
+              <span className="text-[11px] font-medium text-center leading-tight">{action.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <GenerationOverlay active={overlay.active} label={overlay.label} />
     </div>
   );
 }

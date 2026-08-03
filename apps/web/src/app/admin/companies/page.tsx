@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { useLiveRefresh } from "@/lib/data-events";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useRouter } from "next/navigation";
 
@@ -33,6 +34,8 @@ export default function CompaniesPage() {
     }
     loadCompanies();
   }, [session, router]);
+
+  useLiveRefresh(() => loadCompanies());
 
   const loadCompanies = async () => {
     try {

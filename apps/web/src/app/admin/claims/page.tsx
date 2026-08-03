@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { useLiveRefresh } from "@/lib/data-events";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { useRouter } from "next/navigation";
 import {
@@ -86,6 +87,8 @@ export default function ClaimsPage() {
     loadClaims();
     loadAdjusters();
   }, [session, router, statusFilter, adjusterFilter, search, page]);
+
+  useLiveRefresh(() => loadClaims());
 
   const loadClaims = async () => {
     try {

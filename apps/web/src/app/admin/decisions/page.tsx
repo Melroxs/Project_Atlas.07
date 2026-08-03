@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { useLiveRefresh } from "@/lib/data-events";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import {
   Scale,
@@ -153,6 +154,8 @@ export default function DecisionsPage() {
   const [bulkComments, setBulkComments] = useState("");
   const [bulkRunning, setBulkRunning] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
+
+  useLiveRefresh(() => loadDecisions());
 
   const loadDecisions = useCallback(async () => {
     try {

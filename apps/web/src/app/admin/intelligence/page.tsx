@@ -2,22 +2,50 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { notifyDemoChanged } from "@/lib/demo-events";
 import AskAtlas from "@/components/intelligence/AskAtlas";
 import BusinessInsights from "@/components/intelligence/BusinessInsights";
 import Recommendations from "@/components/intelligence/Recommendations";
 import LearningStats from "@/components/intelligence/LearningStats";
+import EvidenceGraph from "@/components/demo/EvidenceGraph";
+import PhotoIntelligence from "@/components/demo/PhotoIntelligence";
+import DecisionReview from "@/components/demo/DecisionReview";
+import TimelinePlayback from "@/components/demo/TimelinePlayback";
+
+type TabId = "ask" | "insights" | "recommendations" | "learning" | "claim";
+
+const tabs: Array<{ id: TabId; label: string; icon: string }> = [
+  { id: "ask", label: "Ask Atlas", icon: "🤖" },
+  { id: "insights", label: "Insights", icon: "📊" },
+  { id: "recommendations", label: "Recommendations", icon: "💡" },
+  { id: "learning", label: "Learning", icon: "🧠" },
+  { id: "claim", label: "Claim Intelligence", icon: "🕸️" },
+];
 
 export default function IntelligencePage() {
-  const [activeTab, setActiveTab] = useState<
-    "ask" | "insights" | "recommendations" | "learning"
-  >("ask");
+  const [activeTab, setActiveTab] = useState<TabId>("ask");
+  const [flagshipClaimId, setFlagshipClaimId] = useState<string | null>(null);
 
-  const tabs = [
-    { id: "ask" as const, label: "Ask Atlas", icon: "🤖" },
-    { id: "insights" as const, label: "Insights", icon: "📊" },
-    { id: "recommendations" as const, label: "Recommendations", icon: "💡" },
-    { id: "learning" as const, label: "Learning", icon: "🧠" },
-  ];
+  // Resolve the flagship claim so the timeline can deep-link into it.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const response = (await apiFetch("/demo/claims")) as {
+          claims?: Array<{ id: string; claimNumber: string }>;
+        };
+        const claims = response?.claims || [];
+        const flagship =
+          claims.find((c) => c.claimNumber === "CL-2026-0614") || claims[0];
+        if (active && flagship?.id) setFlagshipClaimId(flagship.id);
+      } catch {
+        /* demo data may not exist — timeline falls back to the canonical story */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -35,7 +63,7 @@ export default function IntelligencePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border">
+      <div className="flex space-x-2 border-b border flex-wrap">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -53,6 +81,31 @@ export default function IntelligencePage() {
       {activeTab === "insights" && <BusinessInsights />}
       {activeTab === "recommendations" && <Recommendations />}
       {activeTab === "learning" && <LearningStats />}
+
+      {/* Claim Intelligence — live demo modules, animated while data changes */}
+      {activeTab === "claim" && (
+        <div className="space-y-6">
+          <div className="rounded-xl border bg-surface p-5">
+            <h2 className="text-lg font-semibold text-foreground">
+              Live Claim Intelligence
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              The Carter Residence wind &amp; hail claim — evidence graph, photo
+              analysis, decision explainability and timeline. Everything animates
+              and updates live as the demo runs.
+            </p>
+          </div>
+
+          <EvidenceGraph />
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <PhotoIntelligence />
+            <DecisionReview onRefresh={() => notifyDemoChanged()} />
+          </div>
+
+          <TimelinePlayback claimId={flagshipClaimId} />
+        </div>
+      )}
     </div>
   );
 }

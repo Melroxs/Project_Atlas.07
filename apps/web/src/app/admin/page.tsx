@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSupabase } from "@/providers/SupabaseProvider";
 import { apiFetch } from "@/lib/api";
+import { useLiveRefresh } from "@/lib/data-events";
 import AskAtlas from "@/components/intelligence/AskAtlas";
 import NewProjectDialog from "@/components/projects/NewProjectDialog";
 
@@ -62,6 +63,8 @@ export default function HomePage() {
     }
     loadDashboard();
   }, [session, router]);
+
+  useLiveRefresh(() => loadDashboard());
 
   const loadDashboard = async () => {
     try {
