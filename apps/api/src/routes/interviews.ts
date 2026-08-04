@@ -1,7 +1,7 @@
 // apps/api/src/routes/interviews.ts
 import { FastifyPluginAsync } from 'fastify';
 import { eq, and, desc, sql } from 'drizzle-orm';
-import { interviews } from '@project-atlas/database';
+import { interviews, claims, properties } from '@project-atlas/database';
 import { db } from '@project-atlas/database';
 import { z } from 'zod';
 import { AuthenticatedRequest } from '../types/request';
@@ -504,13 +504,93 @@ export const interviewsRoutes: FastifyPluginAsync = async (fastify) => {
 
       const responses = (interview as any).responses || {};
       const claimData = InterviewWorkflowService.extractClaimData(responses, template);
+      const customer = (claimData.customer || {}) as Record<string, any>;
+      const property = (claimData.property || {}) as Record<string, any>;
+      const claimFields = (claimData.claim || {}) as Record<string, any>;
 
-      // TODO: Implement actual claim generation logic
-      // This would create/update customer, property, claim, adjuster entities
-      // For now, return the extracted data
+      // Idempotent: if a claim was already generated from this interview, return it.
+      if ((interview as any).generatedClaimId) {
+        const [existingClaim] = await db
+          .select()
+          .from(claims)
+          .where(eq((claims as any).id, (interview as any).generatedClaimId))
+          .limit(1);
+        if (existingClaim) {
+          reply.send({ claim: existingClaim, alreadyGenerated: true });
+          return;
+        }
+      }
+
+      // 1. Create the property from the interview when one wasn't linked already.
+      let propertyId = (interview as any).propertyId ?? null;
+      const propertyAddress = property.address ? String(property.address).trim() : '';
+      if (!propertyId && propertyAddress) {
+        const [newProperty] = await db
+          .insert(properties)
+          .values({
+            companyId,
+            address: propertyAddress,
+            ownerName: customer.name ? String(customer.name) : null,
+            createdBy: userId,
+          })
+          .returning();
+        propertyId = newProperty.id;
+      }
+
+      // 2. Build the claim from the extracted interview responses.
+      const claimNumber = `CLM-${new Date().getFullYear()}${Date.now().toString().slice(-6)}`;
+      const descriptionParts = [
+        claimFields.cause ? `Cause of loss: ${String(claimFields.cause)}` : null,
+        claimFields.description ? String(claimFields.description) : null,
+      ].filter((p): p is string => Boolean(p));
+
+      const [newClaim] = await db
+        .insert(claims)
+        .values({
+          companyId,
+          claimNumber,
+          entryPoint: 'new_claim',
+          sourceSystem: 'fnol-interview',
+          status: 'new',
+          propertyId,
+          dateOfLoss: claimFields.date ? new Date(String(claimFields.date)) : new Date(),
+          dateReported: new Date(),
+          insuranceCompany: claimFields.insurance ? String(claimFields.insurance) : null,
+          policyNumber: claimFields.policy ? String(claimFields.policy) : null,
+          deductible: claimFields.deductible
+            ? String(claimFields.deductible).replace(/[^0-9.]/g, '')
+            : null,
+          description:
+            descriptionParts.join('. ') || 'Claim generated from FNOL interview.',
+          customerName: customer.name ? String(customer.name) : null,
+          customerEmail: customer.email ? String(customer.email) : null,
+          customerPhone: customer.phone ? String(customer.phone) : null,
+          statusHistory: [
+            {
+              status: 'new',
+              timestamp: new Date().toISOString(),
+              userId,
+              reason: 'Generated from FNOL interview',
+            },
+          ],
+          createdBy: userId,
+        })
+        .returning();
+
+      // 3. Link the generated claim back to the interview.
+      await db
+        .update(interviews)
+        .set({
+          claimId: newClaim.id,
+          generatedClaimId: newClaim.id,
+          updatedAt: new Date(),
+        })
+        .where(eq((interviews as any).id, id));
+
       reply.send({
+        claim: newClaim,
         claimData,
-        message: 'Claim data extracted. Claim generation not yet implemented.',
+        message: 'Claim generated from interview',
       });
     } catch (error) {
       reply.code(500).send({ error: 'Failed to generate claim from interview' });

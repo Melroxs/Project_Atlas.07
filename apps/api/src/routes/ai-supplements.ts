@@ -119,6 +119,16 @@ export const aiSupplementsRoutes: FastifyPluginAsync = async (fastify) => {
           eq((documents as any).companyId, companyId)
         ));
 
+      // Get existing supplements for this claim (context for the AI engine)
+      const existingSupplements = await db
+        .select()
+        .from(supplements)
+        .where(and(
+          eq((supplements as any).claimId, claim.id),
+          eq((supplements as any).companyId, companyId)
+        ))
+        .limit(20);
+
       // Get activities
       const activityTimeline = await db
         .select()
@@ -178,8 +188,31 @@ export const aiSupplementsRoutes: FastifyPluginAsync = async (fastify) => {
         uploadedAt: (doc as any).uploadedAt,
         url: (doc as any).url,
       })),
-      photos: [], // TODO: Implement photos table
-      existingSupplements: [], // TODO: Get existing supplements for this claim
+      // Photos are documents with image MIME types / extensions (no separate photos table).
+      photos: docs
+        .filter(doc => {
+          const mime = String((doc as any).mimeType || '').toLowerCase();
+          const name = String((doc as any).fileName || (doc as any).name || '').toLowerCase();
+          return mime.startsWith('image/') || /\.(jpg|jpeg|png|heic|webp|gif)$/.test(name);
+        })
+        .map(doc => ({
+          id: doc.id,
+          type: 'photo',
+          name: (doc as any).fileName || (doc as any).name,
+          uploadedAt: (doc as any).uploadedAt,
+          url: (doc as any).url,
+        })),
+      existingSupplements: existingSupplements.map(sup => ({
+        id: sup.id,
+        supplementNumber: (sup as any).supplementNumber,
+        status: (sup as any).status,
+        requestedAmount: Number((sup as any).requestedAmount) || 0,
+        approvedAmount: Number((sup as any).approvedAmount) || 0,
+        lineItems: ((sup as any).lineItems as any[]) ?? [],
+        createdAt: (sup as any).createdAt || new Date().toISOString(),
+        submittedAt: (sup as any).submissionDate || undefined,
+        responseDate: (sup as any).responseDate || undefined,
+      })),
       activityTimeline: activityTimeline.map(act => ({
         id: act.id,
         type: (act as any).type,
@@ -303,8 +336,44 @@ export const aiSupplementsRoutes: FastifyPluginAsync = async (fastify) => {
       .where(eq((supplementDrafts as any).id, body.draftId))
       .returning();
 
-    // TODO: Apply approved recommendations to the supplement
-    // This would update the supplement's line items based on the approved draft
+    // Apply the approved recommendations to the supplement record (line items +
+    // requested amount), honoring any user modifications. Approval itself is
+    // already recorded above; a failure here must not 500 a successful approval.
+    try {
+      const recommendations = (draft as any).recommendations as SupplementRecommendations | undefined;
+      let lineItems: any[] = [...(recommendations?.recommendedLineItems ?? [])];
+      const mods = body.modifications;
+      if (mods) {
+        if (mods.removedLineItems?.length) {
+          const removed = new Set(mods.removedLineItems);
+          lineItems = lineItems.filter((item) => !removed.has(item.id));
+        }
+        if (mods.modifiedLineItems?.length) {
+          lineItems = lineItems.map((item) => {
+            const mod = mods!.modifiedLineItems!.find((m) => m.id === item.id);
+            return mod ? { ...item, ...mod } : item;
+          });
+        }
+        if (mods.addedLineItems?.length) {
+          lineItems = [...lineItems, ...mods.addedLineItems];
+        }
+      }
+      const approvedTotal = lineItems.reduce(
+        (sum: number, item: any) => sum + (Number(item.suggestedTotalPrice ?? item.total ?? 0) || 0),
+        0
+      );
+      await db
+        .update(supplements)
+        .set({
+          lineItems: lineItems as any,
+          requestedAmount: approvedTotal > 0 ? approvedTotal.toString() : undefined,
+          approvalDate: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq((supplements as any).id, (draft as any).supplementId));
+    } catch (applyError) {
+      fastify.log?.warn?.(`Failed to apply approved recommendations: ${applyError instanceof Error ? applyError.message : String(applyError)}`);
+    }
 
     // Log activity
     await ActivityService.logUpdate({

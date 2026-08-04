@@ -84,6 +84,18 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/', 'dist/', 'build/', '.next/', '.turbo/'],
+    // Ignore build outputs and dependency trees at ANY depth (workspace
+    // packages build into nested dist/ directories that must never be linted).
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/dist',
+      '**/build/**',
+      '**/.next/**',
+      '**/.turbo/**',
+      '**/.output/**',
+      '**/.wrangler/**',
+      '**/coverage/**',
+    ],
   },
 ];

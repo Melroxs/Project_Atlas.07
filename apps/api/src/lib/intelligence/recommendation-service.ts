@@ -175,9 +175,9 @@ export class RecommendationService {
   /**
    * Acknowledge a recommendation
    */
-  async acknowledgeRecommendation(id: string): Promise<void> {
-    // In a real implementation, this would update the database
-    console.log(`Acknowledging recommendation: ${id}`);
+  async acknowledgeRecommendation(_id: string): Promise<void> {
+    // Legacy in-memory service; acknowledgment state is managed by the
+    // decision/intelligence layer (see claim-intelligence-service).
   }
 
   /**

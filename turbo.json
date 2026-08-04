@@ -21,12 +21,16 @@
     },
     "typecheck": {
       "dependsOn": [
+        "^build",
         "^typecheck"
       ]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": [
+        "^build"
+      ]
     }
   }
 }

@@ -56,7 +56,6 @@ function AtlasMark({ className = "" }: { className?: string }) {
   );
 }
 
-
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-atlas-cyan/80">
@@ -145,7 +144,7 @@ function PilotModal() {
     // Intercept any anchor pointing to the pilot placeholder
     const onClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement | null)?.closest?.(
-        'a[href="#pilot"], button[data-pilot-open]'
+        'a[href="#pilot"], button[data-pilot-open]',
       );
       if (el) {
         e.preventDefault();
@@ -178,7 +177,7 @@ function PilotModal() {
     setSubmitting(true);
     // Placeholder submission — wire to backend later.
     const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    // eslint-disable-next-line no-console
+
     console.log("[Atlas Pilot Application]", data);
     await new Promise((r) => setTimeout(r, 600));
     setSubmitting(false);
@@ -233,10 +232,10 @@ function PilotModal() {
             Apply for Pilot Access
           </h2>
           <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-white/65">
-            Atlas is currently accepting a small number of insurance
-            restoration companies as design partners. Selected teams work
-            directly with us to shape the platform and get early access to
-            supplement intelligence, claim context, and executive signal.
+            Atlas is currently accepting a small number of insurance restoration
+            companies as design partners. Selected teams work directly with us
+            to shape the platform and get early access to supplement
+            intelligence, claim context, and executive signal.
           </p>
         </div>
 
@@ -247,9 +246,9 @@ function PilotModal() {
                 Application received
               </div>
               <p className="mt-3 text-[15px] leading-relaxed text-white/85">
-                Thank you for applying to the Atlas Design Partner Programme.
-                We are reviewing applications and will contact selected
-                companies with next steps.
+                Thank you for applying to the Atlas Design Partner Programme. We
+                are reviewing applications and will contact selected companies
+                with next steps.
               </p>
             </div>
             <div className="mt-6 flex justify-end">
@@ -440,7 +439,6 @@ function TextareaField({
 /* Nav                                                                 */
 /* ------------------------------------------------------------------ */
 
-
 /* Nav                                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -449,7 +447,10 @@ function Nav() {
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-atlas-void via-atlas-void/80 to-transparent" />
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
-        <a href="#top" className="pointer-events-auto flex items-center gap-2.5">
+        <a
+          href="#top"
+          className="pointer-events-auto flex items-center gap-2.5"
+        >
           <AtlasMark className="h-7 w-7" />
           <span className="font-display text-[13px] font-semibold uppercase tracking-[0.28em] text-white">
             Project <span className="text-atlas-cyan">Atlas</span>
@@ -487,7 +488,6 @@ function Nav() {
             className="rounded-full border border-atlas-cyan/40 bg-atlas-cyan/10 px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-atlas-cyan transition hover:border-atlas-cyan hover:bg-atlas-cyan/15"
           >
             Apply for Pilot
-
           </a>
         </div>
       </div>
@@ -667,9 +667,15 @@ function HeroProductUI() {
 
 function Hero() {
   return (
-    <section id="top" className="relative isolate overflow-hidden bg-atmosphere">
+    <section
+      id="top"
+      className="relative isolate overflow-hidden bg-atmosphere"
+    >
       {/* grid + atmosphere */}
-      <div aria-hidden className="absolute inset-0 bg-grid-atlas opacity-[0.35] mask-fade-b" />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-grid-atlas opacity-[0.35] mask-fade-b"
+      />
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-[80vh] opacity-70"
@@ -681,7 +687,10 @@ function Hero() {
       <div
         aria-hidden
         className="absolute right-[-10%] top-[30%] h-[500px] w-[500px] rounded-full opacity-40 blur-3xl"
-        style={{ background: "color-mix(in oklab, var(--atlas-violet) 40%, transparent)" }}
+        style={{
+          background:
+            "color-mix(in oklab, var(--atlas-violet) 40%, transparent)",
+        }}
       />
 
       <div className="relative mx-auto max-w-7xl px-6 pb-24 pt-40 md:px-10 md:pb-32 md:pt-48">
@@ -700,8 +709,8 @@ function Hero() {
           </h1>
 
           <p className="mx-auto mt-8 max-w-2xl text-balance text-base leading-relaxed text-white/65 md:text-lg">
-            Atlas sits above the software your restoration company already
-            runs — CRM, estimating, claims, photos, documents, emails, notes,
+            Atlas sits above the software your restoration company already runs
+            — CRM, estimating, claims, photos, documents, emails, notes,
             supplements, and team knowledge — and turns all of it into one
             connected intelligence layer.
           </p>
@@ -710,7 +719,6 @@ function Hero() {
             <PrimaryCta href={PILOT_URL}>Apply for Pilot Access</PrimaryCta>
             <GhostCta href="#intelligence">Explore Atlas</GhostCta>
           </div>
-
         </div>
 
         <div className="mt-20 md:mt-28">
@@ -750,9 +758,9 @@ function AskAtlas() {
             <span className="text-gradient-atlas">anything.</span>
           </h2>
           <p className="mt-6 max-w-md text-base leading-relaxed text-white/60">
-            When the company becomes legible to AI, operational questions
-            become answerable. Atlas reads across every claim, document, and
-            interview — then responds with context.
+            When the company becomes legible to AI, operational questions become
+            answerable. Atlas reads across every claim, document, and interview
+            — then responds with context.
           </p>
         </div>
 
@@ -791,12 +799,18 @@ function AskAtlas() {
               <div className="flex items-start gap-3">
                 <AtlasMark className="mt-1 h-6 w-6 shrink-0 animate-pulse-glow" />
                 <div className="flex-1 space-y-4 text-[14px] leading-relaxed text-white/85">
-                  <p className="animate-reveal" style={{ animationDelay: "0ms" }}>
+                  <p
+                    className="animate-reveal"
+                    style={{ animationDelay: "0ms" }}
+                  >
                     <span className="text-gradient-atlas font-display text-2xl font-semibold">
                       $42,380
                     </span>{" "}
                     in potential revenue is currently associated with{" "}
-                    <span className="text-white">18 unresolved supplement opportunities</span>.
+                    <span className="text-white">
+                      18 unresolved supplement opportunities
+                    </span>
+                    .
                   </p>
 
                   <div
@@ -866,7 +880,13 @@ function QueryableArchitecture() {
     "Estimates",
     "Photos",
   ];
-  const outputs = ["Answers", "Signals", "Recommendations", "Automation", "Business memory"];
+  const outputs = [
+    "Answers",
+    "Signals",
+    "Recommendations",
+    "Automation",
+    "Business memory",
+  ];
 
   return (
     <SectionShell id="how" className="border-t border-white/5">
@@ -1171,7 +1191,9 @@ function ClosedLoopColumn({
     >
       <div
         aria-hidden
-        className={"pointer-events-none absolute inset-0 bg-gradient-to-br " + accent}
+        className={
+          "pointer-events-none absolute inset-0 bg-gradient-to-br " + accent
+        }
       />
       <div className="relative">
         <div
@@ -1214,14 +1236,17 @@ function ClosedLoopColumn({
 
 /* ------------------------------------------------------------------ */
 
-
-
 function ExecutiveIntelligence() {
   const signals = [
     { v: "$42,380", l: "Revenue at risk", tint: "cyan", size: "xl" },
     { v: "18", l: "Supplements pending", tint: "violet", size: "md" },
     { v: "6", l: "Claims need attention", tint: "cyan", size: "md" },
-    { v: "$127,500", l: "Recovered opportunity tracked", tint: "signal", size: "xl" },
+    {
+      v: "$127,500",
+      l: "Recovered opportunity tracked",
+      tint: "signal",
+      size: "xl",
+    },
   ];
 
   return (
@@ -1450,7 +1475,9 @@ function ClaimInterface() {
             <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
               Status
             </div>
-            <div className="mt-1 text-[14px] text-atlas-signal">In Progress</div>
+            <div className="mt-1 text-[14px] text-atlas-signal">
+              In Progress
+            </div>
           </div>
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
@@ -1697,11 +1724,11 @@ function Closing() {
       />
 
       <div className="relative mx-auto max-w-4xl text-center">
-       <img 
-  src={atlasLogoFull} 
-  alt="Atlas Logo" 
-  className="mx-auto mb-10 h-75 w-400 animate-drift" 
-/>
+        <img
+          src={atlasLogoFull}
+          alt="Atlas Logo"
+          className="mx-auto mb-10 h-75 w-400 animate-drift"
+        />
         <h2 className="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl lg:text-7xl">
           Your company
           <br />
@@ -1767,4 +1794,3 @@ function LandingPage() {
     </div>
   );
 }
-
