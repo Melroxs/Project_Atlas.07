@@ -43,14 +43,17 @@ export default function ScenarioGallery({ hasData }: { hasData: boolean }) {
     loadClaims();
   }, []);
 
-  const loadClaims = async () => {
+  const loadClaims = async (): Promise<Record<string, string>> => {
+    const empty: Record<string, string> = {};
     try {
       const response = (await apiFetch('/demo/claims')) as { claims?: Array<{ id: string; claimNumber: string }> };
       const map: Record<string, string> = {};
       for (const c of response?.claims || []) map[c.claimNumber] = c.id;
       setClaimMap(map);
+      return map;
     } catch {
       // data may not exist yet — cards still render and generate on click
+      return empty;
     } finally {
       setLoaded(true);
     }
@@ -59,14 +62,17 @@ export default function ScenarioGallery({ hasData }: { hasData: boolean }) {
   const openScenario = async (scenario: Scenario) => {
     setBusyId(scenario.id);
     try {
+      let map = claimMap;
       if (!hasData) {
         toast.info('Generating demo data for this scenario…');
         await apiFetch('/demo/generate', { method: 'POST' });
         notifyDemoChanged();
-        await loadClaims();
+        // Re-fetch the claim map after seeding and use the fresh result directly
+        // (state updates are async — a stale closure would miss the new claims).
+        map = await loadClaims();
         toast.success('Demo data ready — opening the scenario');
       }
-      const id = claimMap[scenario.claimNumber];
+      const id = map[scenario.claimNumber];
       if (id) {
         router.push(`/admin/claims/${id}`);
       } else {

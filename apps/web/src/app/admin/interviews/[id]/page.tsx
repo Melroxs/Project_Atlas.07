@@ -62,6 +62,7 @@ export default function InterviewDetailPage() {
   );
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [newStatus, setNewStatus] = useState<InterviewStatus>("draft");
+  const [generatingClaim, setGeneratingClaim] = useState(false);
 
   useEffect(() => {
     if (!session) {
@@ -155,17 +156,24 @@ export default function InterviewDetailPage() {
   };
 
   const generateClaim = async () => {
+    setGeneratingClaim(true);
+    setError("");
     try {
-      const data = await apiFetch<{ claimData: any; message: string }>(
+      const data = await apiFetch<{ claimId?: string; claimNumber?: string; error?: string }>(
         `/interviews/${interviewId}/generate-claim`,
         {
           method: "POST",
         },
       );
-      alert("Claim data extracted. Claim generation not yet implemented.");
-      console.log("Claim data:", data.claimData);
+      if (data.claimId) {
+        router.push(`/admin/claims/${data.claimId}`);
+      } else {
+        setError(data.error || "Claim generation returned no claim");
+      }
     } catch (e: any) {
       setError(`Error generating claim: ${e.message}`);
+    } finally {
+      setGeneratingClaim(false);
     }
   };
 
@@ -417,9 +425,10 @@ export default function InterviewDetailPage() {
           {interview.status === "completed" && (
             <button
               onClick={generateClaim}
-              className="px-4 py-2 bg-success text-foreground rounded hover:bg-success"
+              disabled={generatingClaim}
+              className="px-4 py-2 bg-success text-foreground rounded hover:bg-success disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Generate Claim
+              {generatingClaim ? "Generating…" : "Generate Claim"}
             </button>
           )}
         </div>

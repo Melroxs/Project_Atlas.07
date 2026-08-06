@@ -119,7 +119,19 @@ export default function DecisionReview({ onRefresh }: { onRefresh?: () => void }
             detail = null;
           }
           const ctx = detail?.decisionContext ?? detail?.decision ?? detail?.context ?? null;
-          const scores = ctx?.scores ?? detail?.scores ?? null;
+          // The decisions API returns the score row as `detail.score`, evidence
+          // links as `detail.evidence`, reasoning logs as `detail.reasoning` and
+          // actions as `detail.actions` — read those so the panel shows the real
+          // persisted values once demo data exists (not just the fallback).
+          const scores = ctx?.scores ?? detail?.scores ?? detail?.score ?? null;
+          const liveEvidence =
+            detail?.evidence?.length
+              ? detail.evidence
+              : Array.isArray(ctx?.evidence)
+                ? ctx.evidence
+                : null;
+          const liveReasoning = detail?.reasoning?.length ? detail.reasoning : null;
+          const liveActions = detail?.actions?.length ? detail.actions : null;
           setData({
             decisionId: flagship.id,
             status: ctx?.status ?? flagship.status ?? 'GENERATED',
@@ -133,12 +145,29 @@ export default function DecisionReview({ onRefresh }: { onRefresh?: () => void }
               riskFactor: Number(scores?.riskFactorScore ?? 18) || 18,
               final: Number(scores?.finalScore ?? 90) || 90,
             },
-            reasoning: CANONICAL.reasoning,
-            evidence: ctx?.evidence
-              ? ctx.evidence.map((e: any) => (typeof e === 'string' ? e : `${e.title ?? 'Document'} — strength ${e.strength ?? '—'}`))
+            reasoning: liveReasoning
+              ? liveReasoning.map((r: any) => {
+                  const label = String(r.reasoningType || '').replace(/_/g, ' ').toLowerCase();
+                  let summary = '';
+                  if (typeof r.outputData === 'string') summary = r.outputData;
+                  else if (r.outputData && typeof r.outputData === 'object') {
+                    const values = Object.values(r.outputData).filter((x) => x != null && typeof x !== 'object');
+                    summary = values.slice(0, 4).join(' · ');
+                  }
+                  return summary ? `${label}: ${summary}` : label || 'Reasoning step';
+                }).filter(Boolean)
+              : CANONICAL.reasoning,
+            evidence: liveEvidence
+              ? liveEvidence.map((e: any) =>
+                  typeof e === 'string'
+                    ? e
+                    : `${e.title ?? (e.relationshipType ? 'Evidence link' : 'Document')} — strength ${e.strength ?? e.importanceScore ?? '—'}`,
+                )
               : CANONICAL.evidence,
             missingEvidence: CANONICAL.missingEvidence,
-            actions: CANONICAL.actions,
+            actions: liveActions
+              ? liveActions.map((a: any) => a.description || String(a.actionType || '').replace(/_/g, ' ')).filter(Boolean)
+              : CANONICAL.actions,
             approvalProbability: 84,
           });
         }
