@@ -3,6 +3,7 @@ import { db, setCompanyContext } from '@/lib/server-db';
 import { interviews } from '@project-atlas/database';
 import { eq } from 'drizzle-orm';
 import { requireAuth } from '@/lib/server-auth';
+import { FNOL_TEMPLATE } from '@/lib/fnol-template';
 
 // GET /api/interviews/[id]/template - Get interview template
 export async function GET(
@@ -23,11 +24,15 @@ export async function GET(
       return NextResponse.json({ error: 'Interview not found' }, { status: 404 });
     }
 
-    // Return template information from the interview
-    const template = {
-      id: interview.templateId,
-      name: interview.templateName,
-    };
+    // Serve the canonical template for the interview's templateId.
+    // Mirrors the Fastify API /interviews/:id/template handler: fnol-v1
+    // returns the full template; unknown templates return 404 (the page
+    // renders a graceful "Template not found" state instead of crashing).
+    const template = interview.templateId === 'fnol-v1' ? FNOL_TEMPLATE : null;
+
+    if (!template) {
+      return NextResponse.json({ error: 'Template not found' }, { status: 404 });
+    }
 
     return NextResponse.json(template);
   } catch (error) {
